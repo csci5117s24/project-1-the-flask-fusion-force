@@ -4,13 +4,13 @@ CSCI 5117, Spring 2024, [assignment description](https://canvas.umn.edu/courses/
 
 ## App Info:
 
-* Team Name: TODO
-* App Name: TODO
+* Team Name: Flask Fusion Force
+* App Name: Mixtap.fm
 * App Link: <https://TODO.com/>
 
 ### Students
 
-* First Last, x500@umn.edu
+* Kris Moe moe00013
 * ...
 
 
@@ -41,6 +41,9 @@ along with a very brief caption:**
 There are a few tools for mock-ups. Paper prototypes (low-tech, but effective and cheap), Digital picture edition software (gimp / photoshop / etc.), or dedicated tools like moqups.com (I'm calling out moqups here in particular since it seems to strike the best balance between "easy-to-use" and "wants your money" -- the free teir isn't perfect, but it should be sufficient for our needs with a little "creative layout" to get around the page-limit)
 
 In this space please either provide images (around 4) showing your prototypes, OR, a link to an online hosted mock-up tool like moqups.com
+
+We are using Canva to create our mock ups link is here:
+https://www.canva.com/design/DAF7eiceWJs/7_WpszTzMRMUg8rbZjcjuQ/edit?utm_content=DAF7eiceWJs&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton
 
 **[Add images/photos that show your paper prototype (around 4)](https://stackoverflow.com/questions/10189356/how-to-add-screenshot-to-readmes-in-github-repository) along with a very brief caption:**
 
