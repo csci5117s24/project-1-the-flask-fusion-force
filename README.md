@@ -4,14 +4,17 @@ CSCI 5117, Spring 2024, [assignment description](https://canvas.umn.edu/courses/
 
 ## App Info:
 
-* Team Name: Flask Fusion Force
-* App Name: Mixtap.fm
+* Team Name: The Flask Fusion Force
+* App Name: Mixtape.fm
 * App Link: <https://TODO.com/>
 
 ### Students
 
-* Kris Moe moe00013
-* ...
+* Conner DeJong, dejon113
+* Owen Ratgen, ratge006
+* Thomas Knickerbocker, knick073
+* Allen Liao, liao0144
+* Kris Moe, moe00013
 
 
 ## Key Features
