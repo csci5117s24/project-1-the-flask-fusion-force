@@ -1,0 +1,12 @@
+{% extends "layout.html" %}
+{% block title %}Home{% endblock %}
+{% block page_title %}
+<h1>Home</h1>
+{% endblock %}
+{% block content %}
+<div class="pure-g">
+    {% for playlist in playlists %}
+        {% include "playlistcard.html" ignore missing with context %}
+    {% endfor %}
+</div>
+{% endblock %}

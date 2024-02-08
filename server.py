@@ -2,12 +2,16 @@ from flask import Flask, request, render_template
 
 app = Flask(__name__)
 
+
 @app.route('/', methods=['GET'])
+def layout():
+  return render_template('layout.html',user_id = 0)
+
 @app.route('/home', methods=['GET'])
 @app.route('/homepage', methods=['GET'])
 def homepage():
-  return render_template('homepage.html')
-
+  return render_template('homepage.html',user_id = 0, playlists = [{'image':'image goes here','name':'playlist name goes here','rating':'rating goes here','tags':['tag1','tag2','tag3']}])
+'''
 @app.route('/search', methods=['POST'])
 def search():
   return render_template('search.html')
@@ -27,3 +31,4 @@ def settings():
 @app.route('/library/<int:u_id>', methods=['POST'])
 def library(u_id):
   return render_template('library.html', user_id=u_id)
+'''
