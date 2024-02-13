@@ -16,7 +16,7 @@
         <ul class="pure-menu-list ">
             <li class="pure-menu-item">
                 <form class="pure-form pure-u-1">
-                    <input type="text" class="pure-input-rounded" placeholder="find a playlist"/>
+                    <input type="text" class="pure-input-rounded" placeholder="Find a playlist..."/>
                     <button type="submit" class="pure-button">Search</button>
                 </form>
             </li>
@@ -24,6 +24,7 @@
                 <a href="#" id="menuLink1" class="pure-menu-link">...</a>
                 <ul class="pure-menu-children">
                     {% if user_id == 0 %}
+                    {#  If user not signed in: #}
                     <li class="pure-menu-item">
                         <a href="/home" class="pure-menu-link">Home</a>
                     </li>
