@@ -1,17 +1,108 @@
+from flask import Flask, request, render_template
+
+app = Flask(__name__)
+
+
+@app.route('/', methods=['GET'])
+def layout():
+  return render_template('layout.html.jinja',user_id = 0)
+
+@app.route('/home', methods=['GET'])
+@app.route('/homepage', methods=['GET'])
+def homepage():
+  return render_template('homepage.html.jinja',user_id = 0, playlists = [{'image':'image goes here','name':'playlist name goes here','rating':'rating goes here','tags':['tag1','tag2','tag3']}])
+'''
+@app.route('/search', methods=['POST'])
+def search():
+  return render_template('search.html')
+
+@app.route('/playlist/<int:p_id>', methods=['POST'])
+def playlist(p_id):
+  return render_template('playlist.html', playlist_id=p_id)
+
+@app.route('/login', methods=['GET'])
+def login():
+  return render_template('login.html')
+
+@app.route('/settings', methods=['GET'])
+def settings():
+  return render_template('settings.html')
+
+@app.route('/library/<int:u_id>', methods=['POST'])
+def library(u_id):
+  return render_template('library.html', user_id=u_id)
+'''
+import json
+from os import environ as env
+from urllib.parse import quote_plus, urlencode
+
+from authlib.integrations.flask_client import OAuth
+from dotenv import find_dotenv, load_dotenv
+from flask import redirect, session, url_for
+
+# app = Flask(__name__)
+ENV_FILE = find_dotenv()
+if ENV_FILE:
+    load_dotenv(ENV_FILE)
+app.secret_key = env.get("FLASK_SECRET")
+
+oauth = OAuth(app)
+
+oauth.register(
+    "auth0",
+    client_id=env.get("AUTH0_CLIENT_ID"),
+    client_secret=env.get("AUTH0_CLIENT_SECRET"),
+    client_kwargs={
+        "scope": "openid profile email",
+    },
+    server_metadata_url=f'https://{env.get("AUTH0_DOMAIN")}/.well-known/openid-configuration'
+)
+
+@app.route("/login")
+def login():
+    return oauth.auth0.authorize_redirect(
+        redirect_uri=url_for("callback", _external=True)
+    )
+
+@app.route("/callback", methods=["GET", "POST"])
+def callback():
+    token = oauth.auth0.authorize_access_token()
+    session["user"] = token
+    return redirect("/")
+
+@app.route("/logout")
+def logout():
+    session.clear()
+    return redirect(
+        "https://" + env.get("AUTH0_DOMAIN")
+        + "/v2/logout?"
+        + urlencode(
+            {
+                "returnTo": url_for("home", _external=True),
+                "client_id": env.get("AUTH0_CLIENT_ID"),
+            },
+            quote_via=quote_plus,
+        )
+    )
+
+@app.route("/")
+def home():
+    return render_template("home.html", user_id=0, session=session.get('user'), pretty=json.dumps(session.get('user'), indent=4))
+
 from contextlib import contextmanager
 import logging
-import os
-from flask import Flask, request, render_template, jsonify, current_app, g
+
+from flask import current_app, g
+
 import psycopg2
 from psycopg2.pool import ThreadedConnectionPool
 from psycopg2.extras import DictCursor
 
-app = Flask(__name__)
 pool = None
 
 def setup():
     global pool
-    DATABASE_URL = os.environ['DATABASE_URL']
+    DATABASE_URL = env['DATABASE_URL']
     current_app.logger.info(f"creating db connection pool")
     pool = ThreadedConnectionPool(1, 100, dsn=DATABASE_URL, sslmode='require')
 
@@ -29,25 +120,12 @@ def get_db_connection():
 def get_db_cursor(commit=False):
     with get_db_connection() as connection:
       cursor = connection.cursor(cursor_factory=DictCursor)
-      # cursor = connection.cursor()
       try:
           yield cursor
           if commit:
               connection.commit()
       finally:
           cursor.close()
-
-def get_login_info(username, password):
-  with get_db_cursor(True) as cursor:
-    cursor.execute("SELECT user_id FROM mixtape_fm_users WHERE username=%d, password=%d;", (username, password))
-    return cursor.fetchall()
-
-def attempt_registration(username, password):
-  if (get_login_info(username, password) != None):
-    return (False, None)
-  with get_db_cursor(True) as cursor:
-    cursor.execute("INSERT INTO mixtape_fm_users (username, password, spotify_linked) VALUES (%s, %s, %r);", (username, password, False))
-  return (True, get_login_info(username, password))
 
 def get_playlist(playlist_id):
   with get_db_cursor(True) as cursor:
@@ -92,6 +170,11 @@ def get_song_id(name, artist, album, genre, duration):
     (name, artist, album, genre, duration))
     return cursor.fetchall()
 
+def get_comment_id(commenter_id, playlist_id):
+  with get_db_cursor(True) as cursor:
+    cursor.execute("SELECT * FROM mixtape_fm_comments WHERE comment_user_id=%s, playlist_id=%s;", (commenter_id, playlist_id))
+    return cursor.fetchall()
+
 def insert_playlist(user_id, playlist_name):
   with get_db_cursor(True) as cursor:
     cursor.execute("INSERT INTO mixtape_fm_playlists (user_id, playlist_name, creation_date) VALUES (%s, %s, CURRENT_TIMESTAMP);", \
@@ -110,66 +193,23 @@ def insert_song(name, artist, album, genre, duration):
       (name, artist, album, genre, duration))
       return get_song_id(name, artist, album, genre, duration)
 
+def insert_new_user(user_id):
+  with get_db_cursor(True) as cursor:
+    cursor.execute("INSERT INTO mixtape_fm_users (user_id, spotify_linked) VALUES (%s, %s);", (user_id, 'FALSE'))
+    return
 
-@app.route('/', methods=['GET'])
-def layout():
-  return render_template('layout.html.jinja',user_id = 0)
-
-@app.route('/home', methods=['GET'])
-@app.route('/homepage', methods=['GET'])
-def homepage():
-  return render_template('homepage.html.jinja',user_id = 0, playlists = [{'image':'image goes here','name':'playlist name goes here','rating':'rating goes here','tags':['tag1','tag2','tag3']}])
-'''
-@app.route('/search', methods=['POST'])
-def search():
-  return render_template('search.html')
-
-@app.route('/playlist/<int:p_id>', methods=['POST'])
-def playlist(p_id):
-  return render_template('playlist.html', playlist_id=p_id)
-
-@app.route('/login', methods=['GET'])
-def login():
-  return render_template('login.html')
-
-@app.route('/login_check', methods=['POST'])
-def login_check():
-  if (pool == None):
-    setup()
-  username = request.form.get('username')
-  password = request.form.get('password')
-  if (len(username) > 20 or len(password) > 20):
-    return render_template('login.html', validity='False')
-  user_id = get_login_info(username, password)
-  if (user_id == None):
-    return render_template('login.html', validity='False')
-  return render_template('library.html', user_id=user_id)
-
-@app.route('/register', methods=['GET'])
-def register():
-  return render_template('register.html', issues='None')
-
-@app.route('/register_check', methods=['POST'])
-def register_check():
-  if (pool == None):
-    setup()
-  username = request.form.get('username')
-  password = request.form.get('password')
-  if (len(username) > 20 or len(password) > 20):
-    return render_template('register.html', issues='Too long')
-  (accepted, user_id) = attempt_registration(username, password)
-  if (not accepted):
-    return render_template('register.html', issues='Username in use')
-  return render_template('library.html', user_id=user_id)
-
-@app.route('/settings', methods=['GET'])
-def settings():
-  return render_template('settings.html')
-
-@app.route('/library', methods=['GET', 'POST'])
-def library():
-  u_id = request.args.get('user_id')
-  if (u_id == 'false'):
-    return render_template('login.html', validity='None')
-  return render_template('library.html', user_id=u_id)
-'''
+def insert_new_comment(commenter_id, playlist_id, stars, content):
+  if (stars < 1 or stars > 5):
+    print("Invalid number of stars in review")
+    return None
+  if (get_comment_id(commenter_id, playlist_id) != None):
+    print("User has already left a review of this playlist")
+    return None
+  with get_db_cursor(True) as cursor:
+    if (content == None or content == ''):
+      cursor.execute("INSERT INTO mixtape_fm_comments (comment_user_id, playlist_id, stars, timestamp) VALUES (%s, %s, %s, CURRENT_TIMESTAMP);", \
+      (commenter_id, playlist_id, stars))
+    else:
+      cursor.execute("INSERT INTO mixtape_fm_comments (comment_user_id, playlist_id, stars, content, timestamp) VALUES (%s, %s, %s, %s, CURRENT_TIMESTAMP);", \
+      (commenter_id, playlist_id, stars, content))
+    return get_comment_id(commenter_id, playlist_id)
