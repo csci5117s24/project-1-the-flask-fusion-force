@@ -11,13 +11,12 @@ redirect_uri = "http://127.0.0.1:5000/callback"
 
 @app.route('/', methods=['GET'])
 def layout():
-  return render_template('layout.html',user_id = 0)
+  return render_template('layout.html.jinja',user_id = 0)
 
 @app.route('/home', methods=['GET'])
 @app.route('/homepage', methods=['GET'])
 def homepage():
-  print(request)
-  return render_template('homepage.html',user_id = 0, playlists = [{'image':'image goes here','name':'playlist name goes here','rating':'rating goes here','tags':['tag1','tag2','tag3']}])
+  return render_template('homepage.html.jinja',user_id = 0, playlists = [{'image':'image goes here','name':'playlist name goes here','rating':'rating goes here','tags':['tag1','tag2','tag3']}])
 
 @app.route('/login', methods=['GET'])
 def login():
@@ -46,8 +45,7 @@ def callback():
   credentials_bytes = credentials_str.encode('ascii')
 
   base64_bytes = base64.b64encode(credentials_bytes)
-  base64_str = base64_bytes.decode("ascii") 
-  # print(base64_str)
+  base64_str = base64_bytes.decode("ascii")
 
   auth_options = {
           'Content-Type': 'application/x-www-form-urlencoded',
@@ -74,11 +72,6 @@ def callback():
   
   return render_template('layout.html')
 
-# @app.route('/callback', methods=['POST'])
-# def get_playlists():
-#   print(request)
-#   return render_template('layout.html')
-#   return
 '''
 @app.route('/search', methods=['POST'])
 def search():
