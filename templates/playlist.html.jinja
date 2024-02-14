@@ -37,7 +37,7 @@
             </div>
         </div>
         <div class = "commentlst">
-            <button class = "newcomment">
+            <button class = "newcomment" onclick=" toggleComment('comment-create-box')">
                 <div class="pure-g commentblock">
                     <div class="pure-u-4-10 user-icon ">
                         +
@@ -56,4 +56,23 @@
     </div>
     </div>
 </div>
+<div id = "comment-create-box" style="display: none;" >
+    <form class="pure-form pure-form-stacked">
+        <fieldset>
+            <legend>Leave a comment</legend>
+            <textarea rows="4" cols="100" class="pure-input-1" placeholder="Write somthing"></textarea>
+            <button type="submit" class="pure-button pure-button-primary">Post</button>
+        </fieldset>
+    </form>
+</div>
+<script>
+    function toggleComment(id) {
+    var x = document.getElementById(id);
+    if (x.style.display === "none") {
+        x.style.display = "block";
+    } else {
+        x.style.display = "none";
+    }
+    }
+</script>
 {% endblock %}
