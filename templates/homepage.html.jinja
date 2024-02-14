@@ -1,4 +1,4 @@
-{% extends "layout.html" %}
+{% extends "layout.html.jinja" %}
 {% block title %}Home{% endblock %}
 {% block page_title %}
 <h1>Home</h1>
@@ -10,7 +10,7 @@
     </form>
     
     {% for playlist in playlists %}
-        {% include "playlistcard.html" ignore missing with context %}
+        {% include "playlistcard.html.jinja" ignore missing with context %}
     {% endfor %}
 </div>
 {% endblock %}
