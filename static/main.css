@@ -13,6 +13,9 @@
     /* I need a higher z-index here because of the scroll-over effect. */
     z-index: 4;
 }
+.pure-menu-horizontal{
+    margin-bottom: 1em;
+}
 .page-title{
     margin-top: 7em;
     padding-left: 2em;
@@ -28,6 +31,12 @@
     background: #cccccc;
     border-radius: 2em;
     text-align: center;
+    border: none;
+}
+.playlist:hover{
+   
+    background: #b9b9b9;
+   
 }
 
 .tag{
@@ -110,4 +119,8 @@ button .commentblock:hover{
 }
 .horizontal-double-content{
     padding: 2em; 
+}
+.tab:hover{
+    background-color: #7a7a7a;
+    color:#ffffff;
 }
