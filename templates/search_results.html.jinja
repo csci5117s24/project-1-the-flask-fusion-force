@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% extends "layout.html.jinja" %}
+    {% block title %}Search Results{% endblock %}
+    {% block page_title %}
+    <h1>Search</h1>
+    {% endblock %}
+</head>
+<body>
+{% block content %}
+
+    <!-- Tabs. Should be displayed horizontally -->
+    <div class="tabs">
+        <ul>
+            <li><a href="#" onclick="loadContent('playlist')">Playlist Name</a></li>
+            <li><a href="#" onclick="loadContent('tags')">Tags</a></li>
+            <li><a href="#" onclick="loadContent('account')">Account</a></li>
+            <li><a href="#" onclick="loadContent('recent')">Recently Played</a></li>
+        </ul>
+    </div>
+
+    <!-- Content for tabs -->
+    <div id="content-section">
+        <div id="playlist" class="tab-content" onclick="changeTabs('playlist')">
+            Initial playlist content
+        </div>
+        <div id="tags" class="tab-content" style="display: none;" onclick="changeTabs('tags')">
+            Initial tags content
+        </div>
+        <div id="account" class="tab-content" style="display: none;" onclick="changeTabs('account')">
+            Initial account content
+        </div>
+        <div id="recent" class="tab-content" style="display: none;" onclick="changeTabs('recent')">
+            Initial recently played content
+        </div>
+    </div>
+
+    <script>
+        var search_response = null;
+        var current_tab = null;
+        /*
+        // Gets all search results JSON from server for playlist results when page loads
+        function onPageLoad() {
+            fetch('/getSearchResults')  // can change to whatever the endpoint is
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('No search results response from server');
+                    }
+                    search_response = response.text();  // Stores entire search results for current query. Rudamentary.
+                    return search_response;
+                })
+                .then(data => { 
+                    document.getElementById('playlist').innerHTML = data['playlist'];
+                    document.getElementById('playlist').style.display = "block";
+                    activeTab = 'playlist';
+                })
+                .catch(error => {
+                    console.error('There was a problem with the fetch operation:', error);
+                });
+        }
+        // Alters display when user clicks a new tab
+        function changeTabs(newTab){
+            document.getElementById(current_tab).style.display = "none";
+            current_tab = newTab;
+            document.getElementById('playlist').innerHTML = data[newTab];
+            document.getElementById(newTab).style.display = "block";
+        }
+        window.onload = onPageLoad;
+        */
+    </script>
+
+{% endblock %}
+</body>
+</html>
