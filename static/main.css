@@ -20,6 +20,9 @@
 .pure-menu-item form input {
     margin-right: 5px;
 }
+.pure-menu-horizontal{
+    margin-bottom: 1em;
+}
 .page-title{
     margin-top: 7em;
     padding-left: 2em;
@@ -35,6 +38,12 @@
     background: #e39ec1;
     border-radius: 2em;
     text-align: center;
+    border: none;
+}
+.playlist:hover{
+   
+    background: #b9b9b9;
+   
 }
 
 .tag{
@@ -145,3 +154,7 @@ h1 {
  }
 
  
+.tab:hover{
+    background-color: #7a7a7a;
+    color:#ffffff;
+}
