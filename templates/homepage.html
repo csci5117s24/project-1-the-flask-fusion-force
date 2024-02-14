@@ -1,16 +1,12 @@
-{% extends "layout.html" %}
+{% extends "layout.html.jinja" %}
 {% block title %}Home{% endblock %}
 {% block page_title %}
 <h1>Home</h1>
 {% endblock %}
 {% block content %}
 <div class="pure-g">
-    <form action="/login" method="get">
-        <button type="submit">Login with Spotify</button>
-    </form>
-    
     {% for playlist in playlists %}
-        {% include "playlistcard.html" ignore missing with context %}
+        {% include "playlistcard.html.jinja" ignore missing with context %}
     {% endfor %}
 </div>
 {% endblock %}

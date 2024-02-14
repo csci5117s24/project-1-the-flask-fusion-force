@@ -3,6 +3,7 @@ import json
 from os import environ as env
 from urllib.parse import quote_plus, urlencode
 import requests
+import base64
 
 app = Flask(__name__)
 redirect_uri = "http://127.0.0.1:5000/callback"
@@ -40,28 +41,44 @@ def login():
 @app.route('/callback', methods=['GET'])
 def callback():
   code = request.args.get('code')
-  authOptions = {
-        "url": 'https://accounts.spotify.com/api/token',
-        "form": {
-          "code": code,
-          "redirect_uri": redirect_uri,
-          "grant_type": 'authorization_code'
-        },
-        "headers": {
-          'Authorization': 'Basic ' + env['SPOTIFY_CLIENT_ID'] + ':' + env['SPOTIFY_CLIENT_SECRET']
-        },
-        "json": 'true'
-      };
+
+  credentials_str = f"{env['SPOTIFY_CLIENT_ID']}:{env['SPOTIFY_CLIENT_SECRET']}"
+  credentials_bytes = credentials_str.encode('ascii')
+
+  base64_bytes = base64.b64encode(credentials_bytes)
+  base64_str = base64_bytes.decode("ascii") 
+  # print(base64_str)
+
+  auth_options = {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'Authorization': 'Basic ' + base64_str
+        }
   
-  response = requests.post(url='http://127.0.0.1:5000/callback', json=json.dumps(authOptions))
-  print(response.json())
+  data = {
+    "code": code,
+    "redirect_uri": redirect_uri,
+    "grant_type": 'authorization_code'
+  }
+  
+  # FIXME: Why do I have to login everytime?
+  response = requests.post(url='https://accounts.spotify.com/api/token', data=data, headers=auth_options)
+  response_json = response.json()
+  access_token = response_json.get('access_token')
+  print("Accessing " + str(response_json.get('access_token')))
+
+  playlist_url = "https://api.spotify.com/v1/me/playlists"
+  playlist_headers = {'Authorization': 'Bearer ' + access_token}
+  playlist_rsp = requests.get(url=playlist_url, headers=playlist_headers)
+  playlist_json = playlist_rsp.json()
+  print(playlist_json)
   
   return render_template('layout.html')
 
-@app.route('/callback', methods=['POST'])
-def get_playlists():
-  print(request)
-  return render_template('layout.html')
+# @app.route('/callback', methods=['POST'])
+# def get_playlists():
+#   print(request)
+#   return render_template('layout.html')
+#   return
 '''
 @app.route('/search', methods=['POST'])
 def search():
