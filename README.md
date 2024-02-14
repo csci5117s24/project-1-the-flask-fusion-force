@@ -49,6 +49,7 @@ https://www.canva.com/design/DAF7eiceWJs/7_WpszTzMRMUg8rbZjcjuQ/edit?utm_content
 ![Library](/MOCKUP/mixtape.fm_user_library_page.png?raw=true)
 ![Playlist](/MOCKUP/mixtape.fm_individual_playlist_page.png?raw=true)
 ![Settings](/MOCKUP/mixtape.fm_settings_page.png?raw=true)
+<img width="503" alt="Edit_Comments_Page" src="https://github.com/csci5117s24/project-1-the-flask-fusion-force/assets/136757799/1c64e066-3fcb-498b-b7e9-6ca0c9245fbf">
 
 
 ## External Dependencies
