@@ -124,3 +124,18 @@ button .commentblock:hover{
     background-color: #7a7a7a;
     color:#ffffff;
 }
+#comment-create-box{
+    background-color: #c5c5c5;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 2em;
+}
+#comment-create-box .pure-form {
+    padding: 5em;
+  }
+#comment-create-box button {
+    background-color: #7a7a7a;
+    
+  }
