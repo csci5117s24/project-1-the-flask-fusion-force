@@ -5,46 +5,22 @@
 {% endblock %}
 {% block content %}
 <div class="pure-g">
-    <span class="settingsRow">
-        Change Avatar
-        <button onclick="changeAvatar()">Browse Images...</button>
-    </span>
-    <span class="settingsRow">
-        Change Username
-        <label for="uName">Input</label>
-        <input type="text" id="uName" name="Username">
-        <button onclick="changeUsername()">Change</button>
-    </span>
-    <span class="settingsRow">
-        Change Password
-        <label for="pWord">Input</label>
-        <input type="text" id="pWord" name="Password">
-        <button onclick="changePassword()">Change</button>
-    </span>
-    <span class="settingsRow">
-        Change Email
-        <label for="email">Input</label>
-        <input type="text" id="email" name="Email">
-        <button onclick="changeEmail()">Change</button>
-    </span>
-    <span class="settingsRow">
-        Change Phone Number
-        <label for="phone">Input</label>
-        <input type="text" id="phone" name="PhoneNum">
-        <button onclick="changePhone()">Change</button>
-    </span>
-    <span class="settingsRow">
-        <label for="layoutSetting">Change Default Layout</label>
-        <select name="layoutSetting" id="layoutSetting">
-            <option value="None" selected>User's Current Setting</option>
-            <option
-                value="someOption">
-                A different setting</option>
-        </select>
-    </span>
-    <span class="settingsRow">
-        <input type="checkbox">
-        <span class="slider round"></span>
-    </span>
+    <form class="pure-form pure-form-aligned">
+        <fieldset>
+            <div class="pure-control-group">
+                Change Avatar
+                <button onclick="changeAvatar()">Browse Images...</button>
+                <label for="aligned-name"></label>
+            </div>
+            <div class="pure-control-group
+                <label for=" layoutSetting">Change Default Layout</label>
+                <select name="layoutSetting" id="layoutSetting">
+                    <option value="None" selected>User's Current Setting</option>
+                    <option value="someOption">
+                        A different setting</option>
+                </select>
+            </div>
+        </fieldset>
+    </form>
 </div>
 {% endblock %}
