@@ -11,11 +11,6 @@ def layout():
 @app.route('/homepage', methods=['GET'])
 def homepage():
   return render_template('homepage.html.jinja',user_id = 0, playlists = [{'image':'image goes here','name':'playlist name goes here','rating':'rating goes here','tags':['tag1','tag2','tag3']}])
-
-@app.route('/editPlaylist', methods=['GET'])
-def editPlaylistPage():
-  return render_template('create_edit_playlist.html.jinja',user_id = 0)
-
 '''
 @app.route('/search', methods=['POST'])
 def search():
