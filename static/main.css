@@ -60,6 +60,64 @@
     padding: 1em;
     
 }
+.songlst{
+    padding: 1em;
+    background-color: #8f8f8f;
+}
+.song-icon{
+    background-color: #c5c5c5;
+    padding-top: 1em;
+    padding-bottom: 1em;
+    
+}
+.song-title{
+    padding:0.5em;
+}
+.song{
+    padding:0.5em;
+
+}
+.song-feild{
+    margin-bottom: 2em;
+}
+.small-playlist-icon{
+    background-color: #cccccc;
+    padding: 0.5em;
+    padding-top: 1em;
+    padding-bottom: 1em;
+    margin: 0.5em;
+}
+.user-icon{
+    background-color: #ffffff;
+    padding: 0.5em;
+    padding-top: 1em;
+    padding-bottom: 1em;
+    border-radius: 2em;
+}
+.newcomment{
+    border: none;
+    background-color: #8f8f8f;
+}
+.commentlst{
+    padding: 1em;
+    background-color: #8f8f8f;
+}
+.comment{
+     padding:0.5em; 
+     padding-top: 1em;
+     padding-bottom: 1em;
+}
+.commentblock{
+    padding:0.5em; 
+    margin: 0.5em;
+}
+button .commentblock:hover{
+    background-color: #7a7a7a;
+    border-radius: 1em;
+}
+.horizontal-double-content{
+    padding: 2em; 
+}
 
 #navbarWebsiteName{
     color: white;
