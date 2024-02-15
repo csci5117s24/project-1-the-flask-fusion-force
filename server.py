@@ -3,9 +3,6 @@ from flask import Flask, request, render_template
 app = Flask(__name__)
 
 
-@app.route('/', methods=['GET'])
-def layout():
-  return render_template('layout.html.jinja',user_id = 0)
 
 @app.route('/home', methods=['GET'])
 @app.route('/homepage', methods=['GET'])
@@ -18,18 +15,18 @@ def search():
 @app.route('/playlist/<int:p_id>', methods=['POST','GET'])
 def playlist(p_id):
   return render_template('playlist.html.jinja', playlist_id=p_id,songs= ["Minnesota March","Minnesota Rouser"],comments= ["Lovely","good vibes"])
-
-@app.route('/login', methods=['GET'])
-def login():
-  return render_template('login.html.jinja')
-
 @app.route('/settings', methods=['GET'])
 def settings():
-  return render_template('settings.html.jinja')
+  return render_template('settings.html.jinja',settings = 
+  {"text example":["text"],"upload example":["upload"],"Dropd down example":["dropdown",["option1","option2"]],"Toggel example":["checkbox"]})
 
-@app.route('/library/<int:u_id>', methods=['POST'])
-def library(u_id):
-  return render_template('library.html', user_id=u_id)
+@app.route('/library', methods=['POST','GET'])
+def library():
+  return render_template('user_library.html.jinja', user_id=10)
+
+@app.route('/edit-playlist', methods=['POST','GET'])
+def editplaylist():
+  return render_template('create_edit_playlist.html.jinja', user_id=1,searched_songs= ["Minnesota March","Minnesota Rouser"])
 
 import json
 from os import environ as env
@@ -86,7 +83,7 @@ def logout():
 
 @app.route("/")
 def home():
-    return render_template("home.html", user_id=0, session=session.get('user'), pretty=json.dumps(session.get('user'), indent=4))
+    return render_template("layout.html.jinja", user_id=0, session=session.get('user'), pretty=json.dumps(session.get('user'), indent=4))
 
 from contextlib import contextmanager
 import logging
