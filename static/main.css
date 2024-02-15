@@ -34,11 +34,14 @@
     border: none;
 }
 .playlist:hover{
-   
     background: #b9b9b9;
-   
 }
-
+.playlist-container{
+    background: #cccccc;
+    border-radius: 2em;
+    text-align: center;
+    border: none;
+}
 .tag{
     padding: 0.25em;
     background: #eeeeee;
@@ -139,3 +142,19 @@ button .commentblock:hover{
     background-color: #7a7a7a;
     
   }
+.right-align{
+    width: 150px;
+    margin: 1em;
+    margin-left: auto; 
+   
+
+}
+.add-song{
+    border: none;
+    background-color: #8f8f8f;
+    border-radius: 2em;
+}
+.add-song:hover{
+    border: none;
+    background-color: #7a7a7a;
+}
