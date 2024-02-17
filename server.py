@@ -3,35 +3,31 @@ from flask import Flask, request, render_template
 app = Flask(__name__)
 
 
-@app.route('/', methods=['GET'])
-def layout():
-  return render_template('layout.html.jinja',user_id = 0)
 
 @app.route('/home', methods=['GET'])
 @app.route('/homepage', methods=['GET'])
 def homepage():
   return render_template('homepage.html.jinja',user_id = 0, playlists = [{'image':'image goes here','name':'playlist name goes here','rating':'rating goes here','tags':['tag1','tag2','tag3']}])
-'''
-@app.route('/search', methods=['POST'])
+
+@app.route('/search', methods=['POST','GET'])
 def search():
-  return render_template('search.html')
-
-@app.route('/playlist/<int:p_id>', methods=['POST'])
+  return render_template('search.html.jinja',user_id =1, playlists = [{'image':'image goes here','name':'playlist name goes here','rating':'rating goes here','tags':['tag1','tag2','tag3']}])
+@app.route('/playlist/<int:p_id>', methods=['POST','GET'])
 def playlist(p_id):
-  return render_template('playlist.html', playlist_id=p_id)
-
-@app.route('/login', methods=['GET'])
-def login():
-  return render_template('login.html')
-
+  return render_template('playlist.html.jinja', playlist_id=p_id,songs= ["Minnesota March","Minnesota Rouser"],comments= ["Lovely","good vibes"])
 @app.route('/settings', methods=['GET'])
 def settings():
-  return render_template('settings.html')
+  return render_template('settings.html.jinja',settings = 
+  {"text example":["text"],"upload example":["upload"],"Dropd down example":["dropdown",["option1","option2"]],"Toggel example":["checkbox"]})
 
-@app.route('/library/<int:u_id>', methods=['POST'])
-def library(u_id):
-  return render_template('library.html', user_id=u_id)
-'''
+@app.route('/library', methods=['POST','GET'])
+def library():
+  return render_template('user_library.html.jinja', user_id=10)
+
+@app.route('/edit-playlist', methods=['POST','GET'])
+def editplaylist():
+  return render_template('create_edit_playlist.html.jinja', user_id=1,searched_songs= ["Minnesota March","Minnesota Rouser"])
+
 import json
 from os import environ as env
 from urllib.parse import quote_plus, urlencode
@@ -87,7 +83,7 @@ def logout():
 
 @app.route("/")
 def home():
-    return render_template("home.html", user_id=0, session=session.get('user'), pretty=json.dumps(session.get('user'), indent=4))
+    return render_template("layout.html.jinja", user_id=0, session=session.get('user'), pretty=json.dumps(session.get('user'), indent=4))
 
 from contextlib import contextmanager
 import logging
@@ -213,3 +209,5 @@ def insert_new_comment(commenter_id, playlist_id, stars, content):
       cursor.execute("INSERT INTO mixtape_fm_comments (comment_user_id, playlist_id, stars, content, timestamp) VALUES (%s, %s, %s, %s, CURRENT_TIMESTAMP);", \
       (commenter_id, playlist_id, stars, content))
     return get_comment_id(commenter_id, playlist_id)
+
+  return render_template('library.html.jinja', user_id=u_id)

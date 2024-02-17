@@ -5,8 +5,12 @@
 {% endblock %}
 {% block content %}
 <div class="pure-g">
-    {% for setting in settings %}
-        {% include "settings.html.jinja" ignore missing with context %}
+<form class="pure-form pure-form-aligned">
+    <fieldset>
+    {% for settingName, type in settings.items() %}
+        {% include "settingfactory.html.jinja" ignore missing with context %}
     {% endfor %}
+       </fieldset>
+</form>
 </div>
 {% endblock %}
