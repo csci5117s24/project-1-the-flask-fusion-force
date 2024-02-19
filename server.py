@@ -6,7 +6,7 @@ import requests
 import base64
 
 app = Flask(__name__)
-redirect_uri = "http://127.0.0.1:5000/callback"
+redirect_uri = "http://127.0.0.1:5000/spotify/callback"
 
 
 @app.route('/', methods=['GET'])
@@ -18,16 +18,10 @@ def layout():
 def homepage():
   return render_template('homepage.html.jinja',user_id = 0, playlists = [{'image':'image goes here','name':'playlist name goes here','rating':'rating goes here','tags':['tag1','tag2','tag3']}])
 
-@app.route('/login', methods=['GET'])
-def login():
+@app.route('/spotify/login', methods=['GET'])
+def spotify_login():
   scope = 'user-top-read'
-    # Query string is used to retrieve information from a database
-  json = {
-        "response_type": 'code',
-        "client_id": env['SPOTIFY_CLIENT_ID'],
-        "scope": scope,
-        "redirect_uri": "http://127.0.0.1:5000/callback"
-    }
+  # Query string is used to retrieve information from a database
   return redirect('https://accounts.spotify.com/authorize?' +
       urlencode({
         "response_type": 'code',
@@ -37,8 +31,8 @@ def login():
     },
     quote_via=quote_plus))
 
-@app.route('/callback', methods=['GET'])
-def callback():
+@app.route('/spotify/callback', methods=['GET'])
+def spotify_callback():
   code = request.args.get('code')
 
   credentials_str = f"{env['SPOTIFY_CLIENT_ID']}:{env['SPOTIFY_CLIENT_SECRET']}"
@@ -68,9 +62,10 @@ def callback():
   playlist_headers = {'Authorization': 'Bearer ' + access_token}
   playlist_rsp = requests.get(url=playlist_url, headers=playlist_headers)
   playlist_json = playlist_rsp.json()
-  print(playlist_json)
+  # for entry in playlist_json:
+  # print(playlist_json)
   
-  return render_template('layout.html')
+  return render_template('layout.html.jinja')
 
 '''
 @app.route('/search', methods=['POST'])
