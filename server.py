@@ -12,9 +12,6 @@ def layout():
 def homepage():
   return render_template('homepage.html.jinja',user_id = 0, playlists = [{'image':'image goes here','name':'playlist name goes here','rating':'rating goes here','tags':['tag1','tag2','tag3']}])
 
-@app.route('/settings', methods=['GET'])
-def settings():
-  return render_template('settings.html.jinja')
 '''
 @app.route('/search', methods=['POST'])
 def search():

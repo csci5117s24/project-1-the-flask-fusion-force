@@ -3,9 +3,10 @@
     padding: 0.5em;
     box-shadow: 0 1px 1px rgba(0,0,0, 0.10);
     text-align: center;
+    display: inline-block;
 }
 .home-menu {
-    background: #e7e7e7;
+    background: #9883e5;
 }
 .pure-menu.pure-menu-fixed {
     /* Fixed menus normally have a border at the bottom. */
@@ -13,32 +14,38 @@
     /* I need a higher z-index here because of the scroll-over effect. */
     z-index: 4;
 }
+.pure-menu-item form {
+    display: flex;
+}
+.pure-menu-item form input {
+    margin-right: 5px;
+}
 .page-title{
     margin-top: 7em;
     padding-left: 2em;
   
 }
 .content{
-    background: #eeeeee;
+    background: #c47ac0;
     padding: 1em;
 }
 
 .playlist{
     padding: 2em;
-    background: #cccccc;
+    background: #e39ec1;
     border-radius: 2em;
     text-align: center;
 }
 
 .tag{
     padding: 0.25em;
-    background: #eeeeee;
+    background: #72A1E5;
     border-radius: 0.5em;
     text-align: center;
 }
 .playlist-icon{
     border-style: solid;
-    background: #ffffff;
+    background: #50c9ce;
     border-color: #000000;
     border-radius: 1em;
     text-align: center;
@@ -53,3 +60,30 @@
     padding: 1em;
     
 }
+
+#navbarWebsiteName{
+    color: white;
+    background-color: black;
+    border-radius: 10px;
+}
+#playlistSearchButton{
+    border-radius: 10px;
+}
+
+
+/*  -- Change this whenever, but we may want a font theme -- */
+h1 {  
+    font-family: "Palatino", "URW Palladio L", serif;
+}
+
+
+
+
+/*  -- TABLET (AND UP) MEDIA QUERIES -- */
+ @media (min-width: 40em) {
+ }
+/*  -- DESKTOP (AND UP) MEDIA QUERIES -- */
+ @media (min-width: 60em) {
+ }
+
+ 
