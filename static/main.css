@@ -13,6 +13,9 @@
     /* I need a higher z-index here because of the scroll-over effect. */
     z-index: 4;
 }
+.pure-menu-horizontal{
+    margin-bottom: 1em;
+}
 .page-title{
     margin-top: 7em;
     padding-left: 2em;
@@ -28,8 +31,17 @@
     background: #cccccc;
     border-radius: 2em;
     text-align: center;
+    border: none;
 }
-
+.playlist:hover{
+    background: #b9b9b9;
+}
+.playlist-container{
+    background: #cccccc;
+    border-radius: 2em;
+    text-align: center;
+    border: none;
+}
 .tag{
     padding: 0.25em;
     background: #eeeeee;
@@ -52,4 +64,97 @@
 .playlist-rating{
     padding: 1em;
     
+}
+.songlst{
+    padding: 1em;
+    background-color: #8f8f8f;
+}
+.song-icon{
+    background-color: #c5c5c5;
+    padding-top: 1em;
+    padding-bottom: 1em;
+    
+}
+.song-title{
+    padding:0.5em;
+}
+.song{
+    padding:0.5em;
+
+}
+.song-feild{
+    margin-bottom: 2em;
+}
+.small-playlist-icon{
+    background-color: #cccccc;
+    padding: 0.5em;
+    padding-top: 1em;
+    padding-bottom: 1em;
+    margin: 0.5em;
+}
+.user-icon{
+    background-color: #ffffff;
+    padding: 0.5em;
+    padding-top: 1em;
+    padding-bottom: 1em;
+    border-radius: 2em;
+}
+.newcomment{
+    border: none;
+    background-color: #8f8f8f;
+}
+.commentlst{
+    padding: 1em;
+    background-color: #8f8f8f;
+}
+.comment{
+     padding:0.5em; 
+     padding-top: 1em;
+     padding-bottom: 1em;
+}
+.commentblock{
+    padding:0.5em; 
+    margin: 0.5em;
+}
+button .commentblock:hover{
+    background-color: #7a7a7a;
+    border-radius: 1em;
+}
+.horizontal-double-content{
+    padding: 2em; 
+}
+.tab:hover{
+    background-color: #7a7a7a;
+    color:#ffffff;
+}
+#comment-create-box{
+    background-color: #c5c5c5;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 2em;
+}
+#comment-create-box .pure-form {
+    padding: 5em;
+  }
+#comment-create-box button {
+    background-color: #7a7a7a;
+    
+  }
+.right-align{
+    width: 150px;
+    margin: 1em;
+    margin-left: auto; 
+   
+
+}
+.add-song{
+    border: none;
+    background-color: #8f8f8f;
+    border-radius: 2em;
+}
+.add-song:hover{
+    border: none;
+    background-color: #7a7a7a;
 }

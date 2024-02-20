@@ -1,38 +1,49 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    {% extends "layout.html.jinja" %}
-    {% block title %} Edit Playlist {% endblock %}
-    {% block page_title %}
-    <h1>&lt;Your Playlist Name Here &gt;</h1>
-    {% endblock %}
-</head>
-<body>
+
+{% extends "layout.html.jinja" %}
+{% block title %} Edit Playlist {% endblock %}
+{% block page_title %}
+<h1>&lt;Your Playlist Name Here &gt;</h1>
+{% endblock %}
 {% block content %}
-
-    <!-- Search Bar and Results (Left Side) -->
-    <div class="left-panel">
-        <h2>Search Results</h2>
-        <input type="text" id="searchInput" placeholder="Search for songs...">
-        <ul id="searchResults">
-            <!-- Search results will be displayed here -->
-        </ul>
+<div class="pure-g horizontal-double-content" style="padding: 2em;">
+    <div class="pure-u-5-12">
+         <form class="pure-form pure-u-1" method = "POST" action = "/edit-playlist">
+                    <input type="text" class="pure-input-rounded" placeholder="Find a Song..."/>
+                    <button type="submit" class="pure-button">Search</button>
+        </form>
+        <div class = "songlst">
+            {% for song in searched_songs %}
+                {% include "addsongcard.html.jinja" ignore missing with context %}
+            {% endfor %}
+        </div>
+        
     </div>
-
-    <!-- Playlist Details and Songs (Right Side) -->
-    <div class="right-panel">
-        <h2>Playlist Details</h2>
-        <img src="playlist_image.jpg" alt="Playlist Image">
-        <h3>Playlist Name</h3>
-        <ul id="playlistSongs">
-            <!-- Playlist songs will be displayed here -->
-        </ul>
+    <div class="pure-u-5-12 horizontal-double-content" >
+        <div class="pure-g song-feild">
+            <div class="pure-u-1-5 small-playlist-icon">
+                <img src="playlist_image.jpg" alt="Playlist Image">
+              
+            </div>
+            <div class="pure-u-1-3">
+                Name of Playlist
+            </div>
+        </div>
+      <div class = "songlst">
+            {% for song in added_songs %}
+                {% include "songcard.html.jinja" ignore missing with context %}
+            {% endfor %}
+        </div>
+        <div class = "right-align">
+            <!-- Save Button (Bottom Right) -->
+            <form class="pure-form pure-u-1" method = "POST" action = "/library">
+                <button onclick="savePlaylist()" class="save-button pure-button">Save Playlist</button>
+            </form>
+      </div>
     </div>
+     
+    </div>
+</div>
 
-    <!-- Save Button (Bottom Right) -->
-    <button onclick="savePlaylist()" class="save-button">Save Playlist</button>
 
     <script>
         /*
@@ -70,7 +81,4 @@
         window.onload = getPlaylist();
         */
     </script>
-
 {% endblock %}
-</body>
-</html>

@@ -1,0 +1,27 @@
+{% if type[0] == "text" %}
+     <div class="pure-control-group">
+        <label for={{settingName}}>{{settingName}}</label>
+        <input type="text" id={{settingName}}/>
+    </div>
+{% elif type[0] == "upload" %}
+    <div class="pure-control-group">
+        <label for={{settingName}}>{{settingName}}</label>
+        <input type="file" id={{settingName}}/>
+    </div>
+{% elif type[0] == "checkbox" %}
+    <div class="pure-control-group">
+        <label for={{settingName}}>{{settingName}}</label>
+        <input type="checkbox" id={{settingName}}/>
+    </div>
+{% elif type[0]== "dropdown" %}
+   <div class="pure-control-group">
+        <label for={{settingName}}>{{settingName}}</label>
+        <select id={{settingName}}>
+            {% for option in type[1] %}
+                <option>{{option}}</option>
+            {% endfor %}
+        </select>
+    </div>
+{% else  %}
+    
+{% endif %}

@@ -1,37 +1,38 @@
 from flask import Flask, request, render_template
+import db
 
-app = Flask(__name__)
+def create_app():
+    app = Flask(__name__)
+    with app.app_context():
+        db.setup()
+    return app
 
-
-@app.route('/', methods=['GET'])
-def layout():
-  return render_template('layout.html.jinja',user_id = 0)
+app = create_app()
 
 @app.route('/home', methods=['GET'])
 @app.route('/homepage', methods=['GET'])
 def homepage():
   return render_template('homepage.html.jinja',user_id = 0, playlists = [{'image':'image goes here','name':'playlist name goes here','rating':'rating goes here','tags':['tag1','tag2','tag3']}])
-'''
-@app.route('/search', methods=['POST'])
+
+@app.route('/search', methods=['POST','GET'])
 def search():
-  return render_template('search.html')
-
-@app.route('/playlist/<int:p_id>', methods=['POST'])
+  return render_template('search.html.jinja',user_id =1, playlists = [{'image':'image goes here','name':'playlist name goes here','rating':'rating goes here','tags':['tag1','tag2','tag3']}])
+@app.route('/playlist/<int:p_id>', methods=['POST','GET'])
 def playlist(p_id):
-  return render_template('playlist.html', playlist_id=p_id)
-
-@app.route('/login', methods=['GET'])
-def login():
-  return render_template('login.html')
-
+  return render_template('playlist.html.jinja', playlist_id=p_id,songs= ["Minnesota March","Minnesota Rouser"],comments= ["Lovely","good vibes"])
 @app.route('/settings', methods=['GET'])
 def settings():
-  return render_template('settings.html')
+  return render_template('settings.html.jinja',settings = 
+  {"text example":["text"],"upload example":["upload"],"Dropd down example":["dropdown",["option1","option2"]],"Toggel example":["checkbox"]})
 
-@app.route('/library/<int:u_id>', methods=['POST'])
-def library(u_id):
-  return render_template('library.html', user_id=u_id)
-'''
+@app.route('/library', methods=['POST','GET'])
+def library():
+  return render_template('user_library.html.jinja', user_id=10)
+
+@app.route('/edit-playlist', methods=['POST','GET'])
+def editplaylist():
+  return render_template('create_edit_playlist.html.jinja', user_id=1,searched_songs= ["Minnesota March","Minnesota Rouser"])
+
 import json
 from os import environ as env
 from urllib.parse import quote_plus, urlencode
@@ -87,129 +88,4 @@ def logout():
 
 @app.route("/")
 def home():
-    return render_template("home.html", user_id=0, session=session.get('user'), pretty=json.dumps(session.get('user'), indent=4))
-
-from contextlib import contextmanager
-import logging
-
-from flask import current_app, g
-
-import psycopg2
-from psycopg2.pool import ThreadedConnectionPool
-from psycopg2.extras import DictCursor
-
-pool = None
-
-def setup():
-    global pool
-    DATABASE_URL = env['DATABASE_URL']
-    current_app.logger.info(f"creating db connection pool")
-    pool = ThreadedConnectionPool(1, 100, dsn=DATABASE_URL, sslmode='require')
-
-
-@contextmanager
-def get_db_connection():
-    try:
-        connection = pool.getconn()
-        yield connection
-    finally:
-        pool.putconn(connection)
-
-
-@contextmanager
-def get_db_cursor(commit=False):
-    with get_db_connection() as connection:
-      cursor = connection.cursor(cursor_factory=DictCursor)
-      try:
-          yield cursor
-          if commit:
-              connection.commit()
-      finally:
-          cursor.close()
-
-def get_playlist(playlist_id):
-  with get_db_cursor(True) as cursor:
-    cursor.execute("SELECT * FROM mixtape_fm_playlists WHERE playlist_id=%s;", playlist_id)
-    return cursor.fetchall()
-
-def get_playlist_songs_ids(playlist_id):
-  with get_db_cursor(True) as cursor:
-    cursor.execute("SELECT song_id FROM mixtape_fm_playlist_songs WHERE playlist_id=%s;", playlist_id)
-    return cursor.fetchall()
-
-def get_songs_from_song_id(song_id):
-  with get_db_cursor(True) as cursor:
-    cursor.execute("SELECT * FROM mixtape_fm_songs WHERE song_id=%s;", song_id)
-    return cursor.fetchall()
-
-def get_playlist_songs(playlist_id):
-  playlist_songs_ids = get_playlist_songs_ids(playlist_id)
-  playlist_songs = []
-  for song_id in playlist_songs_ids:
-    playlist_songs.append(get_songs_from_song_id(song_id))
-  return playlist_songs
-
-def get_user_playlists(user_id):
-  with get_db_cursor(True) as cursor:
-    cursor.execute("SELECT * FROM mixtape_fm_playlists WHERE user_id=%s;", user_id)
-    return cursor.fetchall()
-
-def get_playlist_id(user_id, playlist_name):
-  with get_db_cursor(True) as cursor:
-    cursor.execute("SELECT playlist_id FROM mixtape_fm_playlists WHERE user_id=%s, playlist_name=%s;", (user_id, playlist_name))
-    return cursor.fetchall()
-
-def get_playlist_song_id(playlist_id, song_id):
-  with get_db_cursor(True) as cursor:
-    cursor.execute("SELECT playlist_song_id FROM mixtape_fm_playlist_songs WHERE playlist_id=%s, song_id=%s;", (playlist_id, song_id))
-    return cursor.fetchall()
-
-def get_song_id(name, artist, album, genre, duration):
-  with get_db_cursor(True) as cursor:
-    cursor.execute("SELECT song_id FROM mixtape_fm_songs WHERE name=%s, artist=%s, album=%s, genre=%s, duration=%s;", \
-    (name, artist, album, genre, duration))
-    return cursor.fetchall()
-
-def get_comment_id(commenter_id, playlist_id):
-  with get_db_cursor(True) as cursor:
-    cursor.execute("SELECT * FROM mixtape_fm_comments WHERE comment_user_id=%s, playlist_id=%s;", (commenter_id, playlist_id))
-    return cursor.fetchall()
-
-def insert_playlist(user_id, playlist_name):
-  with get_db_cursor(True) as cursor:
-    cursor.execute("INSERT INTO mixtape_fm_playlists (user_id, playlist_name, creation_date) VALUES (%s, %s, CURRENT_TIMESTAMP);", \
-    (user_id, playlist_name))
-    return get_playlist_id(user_id, playlist_name)
-
-def insert_song_into_playlist(playlist_id, song_id):
-  with get_db_cursor(True) as cursor:
-    cursor.execute("INSERT INTO mixtape_fm_playlist_songs (playlist_id, song_id) VALUES (%s, %s);", (playlist_id, song_id))
-    return get_playlist_song_id(playlist_id, song_id)
-
-def insert_song(name, artist, album, genre, duration):
-  if (get_song_id(name, artist, album, genre, duration) == None):
-    with get_db_cursor(True) as cursor:
-      cursor.execute("INSERT INTO mixtape_fm_songs (name, artist, album, genre, duration) VALUES (%s, %s, %s, %s, %s);", \
-      (name, artist, album, genre, duration))
-      return get_song_id(name, artist, album, genre, duration)
-
-def insert_new_user(user_id):
-  with get_db_cursor(True) as cursor:
-    cursor.execute("INSERT INTO mixtape_fm_users (user_id, spotify_linked) VALUES (%s, %s);", (user_id, 'FALSE'))
-    return
-
-def insert_new_comment(commenter_id, playlist_id, stars, content):
-  if (stars < 1 or stars > 5):
-    print("Invalid number of stars in review")
-    return None
-  if (get_comment_id(commenter_id, playlist_id) != None):
-    print("User has already left a review of this playlist")
-    return None
-  with get_db_cursor(True) as cursor:
-    if (content == None or content == ''):
-      cursor.execute("INSERT INTO mixtape_fm_comments (comment_user_id, playlist_id, stars, timestamp) VALUES (%s, %s, %s, CURRENT_TIMESTAMP);", \
-      (commenter_id, playlist_id, stars))
-    else:
-      cursor.execute("INSERT INTO mixtape_fm_comments (comment_user_id, playlist_id, stars, content, timestamp) VALUES (%s, %s, %s, %s, CURRENT_TIMESTAMP);", \
-      (commenter_id, playlist_id, stars, content))
-    return get_comment_id(commenter_id, playlist_id)
+    return render_template("layout.html.jinja", user_id=0, session=session.get('user'), pretty=json.dumps(session.get('user'), indent=4))

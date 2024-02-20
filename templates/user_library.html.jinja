@@ -4,7 +4,31 @@
 <h1>My Library</h1>
 {% endblock %}
 {% block content %}
-<div class="pure-g">
+<div class="pure-menu pure-menu-horizontal">
+    <ul class="pure-menu-list">
+        <li class="pure-menu-item">
+            <a href="#" class="pure-menu-link tab">My Playlists</a>
+        </li>
+        <li class="pure-menu-item">
+            <a href="#" class="pure-menu-link tab">Saved Playlists</a>
+        </li>
+        <li class="pure-menu-item">
+            <a href="#" class="pure-menu-link tab">Recently Played</a>
+        </li>
+        <li class="pure-menu-item">
+            <a href="#" class="pure-menu-link tab">Suprise Me</a>
+        </li>
+    </ul>
+</div>
+<div class="pure-u-1 pure-u-md-1-5 pure-u-lg-1-8 playlist-container">
+    <form class="pure-form pure-u-1" method = "GET" action = "/edit-playlist">
+                   
+    <button  type="submit" class = "playlist">
+        <h1>+</h1>  
+    </button >
+     </form>
+</div>
+
     {% for playlist in playlists %}
         {% include "playlistcard.html.jinja" ignore missing with context %}
     {% endfor %}
