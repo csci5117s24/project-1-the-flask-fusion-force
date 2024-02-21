@@ -58,8 +58,17 @@
     text-align: center;
     border: none;
     border: 0.05em solid black;
+    border: none;
 }
-
+.playlist:hover{
+    background: #b9b9b9;
+}
+.playlist-container{
+    background: #cccccc;
+    border-radius: 2em;
+    text-align: center;
+    border: none;
+}
 .tag {
     padding: 0.25em;
     background: #f8e5e3; /* Adjusted color */
