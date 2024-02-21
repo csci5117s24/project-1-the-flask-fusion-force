@@ -1,69 +1,81 @@
-
 .home-menu {
     padding: 0.5em;
-    box-shadow: 0 1px 1px rgba(0,0,0, 0.10);
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.10);
     text-align: center;
     display: inline-block;
 }
+
 .home-menu {
     background: #9883e5;
+    border: 0.07em solid black;
 }
+
 .pure-menu.pure-menu-fixed {
     /* Fixed menus normally have a border at the bottom. */
     border-bottom: none;
     /* I need a higher z-index here because of the scroll-over effect. */
     z-index: 4;
 }
+
 .pure-menu-item form {
     display: flex;
 }
+
 .pure-menu-item form input {
     margin-right: 5px;
 }
-.pure-menu-horizontal{
+
+.pure-menu-horizontal {
     margin-bottom: 1em;
 }
-.page-title{
+
+.page-title {
     margin-top: 7em;
     padding-left: 2em;
-  
-}
-.content{
-    background: #c47ac0;
-    padding: 1em;
 }
 
-.playlist{
+.content {
+    background: #9883e5 ; /* Adjusted color */
+    padding: 1em;
+    border: 0.07em solid black;
+}
+
+.playlist {
     padding: 2em;
-    background: #e39ec1;
+    background: #e3d9f2; /* Adjusted color */
     border-radius: 2em;
     text-align: center;
     border: none;
 }
-.playlist:hover{
-    background: #b9b9b9;
+
+.playlist:hover {
+    background: #76cad8; /* Adjusted color */
 }
-.playlist-container{
-    background: #cccccc;
+
+.playlist-container {
+    background: #eae6cf; /* Adjusted color */
     border-radius: 2em;
     text-align: center;
     border: none;
+    border: 0.05em solid black;
 }
-.tag{
+
+.tag {
     padding: 0.25em;
-    background: #72A1E5;
+    background: #f8e5e3; /* Adjusted color */
     border-radius: 0.5em;
     text-align: center;
 }
-.playlist-icon{
+
+.playlist-icon {
     border-style: solid;
-    background: #50c9ce;
+    background: #c5eced; /* Adjusted color */
     border-color: #000000;
     border-radius: 1em;
     text-align: center;
     padding: 2em;
-    
 }
+
 .playlist-name{
     padding: 1em;
     
