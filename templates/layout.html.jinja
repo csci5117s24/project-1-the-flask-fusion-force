@@ -12,12 +12,12 @@
   <body>
     
     <div class="home-menu pure-menu pure-menu-horizontal pure-menu-fixed">
-        <a href="/" class="pure-menu-heading pure-menu-link">Mixtape.fm</a>
+        <a href="/" class="pure-menu-heading pure-menu-link" id="navbarWebsiteName">Mixtape.fm</a>
         <ul class="pure-menu-list ">
             <li class="pure-menu-item">
-                <form class="pure-form pure-u-1">
-                    <input type="text" class="pure-input-rounded" placeholder="Find a playlist..."/>
-                    <button type="submit" class="pure-button">Search</button>
+                <form class="pure-form pure-u-1" method = "POST" action = "/search">
+                    <input type="text" class="pure-input-rounded" placeholder="Find a playlist..." />
+                    <button type="submit" class="pure-button-rounded pure-menu-link" id="playlistSearchButton">Search</button>
                 </form>
             </li>
             <li class="pure-menu-item pure-menu-has-children pure-menu-allow-hover nav-right">

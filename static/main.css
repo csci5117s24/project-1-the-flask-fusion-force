@@ -1,0 +1,215 @@
+.home-menu {
+    padding: 0.5em;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.10);
+    text-align: center;
+    display: inline-block;
+}
+
+.home-menu {
+    background: #9883e5;
+    border: 0.07em solid black;
+}
+
+.pure-menu.pure-menu-fixed {
+    /* Fixed menus normally have a border at the bottom. */
+    border-bottom: none;
+    /* I need a higher z-index here because of the scroll-over effect. */
+    z-index: 4;
+}
+
+.pure-menu-item form {
+    display: flex;
+}
+
+.pure-menu-item form input {
+    margin-right: 5px;
+}
+
+.pure-menu-horizontal {
+    margin-bottom: 1em;
+}
+
+.page-title {
+    margin-top: 7em;
+    padding-left: 2em;
+}
+
+.content {
+    background: #9883e5 ; /* Adjusted color */
+    padding: 1em;
+    border: 0.07em solid black;
+}
+
+.playlist {
+    padding: 2em;
+    background: #e3d9f2; /* Adjusted color */
+    border-radius: 2em;
+    text-align: center;
+    border: none;
+}
+
+.playlist:hover {
+    background: #76cad8; /* Adjusted color */
+}
+
+.playlist-container {
+    background: #eae6cf; /* Adjusted color */
+    border-radius: 2em;
+    text-align: center;
+    border: none;
+    border: 0.05em solid black;
+    border: none;
+}
+.playlist:hover{
+    background: #b9b9b9;
+}
+.playlist-container{
+    background: #cccccc;
+    border-radius: 2em;
+    text-align: center;
+    border: none;
+}
+.tag {
+    padding: 0.25em;
+    background: #f8e5e3; /* Adjusted color */
+    border-radius: 0.5em;
+    text-align: center;
+}
+
+.playlist-icon {
+    border-style: solid;
+    background: #c5eced; /* Adjusted color */
+    border-color: #000000;
+    border-radius: 1em;
+    text-align: center;
+    padding: 2em;
+}
+
+.playlist-name{
+    padding: 1em;
+    
+}
+.playlist-rating{
+    padding: 1em;
+    
+}
+.songlst{
+    padding: 1em;
+    background-color: #8f8f8f;
+}
+.song-icon{
+    background-color: #c5c5c5;
+    padding-top: 1em;
+    padding-bottom: 1em;
+    
+}
+.song-title{
+    padding:0.5em;
+}
+.song{
+    padding:0.5em;
+
+}
+.song-feild{
+    margin-bottom: 2em;
+}
+.small-playlist-icon{
+    background-color: #cccccc;
+    padding: 0.5em;
+    padding-top: 1em;
+    padding-bottom: 1em;
+    margin: 0.5em;
+}
+.user-icon{
+    background-color: #ffffff;
+    padding: 0.5em;
+    padding-top: 1em;
+    padding-bottom: 1em;
+    border-radius: 2em;
+}
+.newcomment{
+    border: none;
+    background-color: #8f8f8f;
+}
+.commentlst{
+    padding: 1em;
+    background-color: #8f8f8f;
+}
+.comment{
+     padding:0.5em; 
+     padding-top: 1em;
+     padding-bottom: 1em;
+}
+.commentblock{
+    padding:0.5em; 
+    margin: 0.5em;
+}
+button .commentblock:hover{
+    background-color: #7a7a7a;
+    border-radius: 1em;
+}
+.horizontal-double-content{
+    padding: 2em; 
+}
+
+#navbarWebsiteName{
+    color: white;
+    background-color: black;
+    border-radius: 10px;
+}
+#playlistSearchButton{
+    border-radius: 10px;
+}
+
+
+/*  -- Change this whenever, but we may want a font theme -- */
+h1 {  
+    font-family: "Palatino", "URW Palladio L", serif;
+}
+
+
+
+
+/*  -- TABLET (AND UP) MEDIA QUERIES -- */
+ @media (min-width: 40em) {
+ }
+/*  -- DESKTOP (AND UP) MEDIA QUERIES -- */
+ @media (min-width: 60em) {
+ }
+
+ 
+.tab:hover{
+    background-color: #7a7a7a;
+    color:#ffffff;
+}
+#comment-create-box{
+    background-color: #c5c5c5;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 2em;
+}
+#comment-create-box .pure-form {
+    padding: 5em;
+  }
+#comment-create-box button {
+    background-color: #7a7a7a;
+    
+  }
+.right-align{
+    width: 150px;
+    margin: 1em;
+    margin-left: auto; 
+   
+
+}
+.add-song{
+    border: none;
+    background-color: #8f8f8f;
+    border-radius: 2em;
+}
+.add-song:hover{
+    border: none;
+    background-color: #7a7a7a;
+}
