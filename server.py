@@ -9,10 +9,14 @@ def create_app():
 
 app = create_app()
 
+@app.route("/")
+
 @app.route('/home', methods=['GET'])
 @app.route('/homepage', methods=['GET'])
 def homepage():
-  return render_template('homepage.html.jinja',user_id = 0, playlists = [{'image':'image goes here','name':'playlist name goes here','rating':'rating goes here','tags':['tag1','tag2','tag3']}])
+
+  return render_template('homepage.html.jinja',user_id = 0, session=session.get('user'), pretty=json.dumps(session.get('user'), indent=4),
+  playlists = [{'image':'image goes here','name':'playlist name goes here','rating':'rating goes here','tags':['tag1','tag2','tag3']}])
 
 @app.route('/search', methods=['POST','GET'])
 def search():
@@ -23,7 +27,7 @@ def playlist(p_id):
 @app.route('/settings', methods=['GET'])
 def settings():
   return render_template('settings.html.jinja',settings = 
-  {"text example":["text"],"upload example":["upload"],"Dropd down example":["dropdown",["option1","option2"]],"Toggel example":["checkbox"]})
+  {"Change display name":["text"],"toggle theme":["dropdown",["Light mode","dark mode"]],"Home page display ":["dropdown",["by ratting ","by recent", "random"]],"Resync with spotify":["checkbox"],"Delete account":["checkbox"]})
 
 @app.route('/library', methods=['POST','GET'])
 def library():
@@ -85,7 +89,3 @@ def logout():
             quote_via=quote_plus,
         )
     )
-
-@app.route("/")
-def home():
-    return render_template("layout.html.jinja", user_id=0, session=session.get('user'), pretty=json.dumps(session.get('user'), indent=4))
