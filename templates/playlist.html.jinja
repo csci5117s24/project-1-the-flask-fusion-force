@@ -37,17 +37,18 @@
             </div>
         </div>
         <div class = "commentlst">
-            <button class = "newcomment" onclick=" toggleComment('comment-create-box')">
-                <div class="pure-g commentblock">
-                    <div class="pure-u-4-10 user-icon ">
-                        +
-                    </div>
-                    <div class="pure-u-6-10 comment">
-                        Add a comment
-                    </div>
-                </div>
-            </button>
-        
+        <div class="pure-g">
+            <div class="pure-u-1-2 ">
+                <button class = "newcomment" onclick=" toggleComment('comment-create-box')">
+                    +  Add a comment
+                </button>
+             </div>
+            <div class="pure-u-1-2 ">
+                <button class = "newcomment" onclick=" toggleComment('comment-create-box')">
+                    +  Add a rating
+                </button>
+             </div>
+         </div>
         <div>
             {% for comment in comments %}
                 {% include "commentcard.html.jinja" ignore missing with context %}

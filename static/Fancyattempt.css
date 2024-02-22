@@ -1,0 +1,346 @@
+/*color pallet
+
+
+*/
+body{
+    background-color: #2a1f48;
+}
+.home-menu {
+    padding: 0.5em;
+    box-shadow: 2px 2px 2px  rgba(13, 1, 26, 0.716);
+    background: #9883e5;
+    border: 0.07em solid black;
+    justify-content: center;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+
+.pure-menu.pure-menu-fixed {
+    /* Fixed menus normally have a border at the bottom. */
+    border-bottom: none;
+    /* I need a higher z-index here because of the scroll-over effect. */
+    z-index: 4;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.pure-menu-item form input {
+    margin-right: 5px;
+    color: #000000;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.pure-menu-link{
+    color: #512f94;
+
+    background-color: #b299fa;;
+    border-radius: 1em;
+    border-style: none;
+    box-shadow: 0px 0px;
+    padding-left: 2em;
+    padding-right: 2em;
+    display: flex;
+    flex-wrap: wrap;
+}
+.pure-menu-link::before{
+    content: "";
+  }
+.pure-menu-link::after {
+      content: "";
+  }
+.pure-menu-link:hover{
+    color: #b299fa;
+    background-color: #2a1f48;
+    border-radius: 0.5em;
+    padding-left: 1em;
+    padding-right: 1em;
+}
+.pure-menu-link:hover::before{
+    content: "• ";
+  }
+.pure-menu-link:hover::after {
+      content: " •";
+  }
+
+.pure-menu-horizontal {
+    margin-bottom: 1em;
+}
+
+
+#navbarWebsiteName{
+    padding-left: 1em;
+    padding-right: 1em;
+    color: #b299fa;
+    background-color: #2a1f48;
+    border-radius: 10px;
+}
+#navbarWebsiteName::before{
+  content: "• ";
+}
+#navbarWebsiteName::after {
+    content: " •";
+}
+
+
+.page-title {
+    margin-top: 7em;
+    padding-left: 2em;
+    color: #b299fa;
+}
+
+.content {
+    background: #9883e5 ; /* Adjusted color */
+    padding: 2em;
+   text-align: center;
+    box-shadow: 0em 0em  1.5em  #512f94  inset;
+    border-bottom: 6px inset #512f94;
+    border-top: 6px outset #b299fa;
+    border-left: 6px outset #b299fa;
+    border-right: 6px inset #512f94;
+}
+
+.playlist {
+    padding: 2em;
+    background: #b299fa; /* Adjusted color */
+    border-radius: 2em;
+    text-align: center;
+    border-bottom: 6px inset #bfaaff;
+    border-top: 6px outset #9883e5;
+    border-left: 6px outset #9883e5;
+    border-right: 6px inset #bfaaff;
+
+}
+
+
+.playlist-container {
+    background: #00000000; /* Adjusted color */
+    border-radius: 2em;
+    text-align: center;
+    border: none;
+
+}
+.playlist:hover{
+    background: #512f9488;
+    border-bottom: 6px inset #b299fa;
+    border-top: 6px outset #512f94;
+    border-left: 6px outset #512f94;
+    border-right: 6px inset #b299fa;
+}
+
+.tag {
+    padding: 0.25em;
+    background: #bfaaff; /* Adjusted color */
+    border-radius: 0.5em;
+    text-align: center;
+}
+
+.playlist-icon {
+    border-style: solid;
+    background: #ffffff; /* Adjusted color */
+    border-bottom: 6px inset #9883e5;
+    border-top: 6px outset #bfaaff;
+    border-left: 6px outset #bfaaff;
+    border-right: 6px inset #9883e5;
+    border-radius: 1em;
+    text-align: center;
+    padding: 2em;
+}
+
+.playlist-name{
+    padding: 1em;
+    
+}
+.playlist-rating{
+    padding: 1em;
+    
+}
+.songlst{
+    padding: 1em;
+    border-radius: 0.2em;
+    background-color: #512f94;;
+    border-bottom: 6px inset #512f94;
+    border-top: 6px outset #b299fa;
+    border-left: 6px outset #b299fa;
+    border-right: 6px inset #512f94;
+}
+.song-icon{
+    
+    padding-top: 1em;
+    padding-bottom: 1em;
+    border-style: solid;
+    background: #bfaaff; /* Adjusted color */
+    border-bottom: 6px inset #9883e5;
+    border-top: 6px outset #bfaaff;
+    border-left: 6px outset #bfaaff;
+    border-right: 6px inset #9883e5;
+    border-radius: 1em;
+    text-align: center;
+
+    
+}
+.song-title{
+    padding:0.5em;
+}
+.song{
+    padding:0.5em;
+
+}
+.song-feild{
+    margin-bottom: 2em;
+}
+.small-playlist-icon{
+
+    padding: 0.5em;
+    padding-top: 1em;
+    padding-bottom: 1em;
+    margin: 0.5em;
+    padding-top: 1em;
+    padding-bottom: 1em;
+    border-style: solid;
+    background: #bfaaff; /* Adjusted color */
+    border-bottom: 6px inset #9883e5;
+    border-top: 6px outset #bfaaff;
+    border-left: 6px outset #bfaaff;
+    border-right: 6px inset #9883e5;
+    border-radius: 1em;
+    text-align: center;
+}
+.user-icon{
+    background-color: #ffffff;
+    padding: 0.5em;
+    padding-top: 1em;
+    padding-bottom: 1em;
+    border-radius: 2em;
+}
+.newcomment{
+    background-color: #9883e5;
+    border-radius: 2em;
+    border-bottom: 6px inset #9883e5;
+    border-top: 6px outset #bfaaff;
+    border-left: 6px outset #bfaaff;
+    border-right: 6px inset #9883e5;
+}
+.newcomment:hover{
+    color:#bfaaff;
+    background-color: #512f94;
+    border-radius: 2em;
+    border-bottom: 6px inset #bfaaff;
+    border-top: 6px inset #512f94;
+    border-left: 6px inset #512f94;
+    border-right: 6px inset #bfaaff;
+}
+.commentlst{
+    padding: 1em;
+    background-color: #512f94;
+    border-radius: 0.2em;
+    border-bottom: 6px inset #512f94;
+    border-top: 6px outset #b299fa;
+    border-left: 6px outset #b299fa;
+    border-right: 6px inset #512f94;
+
+}
+.comment{
+     padding:0.5em; 
+     padding-top: 1em;
+     padding-bottom: 1em;
+     
+}
+.commentblock{
+    padding:0.5em; 
+    margin: 0.5em;
+}
+button .commentblock:hover{
+    background-color: #512f9489;
+    border-radius: 1em;
+}
+.horizontal-double-content{
+    padding: 2em; 
+}
+
+/*  -- Change this whenever, but we may want a font theme -- */
+h1 {  
+    font-family: "Palatino", "URW Palladio L", serif;
+}
+
+
+
+
+/*  -- TABLET (AND UP) MEDIA QUERIES -- */
+ @media (min-width: 40em) {
+ }
+/*  -- DESKTOP (AND UP) MEDIA QUERIES -- */
+ @media (min-width: 60em) {
+ }
+
+ 
+
+#comment-create-box{
+    background-color: #c5c5c5;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 2em;
+}
+#comment-create-box .pure-form {
+    padding: 5em;
+  }
+#comment-create-box button {
+    background-color: #7a7a7a;
+    
+  }
+.right-align{
+    width: 150px;
+    margin: 1em;
+    margin-left: auto; 
+   
+
+}
+.add-song{
+ 
+    background-color: #9883e5;
+    border-radius: 2em;
+    border-bottom: 6px inset #9883e5;
+    border-top: 6px outset #bfaaff;
+    border-left: 6px outset #bfaaff;
+    border-right: 6px inset #9883e5;
+    
+}
+.add-song:hover{
+ 
+    background-color: #512f9488;
+    border-radius: 2em;
+    border-bottom: 6px inset #9883e5;
+    border-top: 6px inset #512f94;
+    border-left: 6px inset #512f94;
+    border-right: 6px inset #9883e5;
+}
+
+.pure-menu-children{
+    background-color: #00000000;
+}
+.pure-button{
+    color: #512f94;
+    margin: 1em;
+    background-color: #9883e5;
+    border-radius: 2em;
+    border-bottom: 6px inset #9883e5;
+    border-top: 6px outset #bfaaff;
+    border-left: 6px outset #bfaaff;
+    border-right: 6px inset #9883e5;
+}
+.pure-button:hover{
+    color:#bfaaff;
+    background-color: #512f94;
+    border-radius: 2em;
+    border-bottom: 6px inset #bfaaff;
+    border-top: 6px inset #512f94;
+    border-left: 6px inset #512f94;
+    border-right: 6px inset #bfaaff;
+}
+.song-info-feild{
+    padding: 1em;
+    margin: 1em;
+}
