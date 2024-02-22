@@ -23,7 +23,7 @@ def playlist(p_id):
 @app.route('/settings', methods=['GET'])
 def settings():
   return render_template('settings.html.jinja',settings = 
-  {"text example":["text"],"upload example":["upload"],"Dropd down example":["dropdown",["option1","option2"]],"Toggel example":["checkbox"]})
+  {"text example":["text"],"show me a cat":["upload"],"Fruits":["dropdown",["oranges","option2"]],"Toggel example":["checkbox"]})
 
 @app.route('/library', methods=['POST','GET'])
 def library():
