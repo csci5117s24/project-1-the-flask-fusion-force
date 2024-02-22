@@ -63,7 +63,7 @@ def spotify_callback():
   playlist_rsp = requests.get(url=playlist_url, headers=playlist_headers)
   playlist_json = playlist_rsp.json()
   # for entry in playlist_json:
-  # print(playlist_json)
+  print(playlist_json)
   
   return render_template('layout.html.jinja')
 
