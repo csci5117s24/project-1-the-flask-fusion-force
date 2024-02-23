@@ -5,6 +5,7 @@ from urllib.parse import quote_plus, urlencode
 import requests
 import db
 from spotify import connect_spotify, redirect_uri, db_get_tokens
+from auth import require_login
 
 def create_app():
   app = Flask(__name__)
@@ -56,15 +57,18 @@ def search():
 def playlist(p_id):
   return render_template('playlist.html.jinja', playlist_id=p_id,songs= ["Minnesota March","Minnesota Rouser"],comments= ["Lovely","good vibes"])
 @app.route('/settings', methods=['GET'])
+# @require_login
 def settings():
   return render_template('settings.html.jinja',settings = 
   {"text example":["text"],"show me a cat":["upload"],"Fruits":["dropdown",["oranges","option2"]],"Toggel example":["checkbox"]})
 
 @app.route('/library', methods=['POST','GET'])
+# @require_login
 def library():
   return render_template('user_library.html.jinja', user_id=10)
 
 @app.route('/edit-playlist', methods=['POST','GET'])
+# @require_login
 def editplaylist():
   return render_template('create_edit_playlist.html.jinja', user_id=1,searched_songs= ["Minnesota March","Minnesota Rouser"])
 
@@ -103,6 +107,8 @@ def login():
 @app.route("/callback", methods=["GET", "POST"])
 def callback():
     # FIXME: Store the user_id in the session so we can access the access and refresh tokens
+    # call https://auth0.com/docs/api/authentication#get-user-info
+    # extract the field "sub" for user_id, there's also names for display
     token = oauth.auth0.authorize_access_token()
     session["user"] = token
     return redirect("/")

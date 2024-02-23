@@ -1,10 +1,11 @@
+import functools
 # import json
 # from os import environ as env
 # from urllib.parse import quote_plus, urlencode
 
 # from authlib.integrations.flask_client import OAuth
 # from dotenv import find_dotenv, load_dotenv
-# from flask import Flask, redirect, render_template, session, url_for
+from flask import Flask, redirect, render_template, session, url_for, request
 
 # app = Flask(__name__)
 # app.secret_key = env.get("FLASK_SECRET")
@@ -52,3 +53,9 @@
 # def home():
 #     return render_template("home.html", session=session.get('user'), pretty=json.dumps(session.get('user'), indent=4))
 
+def require_login(func):
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        if session.get("user") is None:
+            return redirect(url_for("login", next=request.url))
+    return wrapper
