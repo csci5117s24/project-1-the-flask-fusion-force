@@ -1,19 +1,19 @@
-from flask import Flask, request, render_template, redirect, Response
+from flask import Flask, request, render_template, redirect, Response, session
 import json
 from os import environ as env
 from urllib.parse import quote_plus, urlencode
 import requests
-import base64
 import db
+from spotify import connect_spotify, redirect_uri, db_get_tokens
 
 def create_app():
   app = Flask(__name__)
-  redirect_uri = "http://127.0.0.1:5000/spotify/callback"
   with app.app_context():
       db.setup()
   return app
 
 app = create_app()
+app.secret_key = env['FLASK_SECRET']
 
 @app.route('/home', methods=['GET'])
 @app.route('/homepage', methods=['GET'])
@@ -35,43 +35,22 @@ def spotify_login():
 
 @app.route('/spotify/callback', methods=['GET'])
 def spotify_callback():
+  # FIXME: See if the user has already connected their Spotify account, we'll assume that they have in our situation
+  #  if user has already linked their spotify account:
+  #    get tokens from database
+  #    call function that checks to see if we can use the access token or if we need to use the refresh token
+  #    call other functions that will returns the info we need
+  # else:
+  # if get_db_tokens
   code = request.args.get('code')
-
-  credentials_str = f"{env['SPOTIFY_CLIENT_ID']}:{env['SPOTIFY_CLIENT_SECRET']}"
-  credentials_bytes = credentials_str.encode('ascii')
-
-  base64_bytes = base64.b64encode(credentials_bytes)
-  base64_str = base64_bytes.decode("ascii")
-
-  auth_options = {
-          'Content-Type': 'application/x-www-form-urlencoded',
-          'Authorization': 'Basic ' + base64_str
-        }
-  
-  data = {
-    "code": code,
-    "redirect_uri": redirect_uri,
-    "grant_type": 'authorization_code'
-  }
-  
-  # FIXME: Why do I have to login everytime?
-  response = requests.post(url='https://accounts.spotify.com/api/token', data=data, headers=auth_options)
-  response_json = response.json()
-  access_token = response_json.get('access_token')
-  print("Accessing " + str(response_json.get('access_token')))
-
-  playlist_url = "https://api.spotify.com/v1/me/playlists"
-  playlist_headers = {'Authorization': 'Bearer ' + access_token}
-  playlist_rsp = requests.get(url=playlist_url, headers=playlist_headers)
-  playlist_json = playlist_rsp.json()
-  # for entry in playlist_json:
-  print(playlist_json)
-  
+  user_id = connect_spotify(code)
   return render_template('layout.html.jinja')
-
 
 @app.route('/search', methods=['POST','GET'])
 def search():
+  # FIXME: Figure out how to tell if it's a Spotify song search or if it's searching through the database
+  search_url = "https://api.spotify.com/v1/search?q=track:"
+  print(request.form)
   return render_template('search.html.jinja',user_id =1, playlists = [{'image':'image goes here','name':'playlist name goes here','rating':'rating goes here','tags':['tag1','tag2','tag3']}])
 @app.route('/playlist/<int:p_id>', methods=['POST','GET'])
 def playlist(p_id):
@@ -123,6 +102,7 @@ def login():
 
 @app.route("/callback", methods=["GET", "POST"])
 def callback():
+    # FIXME: Store the user_id in the session so we can access the access and refresh tokens
     token = oauth.auth0.authorize_access_token()
     session["user"] = token
     return redirect("/")
