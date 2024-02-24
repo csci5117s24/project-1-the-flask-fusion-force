@@ -1,36 +1,68 @@
-
 .home-menu {
     padding: 0.5em;
-    box-shadow: 0 1px 1px rgba(0,0,0, 0.10);
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.10);
     text-align: center;
+    display: inline-block;
 }
+
 .home-menu {
-    background: #e7e7e7;
+    background: #9883e5;
+    border: 0.07em solid black;
 }
+
 .pure-menu.pure-menu-fixed {
     /* Fixed menus normally have a border at the bottom. */
     border-bottom: none;
     /* I need a higher z-index here because of the scroll-over effect. */
     z-index: 4;
 }
-.pure-menu-horizontal{
-    margin-bottom: 1em;
-}
-.page-title{
-    margin-top: 7em;
-    padding-left: 2em;
-  
-}
-.content{
-    background: #eeeeee;
-    padding: 1em;
+
+.pure-menu-item form {
+    justify-content: center;
+    display: flex;
+    flex-wrap:  wrap;
 }
 
-.playlist{
+.pure-menu-item form input {
+    margin-right: 5px;
+}
+
+.pure-menu-horizontal {
+    margin-bottom: 1em;
+}
+
+.page-title {
+    margin-top: 7em;
+    padding-left: 2em;
+}
+
+.content {
+    background: #9883e5 ; /* Adjusted color */
+    padding: 1em;
+    border: 0.07em solid black;
+}
+.tabs{
+    text-align: center;
+    
+}
+.playlist {
     padding: 2em;
-    background: #cccccc;
+    background: #e3d9f2; /* Adjusted color */
     border-radius: 2em;
     text-align: center;
+    border: none;
+}
+
+.playlist:hover {
+    background: #76cad8; /* Adjusted color */
+}
+
+.playlist-container {
+    background: #eae6cf; /* Adjusted color */
+    border-radius: 2em;
+    text-align: center;
+    border: none;
+    border: 0.05em solid black;
     border: none;
 }
 .playlist:hover{
@@ -42,21 +74,22 @@
     text-align: center;
     border: none;
 }
-.tag{
+.tag {
     padding: 0.25em;
-    background: #eeeeee;
+    background: #f8e5e3; /* Adjusted color */
     border-radius: 0.5em;
     text-align: center;
 }
-.playlist-icon{
+
+.playlist-icon {
     border-style: solid;
-    background: #ffffff;
+    background: #c5eced; /* Adjusted color */
     border-color: #000000;
     border-radius: 1em;
     text-align: center;
     padding: 2em;
-    
 }
+
 .playlist-name{
     padding: 1em;
     
@@ -123,10 +156,34 @@ button .commentblock:hover{
 .horizontal-double-content{
     padding: 2em; 
 }
-.tab:hover{
-    background-color: #7a7a7a;
-    color:#ffffff;
+
+#navbarWebsiteName{
+    color: white;
+    background-color: black;
+    border-radius: 10px;
 }
+#playlistSearchButton{
+    border-radius: 10px;
+}
+
+
+/*  -- Change this whenever, but we may want a font theme -- */
+h1 {  
+    font-family: "Palatino", "URW Palladio L", serif;
+}
+
+
+
+
+/*  -- TABLET (AND UP) MEDIA QUERIES -- */
+ @media (min-width: 40em) {
+ }
+/*  -- DESKTOP (AND UP) MEDIA QUERIES -- */
+ @media (min-width: 60em) {
+ }
+
+ 
+
 #comment-create-box{
     background-color: #c5c5c5;
     position: fixed;

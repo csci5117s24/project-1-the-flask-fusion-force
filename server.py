@@ -15,11 +15,12 @@ def create_app():
     return app
 
 app = create_app()
-
+@app.route("/")
 @app.route('/home', methods=['GET'])
 @app.route('/homepage', methods=['GET'])
 def homepage():
-  return render_template('homepage.html.jinja',user_id = session.get('user'), playlists = [{'image':'image goes here','name':'playlist name goes here','rating':'rating goes here','tags':['tag1','tag2','tag3']}])
+  return render_template('homepage.html.jinja',user_id = 0,session=session.get('user'), pretty=json.dumps(session.get('user'), indent=4),
+   playlists = [{'image':'image goes here','name':'playlist name goes here','rating':'rating goes here','tags':['tag1','tag2','tag3']}])
 
 @app.route('/search', methods=['POST','GET'])
 def search():
@@ -30,7 +31,7 @@ def playlist(p_id):
 @app.route('/settings', methods=['GET'])
 def settings():
   return render_template('settings.html.jinja',settings = 
-  {"text example":["text"],"upload example":["upload"],"Dropd down example":["dropdown",["option1","option2"]],"Toggel example":["checkbox"]})
+  {"text example":["text"],"show me a cat":["upload"],"Fruits":["dropdown",["oranges","option2"]],"Toggel example":["checkbox"]})
 
 @app.route('/library', methods=['POST','GET'])
 def library():
@@ -108,6 +109,3 @@ def logout():
         )
     )
 
-@app.route("/")
-def home():
-    return render_template("layout.html.jinja", user_id=session.get('user'), session=session.get('user'), pretty=json.dumps(session.get('user'), indent=4))
