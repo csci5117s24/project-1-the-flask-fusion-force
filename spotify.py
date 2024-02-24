@@ -1,7 +1,9 @@
 from flask import session
 from os import environ as env
+from datetime import datetime, timedelta
 import base64
 import requests
+import json
 import time
 import db
 
@@ -13,6 +15,20 @@ def base64_client_creds():
 
   base64_bytes = base64.b64encode(credentials_bytes)
   return base64_bytes.decode("ascii")
+
+def process_spotify_tokens(response_json):
+  user_id = get_user_info(response_json["access_token"]).get('id')
+                # if session['spotify'] is None else session['spotify']['user_id']
+  spotify = {
+    "user_id": user_id,
+    "access_token": response_json["access_token"],
+    "refresh_token": response_json["refresh_token"],
+    "expire_time": datetime.now() + timedelta(seconds=response_json["expires_in"]),
+  }
+  session['spotify'] = spotify
+
+  db_update_tokens(user_id, spotify['access_token'], spotify['refresh_token'])
+  # potential bug: if spotify token expire time changes
 
 def connect_spotify(code):
   auth_options = {
@@ -27,23 +43,22 @@ def connect_spotify(code):
   }
   
   # First time login
-  # FIXME: Why do I have to login everytime?
   response = requests.post(url='https://accounts.spotify.com/api/token', data=data, headers=auth_options)
-  response_json = response.json()
-  print(response_json.get('access_token'))
-  session['access_token'] = response_json.get('access_token')
-  session['refresh_token'] = response_json.get('refresh_token')
-  user_json = get_user_info(session['access_token'])
-  user_id = user_json.get('id')
-
-  return user_id
+  response_json = json.loads(response.content)
+  process_spotify_tokens(response_json)
+  return session['spotify']['user_id']
 
 # Returns user json object concerning their Spotify Account
 def get_user_info(access_token):
    user_url = "https://api.spotify.com/v1/me"
    user_headers = {'Authorization': 'Bearer ' + access_token}
-   user_rsp = requests.get(url=user_url, headers=user_headers)
-   return user_rsp.json()
+#    user_rsp = requests.get(url=user_url, headers=user_headers)
+#    print(user_rsp.url)
+#    print(user_rsp.reason)
+#    print(user_rsp.headers)
+#    print(user_rsp.content)
+#    print(json.loads(user_rsp.content))
+   return json.loads(user_rsp.content)
 
 # Returns all of the users information on every playlist that they own
 def get_playlist_info(access_token):
@@ -58,33 +73,26 @@ def get_playlist_info(access_token):
     print(playlist_info.get('name'))
     print(playlist_info.get('id'))
 
-def if_expired_refresh_token(user_id):
+def if_expired_refresh_token():
   # Check if need refresh
-  # user = session["user"]
-  # if user.spotify_expire_time < time.time():
-    # return
+  spotify = session["spotify"]
+  if spotify["expire_time"] < time.time():
+    return
 
+  print(f"refreshing token for user {spotify['user_id']}...")
   auth_options = {
     'Content-Type': 'application/x-www-form-urlencoded',
     'Authorization': 'Basic ' + base64_client_creds()
   }
 
-  # user_id = get_user_id!!
-
-  # FIXME: get refresh token
   body = {
-    "refresh_token": None,#refresh_token,
+    "refresh_token": spotify["refresh_token"],
     "grant_type": 'refresh_token'
   }
 
   response = requests.post(url='https://accounts.spotify.com/api/token', data=body, headers=auth_options)
   response_json = response.json()
-  # Store new tokens in session
-  # user.spotify_access_token = response_json.get('access token')
-  # user.spotify_refresh_token = response_json.get('refresh token')
-  # user.spotify_expire_time = time.time() + 60*60     # in secs
-
-  # db_update_tokens(user_id, user.spotify_access_token, user.spotify_refresh_token))
+  process_spotify_tokens(response_json)
 
 # db functions
 def db_update_tokens(user_id, access_token, refresh_token):

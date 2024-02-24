@@ -5,10 +5,11 @@ from dotenv import find_dotenv, load_dotenv
 from urllib.parse import quote_plus, urlencode
 from authlib.integrations.flask_client import OAuth
 from flask import Flask, request, render_template, redirect, session, url_for
-from db import successfulLoginAttempt
 
-from spotify import connect_spotify, redirect_uri, db_get_tokens
+from db import successfulLoginAttempt, get_comment, insertNewComment
+from spotify import connect_spotify, redirect_uri
 from auth import require_login
+from datetime import datetime, timedelta
 
 def create_app():
   app = Flask(__name__)
@@ -23,32 +24,6 @@ app = create_app()
 def homepage():
     return render_template('homepage.html.jinja',user_id = 0,session=session.get('user'), pretty=json.dumps(session.get('user'), indent=4),
    playlists = [{'image':'image goes here','name':'playlist name goes here','rating':'rating goes here','tags':['tag1','tag2','tag3']}])
-
-@app.route('/spotify/login', methods=['GET'])
-def spotify_login():
-  scope = 'user-top-read'
-  # Query string is used to retrieve information from a database
-  return redirect('https://accounts.spotify.com/authorize?' +
-      urlencode({
-        "response_type": 'code',
-        "client_id": env['SPOTIFY_CLIENT_ID'],
-        "scope": scope,
-        "redirect_uri": redirect_uri
-    },
-    quote_via=quote_plus))
-
-@app.route('/spotify/callback', methods=['GET'])
-def spotify_callback():
-  # FIXME: See if the user has already connected their Spotify account, we'll assume that they have in our situation
-  #  if user has already linked their spotify account:
-  #    get tokens from database
-  #    call function that checks to see if we can use the access token or if we need to use the refresh token
-  #    call other functions that will returns the info we need
-  # else:
-  # if get_db_tokens
-  code = request.args.get('code')
-  user_id = connect_spotify(code)
-  return render_template('layout.html.jinja')
 
 @app.route('/spotify/login', methods=['GET'])
 def spotify_login():
@@ -141,8 +116,8 @@ def callback():
     # extract the field "sub" for user_id, there's also names for display
     token = oauth.auth0.authorize_access_token()
     session["user"] = token
-    print(session["user"])
-    if (successfulLoginAttempt(session["user"]["userinfo"]["sub"])):
+
+    if (successfulLoginAttempt(token["userinfo"]["sub"])):
         print("****************")
         print("LOGIN SUCCESSFUL")
         print("****************")
