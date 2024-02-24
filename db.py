@@ -7,6 +7,7 @@ from flask import current_app, g
 import psycopg2
 from psycopg2.pool import ThreadedConnectionPool
 from psycopg2.extras import DictCursor
+import random
 
 pool = None
 
@@ -36,6 +37,11 @@ def get_db_cursor(commit=False):
       finally:
           cursor.close()
 
+### *************************************************************************************
+### *************************************************************************************
+### ******************************GETTER / SELECT FUNCTIONS******************************
+### *************************************************************************************
+### *************************************************************************************
 def get_playlist(playlist_id):
   with get_db_cursor(True) as cursor:
     cursor.execute("SELECT * FROM mixtape_fm_playlists WHERE playlist_id=%s;", (playlist_id,))
@@ -79,7 +85,7 @@ def get_song_id(name, artist, album, genre, duration):
     (name, artist, album, genre, duration))
     return cursor.fetchall()
 
-def get_comment_id(commenter_id, playlist_id):
+def get_comment(commenter_id, playlist_id):
   with get_db_cursor(True) as cursor:
     cursor.execute("SELECT * FROM mixtape_fm_comments WHERE comment_user_id=%s, playlist_id=%s;", (commenter_id, playlist_id))
     return cursor.fetchall()
@@ -88,6 +94,250 @@ def get_tag_id(tag_name):
   with get_db_cursor(True) as cursor:
     cursor.execute("SELECT * FROM mixtape_fm_tags WHERE tag_name=%s;", (tag_name,))
     return cursor.fetchall()
+
+def checkUser(user_id):
+  with get_db_cursor(True) as cursor:
+    cursor.execute("SELECT * FROM mixtape_fm_users WHERE user_id=%s;", (str(user_id), ))
+    return cursor.fetchall()
+
+def successfulLoginAttempt(user_id):
+  print("user_id= " + str(user_id))
+  if (user_id == None):
+    return False
+  checkVal = checkUser(user_id)
+  if (checkVal == []):
+    with get_db_cursor(True) as cursor:
+      cursor.execute("INSERT INTO mixtape_fm_users (user_id, spotify_linked) VALUES (%s, FALSE);", (str(user_id), ))
+      return True
+  else:
+    return True
+
+
+def playlist_search(variation, search_word):
+  with get_db_cursor(True) as cursor:
+    search_symbol = ''
+    if (variation == 1):
+      search_symbol = '%' + search_word + '%'
+    elif (variation == 2):
+      search_symbol = '% ' + search_word + '%'
+    elif (variation == 3):
+      search_symbol = '%' + search_word + ' %'
+    elif (variation == 4):
+      search_symbol = '% ' + search_word + ' %'
+    elif (variation == 5):
+      search_symbol = '% ' + search_word + '.%'
+    elif (variation == 6):
+      search_symbol = '%' + search_word + ',%'
+    else:
+      print("variation value %d invalid", (variation))
+      return None
+    cursor.execute("SELECT * FROM mixtape_fm_playlists WHERE playlist_name LIKE '%s';", (search_symbol, ))
+    return cursor.fetchall()
+
+def tag_id_search(variation, search_word):
+  with get_db_cursor(True) as cursor:
+    search_symbol = ''
+    if (variation == 1):
+      search_symbol = '%' + search_word + '%'
+    elif (variation == 2):
+      search_symbol = '% ' + search_word + '%'
+    elif (variation == 3):
+      search_symbol = '%' + search_word + ' %'
+    elif (variation == 4):
+      search_symbol = '% ' + search_word + ' %'
+    elif (variation == 5):
+      search_symbol = '% ' + search_word + '.%'
+    elif (variation == 6):
+      search_symbol = '%' + search_word + ',%'
+    else:
+      print("variation value %d invalid", (variation))
+      return None
+    cursor.execute("SELECT tag_id FROM mixtape_fm_tags WHERE tag_name LIKE '%s';", (search_symbol, ))
+    return cursor.fetchall()
+
+def get_playlist_id_from_tag_id(tag_id):
+  if (tag_id == None):
+    return None
+  with get_db_cursor(True) as cursor:
+    cursor.execute("SELECT playlist_id FROM mixtape_fm_playlist_tags WHERE tag_id = %s;", (tag_id, ))
+    return cursor.fetchall()
+
+def get_playlist_from_playlist_id(playlist_id):
+  if (playlist_id == None):
+    return None
+  with get_db_cursor(True) as cursor:
+    cursor.execute("SELECT * FROM mixtape_fm_playlists WHERE playlist_id = %s;", (playlist_id, ))
+    return cursor.fetchall()
+
+# TODO: Create search keyword matching, using sql operators 'like' and 'ilike'
+## Make a function compiling results from searching for songs in db and playlists, tags preferable
+def search(search_word):
+  ret_dict = {}
+  if (search_word == None or search_word == ''):
+    return ret_dict
+  playlist_results = []
+  tag_results = []
+  tag_ids = []
+  playlist_ids = []
+  for variation in range(1, 7):
+    playlist_results = playlist_results + playlist_search(variation, search_word)
+    tag_ids = tag_ids + tag_id_search(variation, search_word) # Need to get tag_ids
+  for tag_id in tag_ids:
+    playlist_ids = playlist_ids + get_playlist_id_from_tag_id(tag_id) # Need to get playlist_ids corresponding to tag_ids
+  for playlist_id in playlist_ids:
+    tag_results = tag_results +  get_playlist_from_playlist_id(playlist_id) # Finally, need to get playlists based on initial tag search word
+  ret_dict["playlist_results"] = playlist_results
+  ret_dict["tag_results"] = tag_results
+  return ret_dict
+
+## HELPER FUNCTION TO GET TAGS FOR PLAYLSITS
+def get_tag_id_from_playlist_id(playlist_id):
+  if (playlist_id == None):
+    return []
+  with get_db_cursor(True) as cursor:
+    cursor.execute("SELECT tag_id FROM mixtape_fm_playlist_tags WHERE playlist_id = %s;", (playlist_id, ))
+    return cursor.fetchall()
+
+## HELPER FUNCTION TO GET TAGS FOR PLAYLISTS
+def get_tags_from_id(tag_id):
+  if (tag_id == None):
+    return []
+  with get_db_cursor(True) as cursor:
+    cursor.execute("SELECT tag_name FROM mixtape_fm_tags WHERE tag_id = %s;", (tag_id, ))
+    return cursor.fetchall()
+
+## HELPER FUNCTION TO GET PLAYLISTS
+def getRatingAvg(playlist_id):
+  with get_db_cursor(True) as cursor:
+    cursor.execute("SELECT AVG(stars) FROM mixtape_fm_comments WHERE playlist_id = %s;", (playlist_id, ))
+    return cursor.fetchone()
+
+# HELPER FUNCTION TO GET PLAYLISTS
+def getUserIdFromPlaylistId(playlist_id):
+  with get_db_cursor(True) as cursor:
+    cursor.execute("SELECT user_id FROM mixtape_fm_playlists WHERE playlist_id = %s;", (playlist_id, ))
+    return cursor.fetchone()
+
+## HELPER FUNCTION TO GET PLAYLISTS
+def getUserFromUserId(user_id):
+  with get_db_cursor(True) as cursor:
+    cursor.execute("SELECT * FROM mixtape_fm_users WHERE user_id = %s;", (user_id, ))
+    return cursor.fetchone()
+
+## returns user info 
+def getUserFromPlaylistId(playlist_id):
+  user_id = getUserIdFromPlaylistId(playlist_id)
+  user = getUserFromUserId(user_id)
+  return user
+
+## HELPER FUNCTION TO GET PLAYLISTS
+def get_playlists_from_results(playlist_results):
+  playlists = []
+  for playlist in playlist_results:
+    ratings = get_comments(playlist[0])
+    tag_ids = get_tag_id_from_playlist_id(playlist[0])
+    user = getUserFromPlaylistId(playlist[0])
+    tags = []
+    for tag_id in tag_ids:
+      tags = tags + get_tags_from_id(tag_id)
+    # Get average from ratings
+    ratingAvg = getRatingAvg(playlist[0])
+    playlists.append({'image': playlist[4], 'name': playlist[2], 'ratingAvg': ratingAvg, \
+    'numRatings': len(ratings), 'tags': tags, 'userDisplayName': user[5]})
+  return playlists
+
+# Takes user_id, returns array with {name, image, ratings, tags[], playlist_id}
+def getPlaylists(user_id):
+  if (user_id == None):
+    return []
+  playlist_results = get_user_playlists(user_id)
+  playlists = get_playlists_from_results(playlist_results)
+  return playlists
+
+## Gets n random playlists, returns array with {name, image, ratings, tags[], playlist_id}
+def getRandomPlaylists(user_id, n):
+  if (user_id == None):
+    return []
+  playlist_results = get_user_playlists(user_id)
+  playlists = get_playlists_from_results(playlist_results)
+  if (len(playlists) < n):
+    return playlists
+  else:
+    return random.sample(playlists, n)
+
+def isPlaylistRecent(user_id, playlist_id):
+  with get_db_cursor(True) as cursor:
+    cursor.execute("SELECT * FROM mixtape_fm_user_recent_playlists WHERE user_id = %s, playlist_id = %s;", (user_id, playlist_id))
+    return cursor.fetchall()
+
+def updatePlaylistRecent(user_id, playlist_id):
+  with get_db_cursor(True) as cursor:
+    cursor.execute("UPDATE mixtape_fm_user_recent_playlists SET timestamp = CURRENT_TIMESTAMP WHERE user_id = %s, playlist_id = %s;", \
+    (user_id, playlist_id))
+    return
+
+def playlistLeastRecent(user_id):
+  with get_db_cursor(True) as cursor:
+    cursor.execute("SELECT * FROM mixtape_fm_user_recent_playlists WHERE user_id = %s ORDER BY timestamp ASC;", (user_id, ))
+    return cursor.fetchone()
+
+def retrieveRecentPlaylists():
+  with get_db_cursor(True) as cursor:
+    cursor.execute("SELECT playlist_id FROM mixtape_fm_user_recent_playlists;")
+    cursor.fetchall()
+
+def getRecentPlaylists(n):
+  recent_playlist_ids = retrieveRecentPlaylists()
+  if (len(recent_playlist_ids) > n):
+    recent_playlist_ids = recent_playlist_ids[0:n+1]
+  db_playlists = []
+  for playlist_id in recent_playlist_ids:
+    db_playlists.append(get_playlist_from_playlist_id(playlist_id))
+  playlists = get_playlists_from_results(db_playlists)
+  return playlists
+
+def getUserPlaylists(user_id):
+  if (user_id == None or user_id == ""):
+    return []
+  db_playlists = get_user_playlists(user_id)
+  if (db_playlists == []):
+    return []
+  playlists = get_playlists_from_results(db_playlists)
+  return playlists
+
+## HELPER TO RETRIEVE COMMENTS
+def get_comments(playlist_id):
+  if (playlist_id == None):
+    return []
+  with get_db_cursor(True) as cursor:
+    cursor.execute("SELECT * FROM mixtape_fm_comments WHERE playlist_id = %s ORDER BY stars DESC;", (playlist_id, ))
+    return cursor.fetchall()
+# def get_comments(playlist_id):
+#   with get_db_cursor(True) as cursor:
+#     cursor.execute("SELECT * FROM mixtape_fm_comments WHERE playlist_id = %s;", (playlist_id, ))
+#     return cursor.fetchall()
+
+def format_db_comments(db_comments):
+  comments = []
+  for comment in db_comments:
+    commenter_id = comment[1]
+    commenter_text = comment[4]
+    comments.append({'commenterID': commenter_id, 'commentText': commenter_text})
+  return comments
+
+def getComments(user_id, playlist_id):
+  if (playlist_id == None or playlist_id == ''):
+    return []
+  db_comments = get_comments(playlist_id)
+  comments = format_db_comments(db_comments)
+  return comments
+
+
+### *************************************************************************************
+### *************************************************************************************
+### ******************************SETTER / INSERT FUNCTIONS******************************
+### *************************************************************************************
+### *************************************************************************************
 
 def insert_playlist(user_id, playlist_name):
   with get_db_cursor(True) as cursor:
@@ -112,11 +362,11 @@ def insert_new_user(user_id):
     cursor.execute("INSERT INTO mixtape_fm_users (user_id, spotify_linked) VALUES (%s, %s);", (user_id, 'FALSE'))
     return
 
-def insert_new_comment(commenter_id, playlist_id, stars, content):
+def insertNewComment(commenter_id, playlist_id, stars, content):
   if (stars < 1 or stars > 5):
     print("Invalid number of stars in review")
     return None
-  if (get_comment_id(commenter_id, playlist_id) != None):
+  if (get_comment(commenter_id, playlist_id) != []):
     print("User has already left a review of this playlist")
     return None
   with get_db_cursor(True) as cursor:
@@ -126,7 +376,7 @@ def insert_new_comment(commenter_id, playlist_id, stars, content):
     else:
       cursor.execute("INSERT INTO mixtape_fm_comments (comment_user_id, playlist_id, stars, content, timestamp) VALUES (%s, %s, %s, %s, CURRENT_TIMESTAMP);", \
       (commenter_id, playlist_id, stars, content))
-    return get_comment_id(commenter_id, playlist_id)
+    return get_comment(commenter_id, playlist_id)
 
 def insert_tag(tag_name):
   with get_db_cursor(True) as cursor:
@@ -142,20 +392,26 @@ def insert_playlist_tag_id(playlist_id, tag_id):
   return
 
 def insert_playlist_tag(playlist_id, tag_name):
-  tag_id = get_tag_id(tag_id)
+  tag_id = get_tag_id(tag_name)
   if (tag_id is None):
     tag_id = insert_tag(tag_name)
   insert_playlist_tag_id(playlist_id, tag_id)
   return
 
-def get_login_info(username, password):
+def removePlaylistLeastRecent(user_id, playlist_id):
   with get_db_cursor(True) as cursor:
-    cursor.execute("SELECT user_id FROM mixtape_fm_users WHERE username=%d, password=%d;", (username, password))
-    return cursor.fetchall()
+    cursor.execute("DELETE FROM mixtape_fm_user_recent_playlists WHERE user_id = %s, playlist_id = %s;", (user_id, playlist_id))
+    return
 
-def attempt_registration(username, password):
-  if (get_login_info(username, password) != None):
-    return (False, None)
-  with get_db_cursor(True) as cursor:
-    cursor.execute("INSERT INTO mixtape_fm_users (username, password, spotify_linked) VALUES (%s, %s, %r);", (username, password, False))
-  return (True, get_login_info(username, password))
+def deletePlaylistRecent(user_id):
+  least_recent = playlistLeastRecent(user_id)
+  removePlaylistLeastRecent(least_recent[0], least_recent[1])
+  return
+
+def addPlaylistToRecent(user_id, playlist_id):
+  if (isPlaylistRecent(user_id, playlist_id) == []):
+    if (getNumPlaylistRecents(user_id) > 10):
+      deletePlaylistRecent(user_id)
+    insertPlaylistRecent(user_id, playlist_id)
+  else:
+    updatePlaylistRecent(user_id, playlist_id)
