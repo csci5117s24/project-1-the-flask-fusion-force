@@ -5,22 +5,15 @@
     
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/pure-min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/grids-responsive-min.css" />
-    <link rel="stylesheet" href="/static/main.css">
+    <link rel="stylesheet" href="/static/Fancyattempt.css">
     <title>{% block title %}{% endblock %} </title>
     {% endblock %}
   </head>
   <body>
     
     <div class="home-menu pure-menu pure-menu-horizontal pure-menu-fixed">
-        <a href="/" class="pure-menu-heading pure-menu-link" id="navbarWebsiteName">Mixtape.fm</a>
-        <ul class="pure-menu-list ">
-            <li class="pure-menu-item">
-                <form class="pure-form pure-u-1" method = "POST" action = "/search">
-                    <input type="text" class="pure-input-rounded" placeholder="Find a playlist..." />
-                    <button type="submit" class="pure-button-rounded pure-menu-link" id="playlistSearchButton">Search</button>
-                </form>
-            </li>
-            <li class="pure-menu-item pure-menu-has-children pure-menu-allow-hover nav-right">
+        <ul class="pure-menu-list nav-list">
+          <li class="pure-menu-item pure-menu-has-children pure-menu-allow-hover">
                 <a href="#" id="menuLink1" class="pure-menu-link">...</a>
                 <ul class="pure-menu-children">
                     {% if user_id == 0 %}
@@ -43,15 +36,29 @@
                     </li>
                     <!-- Will need to change to log out method-->
                     <li class="pure-menu-item">
-                        <a href="/" class="pure-menu-link">Log out</a>
+                        {% if session %}
+                            <a href="/logout" class="pure-menu-link">Log Out</a>
+                        {% else %}
+                            <a href="/login" class="pure-menu-link">Log In</a>
+                        {% endif %}
                     </li>
                     {% endif %}
 
                 </ul>
             </li>
-            <li class="pure-menu-item nav-right">
+            <li class="pure-menu-item">
                 {% block avatarPhoto %}{% endblock %}
             </li>
+             <li class="pure-menu-item">
+            <a href="/" class="pure-menu-heading pure-menu-link" id="navbarWebsiteName">Mixtape.fm</a>
+            </li>
+            <li class="pure-menu-item">
+                <form class="pure-form" method = "POST" action = "/search">
+                    <input type="text" class="pure-input-rounded" placeholder="Find a playlist..." />
+                    <button type="submit" class="pure-button-rounded pure-menu-link" id="playlistSearchButton">Search</button>
+                </form>
+            </li>
+          
         </ul>
     </div>
     <div class="page-title">

@@ -18,7 +18,9 @@
 }
 
 .pure-menu-item form {
+    justify-content: center;
     display: flex;
+    flex-wrap:  wrap;
 }
 
 .pure-menu-item form input {
@@ -39,7 +41,10 @@
     padding: 1em;
     border: 0.07em solid black;
 }
-
+.tabs{
+    text-align: center;
+    
+}
 .playlist {
     padding: 2em;
     background: #e3d9f2; /* Adjusted color */
@@ -178,10 +183,7 @@ h1 {
  }
 
  
-.tab:hover{
-    background-color: #7a7a7a;
-    color:#ffffff;
-}
+
 #comment-create-box{
     background-color: #c5c5c5;
     position: fixed;

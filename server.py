@@ -1,9 +1,12 @@
-from flask import Flask, request, render_template, redirect, Response, session
+import db
 import json
 from os import environ as env
+from dotenv import find_dotenv, load_dotenv
 from urllib.parse import quote_plus, urlencode
-import requests
-import db
+from authlib.integrations.flask_client import OAuth
+from flask import Flask, request, render_template, redirect, session, url_for
+from db import successfulLoginAttempt
+
 from spotify import connect_spotify, redirect_uri, db_get_tokens
 from auth import require_login
 
@@ -14,12 +17,38 @@ def create_app():
   return app
 
 app = create_app()
-app.secret_key = env['FLASK_SECRET']
-
+@app.route("/")
 @app.route('/home', methods=['GET'])
 @app.route('/homepage', methods=['GET'])
 def homepage():
-  return render_template('homepage.html.jinja',user_id = 0, playlists = [{'image':'image goes here','name':'playlist name goes here','rating':'rating goes here','tags':['tag1','tag2','tag3']}])
+    return render_template('homepage.html.jinja',user_id = 0,session=session.get('user'), pretty=json.dumps(session.get('user'), indent=4),
+   playlists = [{'image':'image goes here','name':'playlist name goes here','rating':'rating goes here','tags':['tag1','tag2','tag3']}])
+
+@app.route('/spotify/login', methods=['GET'])
+def spotify_login():
+  scope = 'user-top-read'
+  # Query string is used to retrieve information from a database
+  return redirect('https://accounts.spotify.com/authorize?' +
+      urlencode({
+        "response_type": 'code',
+        "client_id": env['SPOTIFY_CLIENT_ID'],
+        "scope": scope,
+        "redirect_uri": redirect_uri
+    },
+    quote_via=quote_plus))
+
+@app.route('/spotify/callback', methods=['GET'])
+def spotify_callback():
+  # FIXME: See if the user has already connected their Spotify account, we'll assume that they have in our situation
+  #  if user has already linked their spotify account:
+  #    get tokens from database
+  #    call function that checks to see if we can use the access token or if we need to use the refresh token
+  #    call other functions that will returns the info we need
+  # else:
+  # if get_db_tokens
+  code = request.args.get('code')
+  user_id = connect_spotify(code)
+  return render_template('layout.html.jinja')
 
 @app.route('/spotify/login', methods=['GET'])
 def spotify_login():
@@ -49,9 +78,6 @@ def spotify_callback():
 
 @app.route('/search', methods=['POST','GET'])
 def search():
-  # FIXME: Figure out how to tell if it's a Spotify song search or if it's searching through the database
-  search_url = "https://api.spotify.com/v1/search?q=track:"
-  print(request.form)
   return render_template('search.html.jinja',user_id =1, playlists = [{'image':'image goes here','name':'playlist name goes here','rating':'rating goes here','tags':['tag1','tag2','tag3']}])
 @app.route('/playlist/<int:p_id>', methods=['POST','GET'])
 def playlist(p_id):
@@ -65,20 +91,24 @@ def settings():
 @app.route('/library', methods=['POST','GET'])
 # @require_login
 def library():
-  return render_template('user_library.html.jinja', user_id=10)
+  return render_template('user_library.html.jinja', user_id=session.get('user'))
 
 @app.route('/edit-playlist', methods=['POST','GET'])
 # @require_login
 def editplaylist():
-  return render_template('create_edit_playlist.html.jinja', user_id=1,searched_songs= ["Minnesota March","Minnesota Rouser"])
+  return render_template('create_edit_playlist.html.jinja', user_id=session.get('user'),searched_songs= ["Minnesota March","Minnesota Rouser"])
 
-import json
-from os import environ as env
-from urllib.parse import quote_plus, urlencode
+# @app.route('/rate-playlist', methods=['POST'])
+def ratePlaylist():
+    user_id = request.args.get('user_id')
+    playlist_id = request.args.get('playlist_id')
+    stars = request.args.get('stars')
+    comment = request.args.get('comment')
+    if (get_comment(user_id, playlist_id) != []):
+        print("User has already left comment for playlist with id: " + str(playlist_id))
+    else:
+        insertNewComment(user_id, playlist_id, stars, comment)
 
-from authlib.integrations.flask_client import OAuth
-from dotenv import find_dotenv, load_dotenv
-from flask import redirect, session, url_for
 
 # app = Flask(__name__)
 ENV_FILE = find_dotenv()
@@ -111,7 +141,18 @@ def callback():
     # extract the field "sub" for user_id, there's also names for display
     token = oauth.auth0.authorize_access_token()
     session["user"] = token
-    return redirect("/")
+    print(session["user"])
+    if (successfulLoginAttempt(session["user"]["userinfo"]["sub"])):
+        print("****************")
+        print("LOGIN SUCCESSFUL")
+        print("****************")
+        return redirect("/home")
+    else:
+        print("||||||||||||")
+        print("LOGIN FAILED")
+        print("||||||||||||")
+        return redirect("/login")
+    return redirect("/home")
 
 @app.route("/logout")
 def logout():
@@ -128,6 +169,3 @@ def logout():
         )
     )
 
-@app.route("/")
-def home():
-    return render_template("layout.html.jinja", user_id=0, session=session.get('user'), pretty=json.dumps(session.get('user'), indent=4))
