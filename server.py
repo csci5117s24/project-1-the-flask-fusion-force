@@ -1,5 +1,12 @@
-from flask import Flask, request, render_template
 import db
+import json
+from os import environ as env
+from dotenv import find_dotenv, load_dotenv
+from urllib.parse import quote_plus, urlencode
+from authlib.integrations.flask_client import OAuth
+from flask import Flask, request, render_template, redirect, session, url_for
+from db import successfulLoginAttempt
+
 
 def create_app():
     app = Flask(__name__)
@@ -17,7 +24,7 @@ def homepage():
 
 @app.route('/search', methods=['POST','GET'])
 def search():
-  return render_template('search.html.jinja',user_id =1, playlists = [{'image':'image goes here','name':'playlist name goes here','rating':'rating goes here','tags':['tag1','tag2','tag3']}])
+  return render_template('search.html.jinja',user_id = session.get('user'), playlists = [{'image':'image goes here','name':'playlist name goes here','rating':'rating goes here','tags':['tag1','tag2','tag3']}])
 @app.route('/playlist/<int:p_id>', methods=['POST','GET'])
 def playlist(p_id):
   return render_template('playlist.html.jinja', playlist_id=p_id,songs= ["Minnesota March","Minnesota Rouser"],comments= ["Lovely","good vibes"])
@@ -28,19 +35,23 @@ def settings():
 
 @app.route('/library', methods=['POST','GET'])
 def library():
-  return render_template('user_library.html.jinja', user_id=10)
+  return render_template('user_library.html.jinja', user_id=session.get('user'))
 
 @app.route('/edit-playlist', methods=['POST','GET'])
 def editplaylist():
-  return render_template('create_edit_playlist.html.jinja', user_id=1,searched_songs= ["Minnesota March","Minnesota Rouser"])
+  return render_template('create_edit_playlist.html.jinja', user_id=session.get('user'),searched_songs= ["Minnesota March","Minnesota Rouser"])
 
-import json
-from os import environ as env
-from urllib.parse import quote_plus, urlencode
+# @app.route('/rate-playlist', methods=['POST'])
+def ratePlaylist():
+    user_id = request.args.get('user_id')
+    playlist_id = request.args.get('playlist_id')
+    stars = request.args.get('stars')
+    comment = request.args.get('comment')
+    if (get_comment(user_id, playlist_id) != []):
+        print("User has already left comment for playlist with id: " + str(playlist_id))
+    else:
+        insertNewComment(user_id, playlist_id, stars, comment)
 
-from authlib.integrations.flask_client import OAuth
-from dotenv import find_dotenv, load_dotenv
-from flask import redirect, session, url_for
 
 # app = Flask(__name__)
 ENV_FILE = find_dotenv()
@@ -70,7 +81,18 @@ def login():
 def callback():
     token = oauth.auth0.authorize_access_token()
     session["user"] = token
-    return redirect("/")
+    print(session["user"])
+    if (successfulLoginAttempt(session["user"]["userinfo"]["sub"])):
+        print("****************")
+        print("LOGIN SUCCESSFUL")
+        print("****************")
+        return redirect("/home")
+    else:
+        print("||||||||||||")
+        print("LOGIN FAILED")
+        print("||||||||||||")
+        return redirect("/login")
+    return redirect("/home")
 
 @app.route("/logout")
 def logout():
