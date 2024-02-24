@@ -14,21 +14,28 @@ def base64_client_creds():
   base64_bytes = base64.b64encode(credentials_bytes)
   return base64_bytes.decode("ascii")
 
-def process_spotify_tokens(response_json):
-  user_id = get_user_info(response_json["access_token"]).get('id')
-                # if session['spotify'] is None else session['spotify']['user_id']
+# Given a dict/json of spotify Oauth0 info, store it in session and DB and return an updated version of it(with user id)
+def process_spotify_tokens(user_id, response_json):
+  s_user_id = get_user_info(response_json["access_token"]).get('id')
+
+  if 'expire_time' in response_json:
+    expire_time = response_json['expire_time']
+  else:
+    expire_time = calc_expire_time()
+
   spotify = {
-    "user_id": user_id,
+    "user_id": s_user_id,
     "access_token": response_json["access_token"],
     "refresh_token": response_json["refresh_token"],
-    "expire_time": time.time() + response_json["expires_in"],
+    "expire_time": expire_time,     # 1 hour
   }
 
-  db_update_tokens(user_id, spotify['access_token'], spotify['refresh_token'])
+  print(f"storing spotify tokens in DB...")
+  db_update_tokens(user_id, spotify['access_token'], spotify['refresh_token'], expire_time)
   # potential bug: if spotify token expire time changes
   return spotify
 
-def connect_spotify(code):
+def connect_spotify(user_id, code):
   auth_options = {
     'Content-Type': 'application/x-www-form-urlencoded',
     'Authorization': 'Basic ' + base64_client_creds()
@@ -44,9 +51,10 @@ def connect_spotify(code):
   response = requests.post(url='https://accounts.spotify.com/api/token', data=data, headers=auth_options)
   log_response(response)
   response_json = json.loads(response.content)
-  return process_spotify_tokens(response_json)
+  return process_spotify_tokens(user_id, response_json)
 
-def refresh_spotify_tokens(spotify_session):
+# Refresh tokens and return updated version
+def refresh_spotify_tokens(user_id, spotify_session):
   # Check if need refresh
   if spotify_session is None: return
   if time.time() < spotify_session["expire_time"]: return
@@ -58,14 +66,14 @@ def refresh_spotify_tokens(spotify_session):
   }
 
   body = {
-    "refresh_token": spotify_session["refresh_token"],
+    "refresh_token": spotify_session['refresh_token'],
     "grant_type": 'refresh_token'
   }
 
   response = requests.post(url='https://accounts.spotify.com/api/token', data=body, headers=auth_options)
   log_response(response)
   response_json = json.loads(response.content)
-  return process_spotify_tokens(response_json)
+  return process_spotify_tokens(user_id, response_json)
 
 # Returns user json object concerning their Spotify Account
 def get_user_info(access_token):
@@ -98,19 +106,26 @@ def search_song(access_token, search_string):
   return rsp_json
 
 # db functions
-def db_update_tokens(user_id, access_token, refresh_token):
+# This user_id is not spotify user_id
+# expire_time is epoch time (in int/float)
+def db_update_tokens(user_id, access_token, refresh_token, expire_time):
   with db.get_db_cursor(True) as cursor:
-    cursor.execute("UPDATE mixtape_fm_users SET spotify_access_token = %s, \
+    if expire_time is None: 
+        expire_time = calc_expire_time()
+    cursor.execute(f"UPDATE mixtape_fm_users SET spotify_access_token = %s, \
                    spotify_refresh_token = %s, \
-                   spotify_token_expire = current_timestamp + interval \'55 minutes\' \
+                   spotify_token_expire = %s \
                    where user_id = %s;", \
-                    (user_id, access_token, refresh_token))
+                    (access_token, refresh_token, expire_time, user_id))
 
 def db_get_tokens(user_id):
   with db.get_db_cursor(True) as cursor:
     cursor.execute("SELECT * FROM mixtape_fm_users WHERE user_id=%s", (user_id,))
     return cursor.fetchall()
-  
+
+def calc_expire_time():
+  return time.time() + 55*60    # epoch time; 1 hour with leeway
+
 def log_response(response):
   content = str(response.content)
   print('======response======')

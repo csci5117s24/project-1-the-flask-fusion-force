@@ -48,7 +48,7 @@ def spotify_callback():
   # else:
   # if get_db_tokens
   code = request.args.get('code')
-  session["spotify"] = connect_spotify(code)
+  session["spotify"] = connect_spotify(session['user_id'], code)
   return render_template('layout.html.jinja')
 
 # Call this route like:.../spotify/search?q=baby%20shark
@@ -60,10 +60,9 @@ def spotify_search():
     if not 'spotify' in session:
        return Response("Need to be logged in to Spotify to use this feature!", status=400, mimetype='text/plain')
 
-    refresh_spotify_tokens(session['spotify'])
+    refresh_spotify_tokens(session['user_id'], session['spotify'])
 
     search_string = request.args.get('q')
-    # print(f'search string: {search_string}')
     search_res = search_song(session['spotify']['access_token'], search_string)  # flask jsonifies this
     return jsonify(search_res)
 
@@ -127,16 +126,28 @@ def login():
 
 @app.route("/callback", methods=["GET", "POST"])
 def callback():
-    # FIXME: Store the user_id in the session so we can access the access and refresh tokens
-    # call https://auth0.com/docs/api/authentication#get-user-info
-    # extract the field "sub" for user_id, there's also names for display
+    # Stores user info in the session so we can access the access and refresh tokens
+    # Info includes tokens, user_id (.user_info.sub), display name (.userinfo.name)
     token = oauth.auth0.authorize_access_token()
+    print(token)
     session["user"] = token
+    session["user_id"] = token["userinfo"]["sub"]
 
-    if (successfulLoginAttempt(token["userinfo"]["sub"])):
+    if (successfulLoginAttempt(session["user_id"], token["userinfo"])):
         print("****************")
         print("LOGIN SUCCESSFUL")
         print("****************")
+
+        # Fetch spotify info and store in session
+        user = db.checkUser(session["user_id"])[0]  # potential bug: what if no users found? is this possible?
+        if (not user.get("spotify_access_token") is None): # spotify acc linked
+            app.logger.info(f'found spotify tokens for logged in user {session["user_id"]}, storing in session...')
+            spotify_session = {
+                "access_token": user.get("spotify_access_token"),
+                "refresh_token": user.get("spotify_refresh_token"),
+                "expire_time": user.get("spotify_token_expire")
+            }
+            session['spotify'] = refresh_spotify_tokens(session['user_id'], spotify_session)
         return redirect("/home")
     else:
         print("||||||||||||")

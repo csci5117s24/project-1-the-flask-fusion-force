@@ -100,14 +100,15 @@ def checkUser(user_id):
     cursor.execute("SELECT * FROM mixtape_fm_users WHERE user_id=%s;", (str(user_id), ))
     return cursor.fetchall()
 
-def successfulLoginAttempt(user_id):
+def successfulLoginAttempt(user_id, user_info):
   print("user_id= " + str(user_id))
   if (user_id == None):
     return False
   checkVal = checkUser(user_id)
   if (checkVal == []):
     with get_db_cursor(True) as cursor:
-      cursor.execute("INSERT INTO mixtape_fm_users (user_id, spotify_linked) VALUES (%s, FALSE);", (str(user_id), ))
+      cursor.execute("INSERT INTO mixtape_fm_users (user_id, user_display_name) VALUES (%s, %s);", \
+                     (str(user_id), user_info.get("name")))
       return True
   else:
     return True
