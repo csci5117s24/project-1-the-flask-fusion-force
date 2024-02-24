@@ -4,10 +4,10 @@ from os import environ as env
 from dotenv import find_dotenv, load_dotenv
 from urllib.parse import quote_plus, urlencode
 from authlib.integrations.flask_client import OAuth
-from flask import Flask, request, render_template, redirect, session, url_for
+from flask import Flask, request, render_template, redirect, session, url_for, Response, jsonify
 
 from db import successfulLoginAttempt, get_comment, insertNewComment
-from spotify import connect_spotify, redirect_uri
+from spotify import connect_spotify, search_song, refresh_spotify_tokens, spotify_redirect_uri
 from auth import require_login
 from datetime import datetime, timedelta
 
@@ -34,7 +34,7 @@ def spotify_login():
         "response_type": 'code',
         "client_id": env['SPOTIFY_CLIENT_ID'],
         "scope": scope,
-        "redirect_uri": redirect_uri
+        "redirect_uri": spotify_redirect_uri
     },
     quote_via=quote_plus))
 
@@ -48,8 +48,24 @@ def spotify_callback():
   # else:
   # if get_db_tokens
   code = request.args.get('code')
-  user_id = connect_spotify(code)
+  session["spotify"] = connect_spotify(code)
   return render_template('layout.html.jinja')
+
+# Call this route like:.../spotify/search?q=baby%20shark
+# The string after "?q=" must be url encoded
+# Return a json object where the list of tracks is in the "items" property
+# See: https://developer.spotify.com/documentation/web-api/reference/search
+@app.route('/spotify/search', methods=['GET'])
+def spotify_search():
+    if not 'spotify' in session:
+       return Response("Need to be logged in to Spotify to use this feature!", status=400, mimetype='text/plain')
+
+    refresh_spotify_tokens(session['spotify'])
+
+    search_string = request.args.get('q')
+    # print(f'search string: {search_string}')
+    search_res = search_song(session['spotify']['access_token'], search_string)  # flask jsonifies this
+    return jsonify(search_res)
 
 @app.route('/search', methods=['POST','GET'])
 def search():
