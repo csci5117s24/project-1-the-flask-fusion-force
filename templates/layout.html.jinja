@@ -43,7 +43,11 @@
                     </li>
                     <!-- Will need to change to log out method-->
                     <li class="pure-menu-item">
-                        <a href="/" class="pure-menu-link">Log out</a>
+                        {% if session %}
+                            <a href="/logout" class="pure-menu-link">Log Out</a>
+                        {% else %}
+                            <a href="/login" class="pure-menu-link">Log In</a>
+                        {% endif %}
                     </li>
                     {% endif %}
 
