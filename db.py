@@ -254,12 +254,23 @@ def getPlaylists(user_id):
   playlists = get_playlists_from_results(playlist_results)
   return jsonify(playlists)
 
-def get_top_playlists():
+def get_top_playlist_ids():
   with get_db_cursor(True) as cursor:
-    cursor.execute("SELECT * FROM mixtape_fm_playlists")
+    cursor.execute("SELECT playlist_id FROM mixtape_fm_playlists ORDER BY stars DESC LIMIT 10;")
+    return cursor.fetchall()
 
+def get_top_playlists():
+  playlist_ids = get_top_playlist_ids()
+  playlist_results = []
+  for playlist_id in playlist_ids:
+    playlist_results.append(get_playlist_from_playlist_id(playlist_id))
+  return playlist_results
+
+## Get 10 top rated playlists across the site
 def getTopRatedPlaylists():
   playlist_results = get_top_playlists()
+  playlists = get_playlists_from_results(playlist_results)
+  return jsonify(playlists)
 
 ## Gets n random playlists, returns array with {name, image, ratings, tags[], playlist_id}
 def getRandomPlaylists(user_id, n):
