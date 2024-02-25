@@ -12,9 +12,11 @@
         <li class="pure-menu-item">
             <a href="#" class="pure-menu-link tab">Tags</a>
         </li>
-        <li class="pure-menu-item">
-            <a href="#" class="pure-menu-link tab">Recently Played</a>
-        </li>
+        {% if user_id != None %}
+            <li class="pure-menu-item">
+                <a href="#" class="pure-menu-link tab">Recently Played</a>
+            </li>
+        {% endif %}
     </ul>
 </div>
 <div class="pure-g">

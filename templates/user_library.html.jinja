@@ -4,6 +4,7 @@
 <h1>My Library</h1>
 {% endblock %}
 {% block content %}
+ {% if user_id != None %}
 <div class="pure-menu pure-menu-horizontal">
     <ul class="pure-menu-list">
         <li class="pure-menu-item">
@@ -33,4 +34,8 @@
         {% include "playlistcard.html.jinja" ignore missing with context %}
     {% endfor %}
 </div>
+{% else %}
+    <p> You can't access this page with out loging in</p>
+    <a href="/login" class="pure-menu-link">Log in</a>
+{% endif %}
 {% endblock %}

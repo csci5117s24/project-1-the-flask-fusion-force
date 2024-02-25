@@ -5,6 +5,7 @@
 <h1>&lt;Your Playlist Name Here &gt;</h1>
 {% endblock %}
 {% block content %}
+{% if user_id != None %}
 <div class="pure-g horizontal-double-content" style="padding: 2em;">
     <div class="pure-u-5-12">
          <form class="pure-form pure-u-1" method = "POST" action = "/edit-playlist">
@@ -43,6 +44,10 @@
      
     </div>
 </div>
+{% else %}
+    <p> You can't access this page with out loging in</p>
+    <a href="/login" class="pure-menu-link">Log in</a>
+{% endif %}
 
 
     <script>
