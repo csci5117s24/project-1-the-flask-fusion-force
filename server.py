@@ -57,12 +57,15 @@ def spotify_callback():
 # See: https://developer.spotify.com/documentation/web-api/reference/search
 @app.route('/spotify/search', methods=['GET'])
 def spotify_search():
-    if not 'spotify' in session:
+    if not session.get['spotify'] is None:
        return Response("Need to be logged in to Spotify to use this feature!", status=400, mimetype='text/plain')
 
     refresh_spotify_tokens(session['user_id'], session['spotify'])
 
     search_string = request.args.get('q')
+    if (search_string is None): 
+       return Response("Need to pass in a query string!", status=400, mimetype='text/plain')
+
     search_res = search_song(session['spotify']['access_token'], search_string)  # flask jsonifies this
     return jsonify(search_res)
 
@@ -142,6 +145,7 @@ def callback():
         user = db.checkUser(session["user_id"])[0]  # potential bug: what if no users found? is this possible?
         if (not user.get("spotify_access_token") is None): # spotify acc linked
             app.logger.info(f'found spotify tokens for logged in user {session["user_id"]}, storing in session...')
+            # construct a spotify_session from database to refresh it
             spotify_session = {
                 "access_token": user.get("spotify_access_token"),
                 "refresh_token": user.get("spotify_refresh_token"),
