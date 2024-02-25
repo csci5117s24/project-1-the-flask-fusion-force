@@ -28,8 +28,8 @@ app = create_app()
 @app.route('/home', methods=['GET'])
 @app.route('/homepage', methods=['GET'])
 def homepage():
-    playlist_list = db.get_top_playlists()
-    print(playlist_list)
+    #playlist_list = db.get_top_playlists()
+    #print(playlist_list)
     return render_template('homepage.html.jinja', user_session=session.get('user'), pretty=json.dumps(session.get('user'), indent=4),
     playlists = [{'image':'image goes here','name':'playlist name goes here','rating':'rating goes here','tags':['tag1','tag2','tag3']}])
 
@@ -92,7 +92,7 @@ def playlist(p_id):
 @auth.require_login
 def settings():
     return render_template('settings.html.jinja', user_id=session.get('user_id'),settings = 
-  {"Login with spotify":["button",["/spotify/login","get",session['spotify']]]})
+  {"Login with spotify":["button",["/spotify/login","get",session.get('spotify')]]})
 
 @app.route('/library', methods=['POST','GET'])
 @auth.require_login

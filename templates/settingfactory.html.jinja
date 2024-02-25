@@ -23,7 +23,7 @@
         </select>
     </div>
 {% elif type[0]== "button" %}
-    <p>{{type[1][2]}}</p>
+
     {% if type[1][2]%}
     <button class = "pure-button-disabled" type="submit" formaction = {{type[1][0]}} formmettod = {{type[1][1]}}>{{settingName}}</button>
     {% else %}

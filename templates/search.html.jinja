@@ -12,14 +12,7 @@
         <li class="pure-menu-item">
             <a href="#" class="pure-menu-link tab">Tags</a>
         </li>
-       <form class="pure-form pure-u-1" method = "POST" action = "/edit-playlist">
-                    <input type="text" class="pure-input-rounded" placeholder="Find a Song..."/>
-                    <button type="submit" class="pure-button">Search</button>
-        </form>
-            <li class="pure-menu-item">
-                <a href="#" class="pure-menu-link tab">Recently Played</a>
-            </li>
-        {% endif %}
+       
     </ul>
 </div>
 <div class="pure-g">
@@ -27,8 +20,4 @@
         {% include "playlistcard.html.jinja" ignore missing with context %}
     {% endfor %}
 </div>
-
-<script>
-window.onload=getResults(document.getElementById)
-</script>
 {% endblock %}
