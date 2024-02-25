@@ -89,7 +89,7 @@ def playlist(p_id):
 @auth.require_login
 def settings():
     return render_template('settings.html.jinja',settings = 
-  {"text example":["text"],"show me a cat":["upload"],"Fruits":["dropdown",["oranges","option2"]],"Toggel example":["checkbox"]})
+  {"Login with spotify":["button",["/spotify/login","get"]]})
 
 @app.route('/library', methods=['POST','GET'])
 @auth.require_login

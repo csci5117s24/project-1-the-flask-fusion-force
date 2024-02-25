@@ -22,6 +22,8 @@
             {% endfor %}
         </select>
     </div>
+{% elif type[0]== "button" %}
+    <button class = "pure-button" type="submit" formaction = {{type[1][0]}} formmettod = {{type[1][1]}}>{{settingName}}</button>
 {% else  %}
     
 {% endif %}
