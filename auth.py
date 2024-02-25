@@ -42,7 +42,7 @@ def callback():
     token = oauth.auth0.authorize_access_token()
     print(token)
     session["user"] = token
-    session["user_id"] = token["userinfo"]["sub"]
+    session["user_id"] = token["sid"]
 
     if (db.successfulLoginAttempt(session["user"]["userinfo"]["sid"], session["user"]["userinfo"]["name"], session["user"]["userinfo"]["picture"])):
         print("****************")
