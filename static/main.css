@@ -434,6 +434,15 @@ button .commentblock:hover{
     border-left: 6px inset #512f94;
     border-right: 6px inset #bfaaff;
 }
+.pure-button-disabled{
+    color:#bfaaff;
+    background-color: #512f94;
+    border-radius: 2em;
+    border-bottom: 6px inset #bfaaff;
+    border-top: 6px inset #512f94;
+    border-left: 6px inset #512f94;
+    border-right: 6px inset #bfaaff;
+}
 .song-info-feild{
     padding: 1em;
     margin: 1em;
