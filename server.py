@@ -28,7 +28,8 @@ app = create_app()
 @app.route('/home', methods=['GET'])
 @app.route('/homepage', methods=['GET'])
 def homepage():
-    #print(db.get_top_playlists())
+    playlist_list = db.get_top_playlists()
+    print(playlist_list)
     return render_template('homepage.html.jinja', user_session=session.get('user'), pretty=json.dumps(session.get('user'), indent=4),
     playlists = [{'image':'image goes here','name':'playlist name goes here','rating':'rating goes here','tags':['tag1','tag2','tag3']}])
 
