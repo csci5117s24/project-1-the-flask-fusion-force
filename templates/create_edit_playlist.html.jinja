@@ -5,7 +5,7 @@
 <h1>&lt;Your Playlist Name Here &gt;</h1>
 {% endblock %}
 {% block content %}
-{% if user_id != None %}
+{% if user_session != None %}
 <div class="pure-g horizontal-double-content" style="padding: 2em;">
     <div class="pure-u-5-12">
          <form class="pure-form pure-u-1" method = "POST" action = "/edit-playlist">
