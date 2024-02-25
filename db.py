@@ -253,7 +253,7 @@ def getPlaylists(user_id):
 
 def get_top_playlist_ids():
   with get_db_cursor(True) as cursor:
-    cursor.execute("SELECT playlist_id FROM mixtape_fm_playlists ORDER BY stars DESC LIMIT 10;")
+    cursor.execute("SELECT playlist_id FROM mixtape_fm_comments ORDER BY stars DESC LIMIT 10;")
     return cursor.fetchall()
 
 def get_top_playlists():
@@ -380,14 +380,17 @@ def insert_song(name, artist, album, genre, duration):
 #     return
 
 def insertNewComment(commenter_id, playlist_id, stars, content):
-  if (stars < 1 or stars > 5):
-    print("Invalid number of stars in review")
-    return None
+  # if (stars < 1 or stars > 5):
+  #   print("Invalid number of stars in review")
+  #   return None
   if (get_comment(commenter_id, playlist_id) != []):
     print("User has already left a review of this playlist")
     return None
   with get_db_cursor(True) as cursor:
-    if (content == None or content == ''):
+    if (stars == '' and content != ''):
+      cursor.execute("INSERT INTO mixtape_fm_comments (comment_user_id, playlist_id, content, timestamp) VALUES (%s, %s, %s, CURRENT_TIMESTAMP);", \
+      (commenter_id, playlist_id, content))
+    elif (content == '' and stars != ''):
       cursor.execute("INSERT INTO mixtape_fm_comments (comment_user_id, playlist_id, stars, timestamp) VALUES (%s, %s, %s, CURRENT_TIMESTAMP);", \
       (commenter_id, playlist_id, stars))
     else:
