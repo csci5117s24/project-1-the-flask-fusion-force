@@ -32,6 +32,7 @@ def homepage():
    playlists = [{'image':'image goes here','name':'playlist name goes here','rating':'rating goes here','tags':['tag1','tag2','tag3']}])
 
 @app.route('/spotify/login', methods=['GET'])
+@auth.require_login
 def spotify_login():
   scope = 'user-top-read'
   # Query string is used to retrieve information from a database
@@ -45,6 +46,7 @@ def spotify_login():
     quote_via=quote_plus))
 
 @app.route('/spotify/callback', methods=['GET'])
+@auth.require_login(redirect_to="/spotify/login")
 def spotify_callback():
   # FIXME: See if the user has already connected their Spotify account, we'll assume that they have in our situation
   #  if user has already linked their spotify account:
@@ -62,8 +64,9 @@ def spotify_callback():
 # Return a json object where the list of tracks is in the "items" property
 # See: https://developer.spotify.com/documentation/web-api/reference/search
 @app.route('/spotify/search', methods=['GET'])
+@auth.require_login
 def spotify_search():
-    if not session.get['spotify'] is None:
+    if session.get('spotify') is None:
        return Response("Need to be logged in to Spotify to use this feature!", status=400, mimetype='text/plain')
 
     spotify.refresh_spotify_tokens(session['user_id'], session['spotify'])
@@ -82,18 +85,18 @@ def search():
 def playlist(p_id):
   return render_template('playlist.html.jinja', playlist_id=p_id,songs= ["Minnesota March","Minnesota Rouser"],comments= ["Lovely","good vibes"])
 @app.route('/settings', methods=['GET'])
-# @require_login
+@auth.require_login
 def settings():
   return render_template('settings.html.jinja',settings = 
   {"text example":["text"],"show me a cat":["upload"],"Fruits":["dropdown",["oranges","option2"]],"Toggel example":["checkbox"]})
 
 @app.route('/library', methods=['POST','GET'])
-# @require_login
+@auth.require_login
 def library():
   return render_template('user_library.html.jinja', user_id=session.get('user'))
 
 @app.route('/edit-playlist', methods=['POST','GET'])
-# @require_login
+@auth.require_login
 def editplaylist():
   return render_template('create_edit_playlist.html.jinja', user_id=session.get('user'),searched_songs= ["Minnesota March","Minnesota Rouser"])
 

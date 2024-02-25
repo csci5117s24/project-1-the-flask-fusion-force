@@ -1,7 +1,7 @@
-import functools
+from functools import wraps
 from os import environ as env
 from urllib.parse import quote_plus, urlencode
-from flask import redirect, current_app, session, url_for, Blueprint
+from flask import redirect, current_app, session, url_for, Blueprint, request
 from authlib.integrations.flask_client import OAuth
 
 import db
@@ -26,12 +26,17 @@ def setup():
 
 @app.route("/login")
 def login():
+    next = request.args.get('next') # destination to redirect after login 
+    # (due to user trying to access some forbidden before logging in)
     return oauth.auth0.authorize_redirect(
-        redirect_uri=url_for("auth.callback", _external=True)
+        redirect_uri=url_for("auth.callback", _external=True, next=next)  # next = None is fine
     )
 
 @app.route("/callback", methods=["GET", "POST"])
 def callback():
+    next = request.args.get('next') # destination to redirect after login 
+    if (next is None): next = "/homepage"
+
     # Stores user info in the session so we can access the access and refresh tokens
     # Info includes tokens, user_id (.user_info.sub), display name (.userinfo.name)
     token = oauth.auth0.authorize_access_token()
@@ -46,7 +51,9 @@ def callback():
 
         # Fetch spotify info and store in session
         user = db.checkUser(session["user_id"])[0]  # potential bug: what if no users found? is this possible?
-        if (not user.get("spotify_access_token") is None): # spotify acc linked
+        print(user)
+        print(user.get("spotify_access_token"))
+        if (user.get('spotify_access_token') is not None): # spotify acc linked
             current_app.logger.info(f'found spotify tokens for logged in user {session["user_id"]}, storing in session...')
             # construct a spotify_session from database to refresh it
             spotify_session = {
@@ -54,8 +61,9 @@ def callback():
                 "refresh_token": user.get("spotify_refresh_token"),
                 "expire_time": user.get("spotify_token_expire")
             }
+
             session['spotify'] = spotify.refresh_spotify_tokens(session['user_id'], spotify_session)
-        return redirect(url_for("homepage"))
+        return redirect(next)
     else:
         print("||||||||||||")
         print("LOGIN FAILED")
@@ -77,9 +85,25 @@ def logout():
         )
     )
 
-# def require_login(func):
-#     @functools.wraps(func)
-#     def wrapper(*args, **kwargs):
-#         if session.get("user") is None:
-#             return redirect(url_for("login", next=request.url))
-#     return wrapper
+def require_login(func=None, *, redirect_to=None):
+    # @require_login => func is not None, so returns inner_decorator
+    # @require_login(named=arg) => returns decorator that still need to take a function
+    def decorator(func):
+        @wraps(func)
+        def inner_decorator(*args, **kwargs):
+            print(f"checking if logged in: { session.get('user_id') is not None }")
+
+            nonlocal redirect_to
+            if redirect_to is None: redirect_to = request.full_path
+
+            if session.get("user_id") is None:
+                return redirect(url_for("auth.login", next=redirect_to))
+            else:
+                return func(*args, **kwargs)
+        return inner_decorator
+
+    # decorator is supplied with named argument
+    if func is None:
+        return decorator
+    else:
+        return decorator(func)

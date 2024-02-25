@@ -58,7 +58,7 @@ def connect_spotify(user_id, code):
 def refresh_spotify_tokens(user_id, spotify_session):
   # Check if need refresh
   if spotify_session is None: return
-  if time.time() < spotify_session["expire_time"]: return
+  if time.time() < spotify_session["expire_time"]: return spotify_session
 
   print(f"refreshing token for user {user_id}...")
   auth_options = {
