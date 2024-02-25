@@ -115,3 +115,5 @@ def ratePlaylist():
         print("User has already left comment for playlist with id: " + str(playlist_id))
     else:
         db.insertNewComment(user_id, playlist_id, stars, comment)
+
+
