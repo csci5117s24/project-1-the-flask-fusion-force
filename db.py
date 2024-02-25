@@ -1,13 +1,10 @@
 from contextlib import contextmanager
-import logging
 import os
-
-from flask import current_app, g
-
+import random
+from flask import current_app, jsonify
 import psycopg2
 from psycopg2.pool import ThreadedConnectionPool
 from psycopg2.extras import DictCursor
-import random
 
 pool = None
 
@@ -402,7 +399,7 @@ def insert_tag(tag_name):
   with get_db_cursor(True) as cursor:
     cursor.execute("INSERT INTO mixtape_fm_tags (tag_name) VALUES (%s);", (tag_name,))
   tag_ids = get_tag_id(tag_name)
-  if (len(tag_ids) is 1): # shouldn't != 1
+  if (len(tag_ids) == 1): # shouldn't != 1
     return tag_ids[0]
   else: return None
 
