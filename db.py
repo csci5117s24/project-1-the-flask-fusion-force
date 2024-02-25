@@ -100,14 +100,14 @@ def checkUser(user_id):
     cursor.execute("SELECT * FROM mixtape_fm_users WHERE user_id=%s;", (str(user_id), ))
     return cursor.fetchall()
 
-def successfulLoginAttempt(user_id):
+def successfulLoginAttempt(user_id, user_display_name, image):
   print("user_id= " + str(user_id))
   if (user_id == None):
     return False
   checkVal = checkUser(user_id)
   if (checkVal == []):
     with get_db_cursor(True) as cursor:
-      cursor.execute("INSERT INTO mixtape_fm_users (user_id, spotify_linked) VALUES (%s, FALSE);", (str(user_id), ))
+      cursor.execute("INSERT INTO mixtape_fm_users (user_id, user_display_name, image) VALUES (%s, %s, %s);", (str(user_id), str(user_display_name), str(image)))
       return True
   else:
     return True
@@ -243,7 +243,7 @@ def get_playlists_from_results(playlist_results):
     # Get average from ratings
     ratingAvg = getRatingAvg(playlist[0])
     playlists.append({'image': playlist[4], 'name': playlist[2], 'ratingAvg': ratingAvg, \
-    'numRatings': len(ratings), 'tags': tags, 'userDisplayName': user[5]})
+    'numRatings': len(ratings), 'tags': tags, 'userDisplayName': user[3]})
   return playlists
 
 # Takes user_id, returns array with {name, image, ratings, tags[], playlist_id}
@@ -252,7 +252,14 @@ def getPlaylists(user_id):
     return []
   playlist_results = get_user_playlists(user_id)
   playlists = get_playlists_from_results(playlist_results)
-  return playlists
+  return jsonify(playlists)
+
+def get_top_playlists():
+  with get_db_cursor(True) as cursor:
+    cursor.execute("SELECT * FROM mixtape_fm_playlists")
+
+def getTopRatedPlaylists():
+  playlist_results = get_top_playlists()
 
 ## Gets n random playlists, returns array with {name, image, ratings, tags[], playlist_id}
 def getRandomPlaylists(user_id, n):
@@ -261,9 +268,10 @@ def getRandomPlaylists(user_id, n):
   playlist_results = get_user_playlists(user_id)
   playlists = get_playlists_from_results(playlist_results)
   if (len(playlists) < n):
-    return playlists
+    return jsonify(playlists)
   else:
-    return random.sample(playlists, n)
+    random_playlists = random.sample(playlists, n)
+    return jsonify(random_playlists)
 
 def isPlaylistRecent(user_id, playlist_id):
   with get_db_cursor(True) as cursor:
@@ -294,7 +302,7 @@ def getRecentPlaylists(n):
   for playlist_id in recent_playlist_ids:
     db_playlists.append(get_playlist_from_playlist_id(playlist_id))
   playlists = get_playlists_from_results(db_playlists)
-  return playlists
+  return jsonify(playlists)
 
 def getUserPlaylists(user_id):
   if (user_id == None or user_id == ""):
@@ -303,7 +311,7 @@ def getUserPlaylists(user_id):
   if (db_playlists == []):
     return []
   playlists = get_playlists_from_results(db_playlists)
-  return playlists
+  return jsonify(playlists)
 
 ## HELPER TO RETRIEVE COMMENTS
 def get_comments(playlist_id):
@@ -321,8 +329,9 @@ def format_db_comments(db_comments):
   comments = []
   for comment in db_comments:
     commenter_id = comment[1]
+    commenter = getUserFromUserId(commenter_id)
     commenter_text = comment[4]
-    comments.append({'commenterID': commenter_id, 'commentText': commenter_text})
+    comments.append({'commenterID': commenter_id, 'commenterPFP': commenter[5], 'commentText': commenter_text})
   return comments
 
 def getComments(user_id, playlist_id):
@@ -330,7 +339,7 @@ def getComments(user_id, playlist_id):
     return []
   db_comments = get_comments(playlist_id)
   comments = format_db_comments(db_comments)
-  return comments
+  return jsonify(comments)
 
 
 ### *************************************************************************************
@@ -357,10 +366,10 @@ def insert_song(name, artist, album, genre, duration):
       (name, artist, album, genre, duration))
       return get_song_id(name, artist, album, genre, duration)
 
-def insert_new_user(user_id):
-  with get_db_cursor(True) as cursor:
-    cursor.execute("INSERT INTO mixtape_fm_users (user_id, spotify_linked) VALUES (%s, %s);", (user_id, 'FALSE'))
-    return
+# def insert_new_user(user_id):
+#   with get_db_cursor(True) as cursor:
+#     cursor.execute("INSERT INTO mixtape_fm_users (user_id, spotify_linked) VALUES (%s, %s);", (user_id, 'FALSE'))
+#     return
 
 def insertNewComment(commenter_id, playlist_id, stars, content):
   if (stars < 1 or stars > 5):

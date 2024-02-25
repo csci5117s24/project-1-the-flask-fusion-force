@@ -82,7 +82,7 @@ def callback():
     token = oauth.auth0.authorize_access_token()
     session["user"] = token
     print(session["user"])
-    if (successfulLoginAttempt(session["user"]["userinfo"]["sub"])):
+    if (successfulLoginAttempt(session["user"]["userinfo"]["sid"], session["user"]["userinfo"]["name"], session["user"]["userinfo"]["picture"])):
         print("****************")
         print("LOGIN SUCCESSFUL")
         print("****************")
