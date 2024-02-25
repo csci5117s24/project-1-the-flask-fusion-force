@@ -3,18 +3,24 @@ import json
 from os import environ as env
 from dotenv import find_dotenv, load_dotenv
 from urllib.parse import quote_plus, urlencode
-from authlib.integrations.flask_client import OAuth
-from flask import Flask, request, render_template, redirect, session, url_for, Response, jsonify
+from flask import Flask, request, render_template, redirect, session, Response, jsonify
 
-from db import successfulLoginAttempt, get_comment, insertNewComment
-from spotify import connect_spotify, search_song, refresh_spotify_tokens, spotify_redirect_uri
-from auth import require_login
-from datetime import datetime, timedelta
+import auth, db, spotify
 
 def create_app():
   app = Flask(__name__)
+  app.register_blueprint(auth.app)
+
+  # load flask secret key
+  ENV_FILE = find_dotenv()
+  if ENV_FILE:
+    load_dotenv(ENV_FILE)
+  app.secret_key = env.get("FLASK_SECRET")
+
+  # setup other modules
   with app.app_context():
-      db.setup()
+    db.setup()
+    auth.setup()
   return app
 
 app = create_app()
@@ -34,7 +40,7 @@ def spotify_login():
         "response_type": 'code',
         "client_id": env['SPOTIFY_CLIENT_ID'],
         "scope": scope,
-        "redirect_uri": spotify_redirect_uri
+        "redirect_uri": spotify.spotify_redirect_uri
     },
     quote_via=quote_plus))
 
@@ -48,7 +54,7 @@ def spotify_callback():
   # else:
   # if get_db_tokens
   code = request.args.get('code')
-  session["spotify"] = connect_spotify(session['user_id'], code)
+  session["spotify"] = spotify.connect_spotify(session['user_id'], code)
   return render_template('layout.html.jinja')
 
 # Call this route like:.../spotify/search?q=baby%20shark
@@ -60,13 +66,13 @@ def spotify_search():
     if not session.get['spotify'] is None:
        return Response("Need to be logged in to Spotify to use this feature!", status=400, mimetype='text/plain')
 
-    refresh_spotify_tokens(session['user_id'], session['spotify'])
+    spotify.refresh_spotify_tokens(session['user_id'], session['spotify'])
 
     search_string = request.args.get('q')
     if (search_string is None): 
        return Response("Need to pass in a query string!", status=400, mimetype='text/plain')
 
-    search_res = search_song(session['spotify']['access_token'], search_string)  # flask jsonifies this
+    search_res = spotify.search_song(session['spotify']['access_token'], search_string)  # flask jsonifies this
     return jsonify(search_res)
 
 @app.route('/search', methods=['POST','GET'])
@@ -97,81 +103,7 @@ def ratePlaylist():
     playlist_id = request.args.get('playlist_id')
     stars = request.args.get('stars')
     comment = request.args.get('comment')
-    if (get_comment(user_id, playlist_id) != []):
+    if (db.get_comment(user_id, playlist_id) != []):
         print("User has already left comment for playlist with id: " + str(playlist_id))
     else:
-        insertNewComment(user_id, playlist_id, stars, comment)
-
-
-# app = Flask(__name__)
-ENV_FILE = find_dotenv()
-if ENV_FILE:
-    load_dotenv(ENV_FILE)
-app.secret_key = env.get("FLASK_SECRET")
-
-oauth = OAuth(app)
-
-oauth.register(
-    "auth0",
-    client_id=env.get("AUTH0_CLIENT_ID"),
-    client_secret=env.get("AUTH0_CLIENT_SECRET"),
-    client_kwargs={
-        "scope": "openid profile email",
-    },
-    server_metadata_url=f'https://{env.get("AUTH0_DOMAIN")}/.well-known/openid-configuration'
-)
-
-@app.route("/login")
-def login():
-    return oauth.auth0.authorize_redirect(
-        redirect_uri=url_for("callback", _external=True)
-    )
-
-@app.route("/callback", methods=["GET", "POST"])
-def callback():
-    # Stores user info in the session so we can access the access and refresh tokens
-    # Info includes tokens, user_id (.user_info.sub), display name (.userinfo.name)
-    token = oauth.auth0.authorize_access_token()
-    print(token)
-    session["user"] = token
-    session["user_id"] = token["userinfo"]["sub"]
-
-    if (successfulLoginAttempt(session["user_id"], token["userinfo"])):
-        print("****************")
-        print("LOGIN SUCCESSFUL")
-        print("****************")
-
-        # Fetch spotify info and store in session
-        user = db.checkUser(session["user_id"])[0]  # potential bug: what if no users found? is this possible?
-        if (not user.get("spotify_access_token") is None): # spotify acc linked
-            app.logger.info(f'found spotify tokens for logged in user {session["user_id"]}, storing in session...')
-            # construct a spotify_session from database to refresh it
-            spotify_session = {
-                "access_token": user.get("spotify_access_token"),
-                "refresh_token": user.get("spotify_refresh_token"),
-                "expire_time": user.get("spotify_token_expire")
-            }
-            session['spotify'] = refresh_spotify_tokens(session['user_id'], spotify_session)
-        return redirect("/home")
-    else:
-        print("||||||||||||")
-        print("LOGIN FAILED")
-        print("||||||||||||")
-        return redirect("/login")
-    return redirect("/home")
-
-@app.route("/logout")
-def logout():
-    session.clear()
-    return redirect(
-        "https://" + env.get("AUTH0_DOMAIN")
-        + "/v2/logout?"
-        + urlencode(
-            {
-                "returnTo": url_for("home", _external=True),
-                "client_id": env.get("AUTH0_CLIENT_ID"),
-            },
-            quote_via=quote_plus,
-        )
-    )
-
+        db.insertNewComment(user_id, playlist_id, stars, comment)
