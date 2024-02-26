@@ -82,7 +82,7 @@ def spotify_search():
 @app.route('/search', methods=['POST','GET'])
 def search():
     searchtext = request.form.get("SerchBar")
-    #print(db.search(searchtext))
+    print(db.search(searchtext))
     return render_template('search.html.jinja',user_session = session.get('user'), playlists = [{'image':'image goes here','name':'playlist name goes here','rating':'rating goes here','tags':['tag1','tag2','tag3']}])
 @app.route('/playlist/<int:p_id>', methods=['POST','GET'])
 def playlist(p_id):
