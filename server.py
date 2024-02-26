@@ -37,7 +37,7 @@ def homepage():
     if (session.get('user_id') != None):
       playlists = db.getUserPlaylists(session['user_id'])
     else:
-      playlists = db.getTopRatedPlaylists()
+      playlists = db.getRandomPlaylists(10)
     print('\n\nPLAYLISTS\n')
     print(playlists)
     print('\n')
