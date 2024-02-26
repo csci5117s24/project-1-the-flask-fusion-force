@@ -311,19 +311,27 @@ def getTopRatedPlaylists():
   return playlists
   # return jsonify(playlists)
 
+def get_random_playlists(n):
+  with get_db_cursor(True) as cursor:
+    cursor.execute("SELECT * FROM mixtape_fm_playlists ORDER BY random() LIMIT %s;", (n, ))
+    return cursor.fetchall()
+
 ## Gets n random playlists, returns array with {name, image, ratings, tags[], playlist_id}
-def getRandomPlaylists(user_id, n):
-  if (user_id == None):
+def getRandomPlaylists(n):
+  if (n == None or n <= 0):
     return []
-  playlist_results = get_user_playlists(user_id)
+  # playlist_results = get_user_playlists(user_id)
+  playlist_results = get_random_playlists(n)
   playlists = get_playlists_from_results(playlist_results)
-  if (len(playlists) < n):
-    return playlists
-    # return jsonify(playlists)
-  else:
-    random_playlists = random.sample(playlists, n)
-    return random_playlists
-    # return jsonify(random_playlists)
+  return playlists
+  # playlists = get_playlists_from_results(playlist_results)
+  # if (len(playlists) < n):
+  #   return playlists
+  #   # return jsonify(playlists)
+  # else:
+  #   random_playlists = random.sample(playlists, n)
+  #   return random_playlists
+  #   # return jsonify(random_playlists)
 
 def isPlaylistRecent(user_id, playlist_id):
   with get_db_cursor(True) as cursor:
@@ -459,10 +467,10 @@ def getAllRatings(playlist_id):
 ### *************************************************************************************
 ### *************************************************************************************
 
-def insert_playlist(user_id, playlist_name):
+def insert_playlist(user_id, playlist_name, image):
   with get_db_cursor(True) as cursor:
-    cursor.execute("INSERT INTO mixtape_fm_playlists (user_id, playlist_name, creation_date) VALUES (%s, %s, CURRENT_TIMESTAMP);", \
-    (user_id, playlist_name))
+    cursor.execute("INSERT INTO mixtape_fm_playlists (user_id, playlist_name, creation_date, image) VALUES (%s, %s, CURRENT_TIMESTAMP, %s);", \
+    (user_id, playlist_name, image))
     playlist_id = get_playlist_id(user_id, playlist_name)
     return playlist_id[0]
 
