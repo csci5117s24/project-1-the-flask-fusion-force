@@ -90,8 +90,12 @@ def getPlaylistSongId(playlist_id, song_id):
 
 def get_song_id(name, artist, album, genre, duration):
   with get_db_cursor(True) as cursor:
-    cursor.execute("SELECT song_id FROM mixtape_fm_songs WHERE name=%s AND artist=%s AND album=%s AND genre=%s AND duration=%s;", \
-    (name, artist, album, genre, duration))
+    if (genre == None):
+      cursor.execute("SELECT song_id FROM mixtape_fm_songs WHERE name=%s AND artist=%s AND album=%s AND duration=%s;", \
+      (name, artist, album, duration))
+    else:
+      cursor.execute("SELECT song_id FROM mixtape_fm_songs WHERE name=%s AND artist=%s AND album=%s AND genre=%s AND duration=%s;", \
+      (name, artist, album, genre, duration))
     return cursor.fetchone()
 
 def get_comment(commenter_id, playlist_id):
@@ -523,30 +527,44 @@ def insert_playlist(user_id, playlist_name, image):
   with get_db_cursor(True) as cursor:
     cursor.execute("INSERT INTO mixtape_fm_playlists (user_id, playlist_name, creation_date, image) VALUES (%s, %s, CURRENT_TIMESTAMP, %s);", \
     (user_id, playlist_name, image))
-    playlist_id = get_playlist_id(user_id, playlist_name)
-    return playlist_id[0]
+  playlist_id = get_playlist_id(user_id, playlist_name)
+  return playlist_id[0]
 
 def insert_song_into_playlist(playlist_id, song_id, position):
   with get_db_cursor(True) as cursor:
     cursor.execute("INSERT INTO mixtape_fm_playlist_songs (playlist_id, song_id, position) VALUES (%s, %s, %s);", (playlist_id, song_id, position))
-    p_s_id = get_playlist_song_id(playlist_id, song_id)
-    return p_s_id[0]
+  p_s_id = get_playlist_song_id(playlist_id, song_id)
+  return p_s_id[0]
 
 def insert_song(name, artist, album, genre, duration):
+  if (name == None or artist == None or album == None or duration == None):
+    print("Invalid parameters:")
+    print("  name= " + str(name))
+    print("  artist= " + str(artist))
+    print("  album= " + str(album))
+    print("  duration= " + str(duration))
+    return None
   if (get_song_id(name, artist, album, genre, duration) == None):
     with get_db_cursor(True) as cursor:
       cursor.execute("INSERT INTO mixtape_fm_songs (name, artist, album, genre, duration) VALUES (%s, %s, %s, %s, %s);", \
       (name, artist, album, genre, duration))
-      s_id = get_song_id(name, artist, album, genre, duration)
-      return s_id[0]
+  s_id = get_song_id(name, artist, album, genre, duration)
+  return s_id[0]
 
 def insertSong(name, artist, album, genre, duration):
+  if (name == None or artist == None or album == None or duration == None):
+    print("Invalid parameters:")
+    print("  name= " + str(name))
+    print("  artist= " + str(artist))
+    print("  album= " + str(album))
+    print("  duration= " + str(duration))
+    return None
   if (get_song_id(name, artist, album, genre, duration) == None):
     with get_db_cursor(True) as cursor:
       cursor.execute("INSERT INTO mixtape_fm_songs (name, artist, album, genre, duration) VALUES (%s, %s, %s, %s, %s);", \
       (name, artist, album, genre, duration))
-    s_id = get_song_id(name, artist, album, genre, duration)
-    return s_id[0]
+  s_id = get_song_id(name, artist, album, genre, duration)
+  return s_id[0]
 
 # def insert_new_user(user_id):
 #   with get_db_cursor(True) as cursor:
