@@ -60,21 +60,20 @@ def spotify_callback():
     playlist_ids.append(playlist_info.get('id'))
 
   db_playlists = db.getPlaylists(session['user_id'])
-  print(db_playlists)
-  # db_playlist_names = [playlist.get('name') for playlist in db_playlists]
-  # print(db_playlist_names)
+  db_playlist_names = [playlist.get('name') for playlist in db_playlists]
+  print(db_playlist_names)
 
-  # for playlist in info:
-  #   # Makes it so the database won't add a duplicate playlist
-  #   if playlist.get('name') not in db_playlist_names:
-  #       db.insert_playlist(session['user_id'], playlist.get('name'))
+  for playlist in info:
+    # Makes it so the database won't add a duplicate playlist
+    if playlist.get('name') not in db_playlist_names:
+        db.insert_playlist(session['user_id'], playlist.get('name'))
 
 #   for playlist_id in playlist_ids:
 #     spotify.get_songs_from_playlist(session["spotify"].get("access_token"), playlist_id)
 #   playlist = [{'image': 'https://mosaic.scdn.co/640/ab67616d0000b2732887f8c05b5a9f1cb105be29ab67616d0000b273c4e6adea69105e6b6e214b96ab67616d0000b273d81a092eb373ded457d94eecab67616d0000b273e6d6d392a66a7f9172fe57c8',
 #               'name': 'Nebraska',
 #               'rating': 0}]
-  return render_template('homepage.html.jinja', playlists=info)
+  return render_template('user_library.html.jinja', playlists=info)
 
 # Call this route like:.../spotify/search?q=baby%20shark
 # The string after "?q=" must be url encoded
@@ -107,7 +106,7 @@ def playlist(p_id):
 @auth.require_login
 def settings():
     return render_template('settings.html.jinja', user_id=session.get('user_id'),settings = 
-  {"Import Spotify playlists":["button",["/spotify/login","get",session.get('spotify')]]})
+  {"Import Spotify playlists":["button",["/spotify/login","get",False]]})
 
 @app.route('/library', methods=['POST','GET'])
 @auth.require_login
