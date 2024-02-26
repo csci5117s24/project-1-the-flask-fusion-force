@@ -175,7 +175,7 @@ def get_playlist_from_playlist_id(playlist_id):
     return None
   with get_db_cursor(True) as cursor:
     cursor.execute("SELECT * FROM mixtape_fm_playlists WHERE playlist_id = %s;", (playlist_id, ))
-    return cursor.fetchall()
+    return cursor.fetchone()
 
 # TODO: Create search keyword matching, using sql operators 'like' and 'ilike'
 ## Make a function compiling results from searching for songs in db and playlists, tags preferable
@@ -188,19 +188,30 @@ def search(search_word):
   tag_ids = []
   playlist_ids = []
   for variation in range(1, 7):
-    playlist_results = playlist_results + playlist_search(variation, search_word)
+    # playlist_results = playlist_results + playlist_search(variation, search_word)
+    p_s_results = playlist_search(variation, search_word)
+    for result in p_s_results:
+      tags = []
+      db_tag_ids = get_tag_ids_from_playlist_id(result[0])
+      for db_tag_id in db_tag_ids:
+        db_tag = get_tag_from_id(db_tag_id[0])
+        tags.append(db_tag[0])
+      avg_rating = getRatingAvg(result[0])
+      playlist_results.append({'image': result[4],'name': result[2],'rating': avg_rating[0],'tags': tags})
     tag_ids = tag_ids + tag_id_search(variation, search_word) # Need to get tag_ids
   for tag_id in tag_ids:
     p_t_id = get_playlist_id_from_tag_id(tag_id)
     playlist_ids.append(p_t_id[0]) # Need to get playlist_ids corresponding to tag_ids
   for playlist_id in playlist_ids:
-    tag_results = tag_results +  get_playlist_from_playlist_id(playlist_id) # Finally, need to get playlists based on initial tag search word
+    db_playlist = get_playlist_from_playlist_id(playlist_id)
+    tag_results.append(db_playlist[0])
+    # tag_results = tag_results +  get_playlist_from_playlist_id(playlist_id) # Finally, need to get playlists based on initial tag search word
   ret_dict["playlist_results"] = playlist_results
   ret_dict["tag_results"] = tag_results
   return ret_dict
 
 ## HELPER FUNCTION TO GET TAGS FOR PLAYLSITS
-def get_tag_id_from_playlist_id(playlist_id):
+def get_tag_ids_from_playlist_id(playlist_id):
   if (playlist_id == None):
     return []
   with get_db_cursor(True) as cursor:
@@ -208,12 +219,12 @@ def get_tag_id_from_playlist_id(playlist_id):
     return cursor.fetchall()
 
 ## HELPER FUNCTION TO GET TAGS FOR PLAYLISTS
-def get_tags_from_id(tag_id):
+def get_tag_from_id(tag_id):
   if (tag_id == None):
     return []
   with get_db_cursor(True) as cursor:
     cursor.execute("SELECT tag_name FROM mixtape_fm_tags WHERE tag_id = %s;", (tag_id, ))
-    return cursor.fetchall()
+    return cursor.fetchone()
 
 ## HELPER FUNCTION TO GET PLAYLISTS
 def getRatingAvg(playlist_id):
@@ -245,14 +256,16 @@ def get_playlists_from_results(playlist_results):
   for playlist in playlist_results:
     # ratings = get_comments(playlist[0]) TODO
     ratings = getRatings(playlist[0])
-    tag_ids = get_tag_id_from_playlist_id(playlist[0])
+    tag_ids = get_tag_ids_from_playlist_id(playlist[0])
     user = getUserFromPlaylistId(playlist[0])
     tags = []
     for tag_id in tag_ids:
-      tags = tags + get_tags_from_id(tag_id)
+      db_tag = get_tag_from_id(tag_id[0])
+      tags.append(db_tag[0])
+      # tags = tags + get_tag_from_id(tag_id[0])
     # Get average from ratings
     ratingAvg = getRatingAvg(playlist[0])
-    playlists.append({'image': playlist[4], 'name': playlist[2], 'ratingAvg': ratingAvg, \
+    playlists.append({'image': playlist[4], 'name': playlist[2], 'ratingAvg': ratingAvg[0], \
     'numRatings': len(ratings), 'tags': tags, 'userDisplayName': user[3]})
   return playlists
 
@@ -273,7 +286,9 @@ def get_top_playlists():
   playlist_ids = get_top_playlist_ids()
   playlist_results = []
   for playlist_id in playlist_ids:
-    playlist_results.append(get_playlist_from_playlist_id(playlist_id))
+    playlist_result = get_playlist_from_playlist_id(playlist_id)
+    playlist_results.append(playlist_result[0])
+    # playlist_results.append(get_playlist_from_playlist_id(playlist_id))
   return playlist_results
 
 ## Get 10 top rated playlists across the site
@@ -289,10 +304,12 @@ def getRandomPlaylists(user_id, n):
   playlist_results = get_user_playlists(user_id)
   playlists = get_playlists_from_results(playlist_results)
   if (len(playlists) < n):
-    return jsonify(playlists)
+    return playlists
+    # return jsonify(playlists)
   else:
     random_playlists = random.sample(playlists, n)
-    return jsonify(random_playlists)
+    return random_playlists
+    # return jsonify(random_playlists)
 
 def isPlaylistRecent(user_id, playlist_id):
   with get_db_cursor(True) as cursor:
@@ -321,18 +338,24 @@ def getRecentPlaylists(n):
     recent_playlist_ids = recent_playlist_ids[0:n+1]
   db_playlists = []
   for playlist_id in recent_playlist_ids:
-    db_playlists.append(get_playlist_from_playlist_id(playlist_id))
+    db_playlist = get_playlist_from_playlist_id(playlist_id)
+    db_playlists.append(db_playlist[0])
+    # db_playlists.append(get_playlist_from_playlist_id(playlist_id))
   playlists = get_playlists_from_results(db_playlists)
-  return jsonify(playlists)
+  return playlists
+  # return jsonify(playlists)
 
 def getUserPlaylists(user_id):
   if (user_id == None or user_id == ""):
     return []
+    # return jsonify([])
   db_playlists = get_user_playlists(user_id)
   if (db_playlists == []):
     return []
+    # return jsonify([])
   playlists = get_playlists_from_results(db_playlists)
-  return jsonify(playlists)
+  return playlists
+  # return jsonify(playlists)
 
 ## HELPER TO RETRIEVE COMMENTS
 def get_comments(playlist_id):
@@ -354,10 +377,12 @@ def format_db_comments(db_comments):
 
 def getComments(user_id, playlist_id):
   if (playlist_id == None or playlist_id == ''):
-    return jsonify([])
+    return []
+    # return jsonify([])
   db_comments = get_comments(playlist_id)
   comments = format_db_comments(db_comments)
-  return jsonify(comments)
+  return comments
+  # return jsonify(comments)
 
 def get_ratings(user_id, playlist_id):
   with get_db_cursor(True) as cursor:
@@ -385,26 +410,32 @@ def get_ratings_from_db_ratings(db_ratings):
 def getRatings(playlist_id):
   ratings = []
   if (playlist_id == None):
-    return jsonify(ratings)
+    return ratings
+    # return jsonify(ratings)
   db_ratings = get_ratings(playlist_id)
   ratings = get_ratings_from_db_ratings(db_ratings)
-  return jsonify(ratings) 
+  return ratings
+  # return jsonify(ratings) 
 
 def getRatings(user_id, playlist_id):
   ratings = []
   if (playlist_id == None or user_id == None):
-    return jsonify(ratings)
+    return ratings
+    # return jsonify(ratings)
   db_ratings = get_ratings(user_id, playlist_id)
   ratings = get_ratings_from_db_ratings(db_ratings)
-  return jsonify(ratings) 
+  return ratings
+  # return jsonify(ratings) 
 
 def getAllRatings(playlist_id):
   ratings = []
   if (playlist_id == None):
-    return jsonify(ratings)
+    return ratings
+    # return jsonify(ratings)
   db_ratings = get_all_ratings(playlist_id)
   ratings = get_ratings_from_db_ratings(db_ratings)
-  return jsonify(ratings)
+  return ratings
+  # return jsonify(ratings)
 
 
 ### *************************************************************************************
@@ -682,5 +713,6 @@ def getSavedPlaylists(user_id):
     return
   playlist_results = get_saved_playlists(user_id)
   playlists = get_playlists_from_results(playlist_results)
-  return jsonify(playlists)
+  return playlists
+  # return jsonify(playlists)
   
