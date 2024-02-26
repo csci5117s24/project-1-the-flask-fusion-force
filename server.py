@@ -6,11 +6,12 @@ from urllib.parse import quote_plus, urlencode
 from flask import Flask, request, render_template, redirect, session, Response, jsonify
 from spotify import get_playlist_info
 
-import auth, db, spotify
+import auth, db, spotify, api
 
 def create_app():
   app = Flask(__name__)
   app.register_blueprint(auth.app)
+  app.register_blueprint(api.app)
 
   # load flask secret key
   ENV_FILE = find_dotenv()
