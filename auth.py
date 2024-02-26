@@ -42,9 +42,9 @@ def callback():
     token = oauth.auth0.authorize_access_token()
     print(token)
     session["user"] = token
-    session["user_id"] = token["userinfo"]["sid"]
+    session["user_id"] = token["userinfo"]["email"]
 
-    if (db.successfulLoginAttempt(session["user"]["userinfo"]["sid"], session["user"]["userinfo"]["name"], session["user"]["userinfo"]["picture"])):
+    if (db.successfulLoginAttempt(session["user"]["userinfo"]["email"], session["user"]["userinfo"]["name"], session["user"]["userinfo"]["picture"])):
         print("****************")
         print("LOGIN SUCCESSFUL")
         print("****************")

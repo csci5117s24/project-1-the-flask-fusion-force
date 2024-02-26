@@ -247,15 +247,27 @@ def getUserFromUserId(user_id):
 ## returns user info 
 def getUserFromPlaylistId(playlist_id):
   user_id = getUserIdFromPlaylistId(playlist_id)
-  user = getUserFromUserId(user_id)
+  user = []
+  if (user_id):
+    user = getUserFromUserId(user_id[0])
   return user
+
+def getRatingsNoUser(playlist_id):
+  ratings = []
+  if (playlist_id == None):
+    return ratings
+    # return jsonify(ratings)
+  db_ratings = get_ratings_no_user(playlist_id)
+  ratings = get_ratings_from_db_ratings(db_ratings)
+  return ratings
+  # return jsonify(ratings) 
 
 ## HELPER FUNCTION TO GET PLAYLISTS
 def get_playlists_from_results(playlist_results):
   playlists = []
   for playlist in playlist_results:
     # ratings = get_comments(playlist[0]) TODO
-    ratings = getRatings(playlist[0])
+    ratings = getRatingsNoUser(playlist[0])
     tag_ids = get_tag_ids_from_playlist_id(playlist[0])
     user = getUserFromPlaylistId(playlist[0])
     tags = []
@@ -391,7 +403,7 @@ def get_ratings(user_id, playlist_id):
     cursor.execute("SELECT * FROM mixtape_fm_ratings WHERE rating_user_id=%s AND playlist_id=%s;", (user_id, playlist_id))
     cursor.fetchall()    
 
-def get_ratings(playlist_id):
+def get_ratings_no_user(playlist_id):
   with get_db_cursor(True) as cursor:
     cursor.execute("SELECT * FROM mixtape_fm_ratings WHERE playlist_id=%s;", (playlist_id, ))
     cursor.fetchall()  
@@ -403,21 +415,22 @@ def get_all_ratings(playlist_id):
 
 def get_ratings_from_db_ratings(db_ratings):
   ratings = []
-  for db_rating in db_ratings:
-    user = getUserFromUserId(db_rating[1])
-    rating = {'raterID':user[0], 'raterPFP':user[5], 'rating':db_rating[3]}
-    ratings.append(rating)
+  if (db_ratings):
+    for db_rating in db_ratings:
+      user = getUserFromUserId(db_rating[1])
+      rating = {'raterID':user[0], 'raterPFP':user[5], 'rating':db_rating[3]}
+      ratings.append(rating)
   return ratings
 
-def getRatings(playlist_id):
-  ratings = []
-  if (playlist_id == None):
-    return ratings
-    # return jsonify(ratings)
-  db_ratings = get_ratings(playlist_id)
-  ratings = get_ratings_from_db_ratings(db_ratings)
-  return ratings
-  # return jsonify(ratings) 
+# def getRatings(playlist_id):
+#   ratings = []
+#   if (playlist_id == None):
+#     return ratings
+#     # return jsonify(ratings)
+#   db_ratings = get_ratings(playlist_id)
+#   ratings = get_ratings_from_db_ratings(db_ratings)
+#   return ratings
+#   # return jsonify(ratings) 
 
 def getRatings(user_id, playlist_id):
   ratings = []
