@@ -1,23 +1,28 @@
 <div class="pure-u-1 pure-u-md-1-3 pure-u-lg-1-5 playlist-container">
-    <button class = " playlist">
-        <div class = "playlist-icon">
-            <img src={{ playlist.image}}>
+    <button class="playlist" onclick="redirectToPlaylist({{ playlist.id }})">
+        <div class="playlist-icon">
+            <img class="playlist-img" src="{{ playlist.image }}" alt="Playlist Image">
         </div>
-        <div class = "playlist-name">
+        <div class="playlist-name">
             {{ playlist.name }}
         </div>
-        <div class = "playlist-rating">
+        <div class="playlist-rating">
             {{ playlist.rating }}
         </div>
-        <div class = "pure-g playlist-tags">
+        <div class="pure-g playlist-tags">
             {% for tag in playlist.tags %}
-            <div class = "tag pure-u-1-3">
-            {{tag}} 
-            </div>
+                <div class="tag pure-u-1-3">
+                    {{ tag }}
+                </div>
             {% endfor %}
         </div>
-    </button >
-    <div class = "playlist-edit" style="display: none;" >
-        <button class="playlist" >Edit</button>
+    </button>
+    <div class="playlist-edit" style="display: none;">
+        <button class="playlist">Edit</button>
     </div>
 </div>
+<script>
+    function redirectToPlaylist(playlistId) {
+        window.location.href = "/playlist/" + playlistId;
+    }
+</script>

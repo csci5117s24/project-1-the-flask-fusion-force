@@ -29,8 +29,9 @@ app = create_app()
 @app.route('/home', methods=['GET'])
 @app.route('/homepage', methods=['GET'])
 def homepage():
-    return render_template('homepage.html.jinja',user_id = 0,session=session.get('user'), pretty=json.dumps(session.get('user'), indent=4),
-   playlists = [{'image':'image goes here','name':'playlist name goes here','rating':'rating goes here','tags':['tag1','tag2','tag3']}])
+    #print(db.get_top_playlists()) 
+    return render_template('homepage.html.jinja', user_session=session.get('user'), pretty=json.dumps(session.get('user'), indent=4),
+    playlists = [{'image':'image goes here','name':'playlist name goes here','rating':'rating goes here','tags':['tag1','tag2','tag3']}])
 
 @app.route('/spotify/login', methods=['GET'])
 @auth.require_login
@@ -95,25 +96,36 @@ def spotify_search():
 
 @app.route('/search', methods=['POST','GET'])
 def search():
-  return render_template('search.html.jinja',user_id =1, playlists = [{'image':'image goes here','name':'playlist name goes here','rating':'rating goes here','tags':['tag1','tag2','tag3']}])
+    searchtext = request.form.get("SerchBar")
+    print(db.search(searchtext))
+    return render_template('search.html.jinja',user_session = session.get('user'), playlists = [{'image':'image goes here','name':'playlist name goes here','rating':'rating goes here','tags':['tag1','tag2','tag3']}])
 @app.route('/playlist/<int:p_id>', methods=['POST','GET'])
 def playlist(p_id):
-  return render_template('playlist.html.jinja', playlist_id=p_id,songs= ["Minnesota March","Minnesota Rouser"],comments= ["Lovely","good vibes"])
+    return render_template('playlist.html.jinja', playlist_id=p_id,user_session = session.get('user'), user_id=session.get('user_id'), songs= ["Minnesota March","Minnesota Rouser"],comments= ["Lovely","good vibes"])
 @app.route('/settings', methods=['GET'])
 @auth.require_login
 def settings():
-  return render_template('settings.html.jinja',settings = 
-  {"text example":["text"],"show me a cat":["upload"],"Fruits":["dropdown",["oranges","option2"]],"Toggel example":["checkbox"]})
+    return render_template('settings.html.jinja', user_id=session.get('user_id'),settings = 
+  {"Login with spotify":["button",["/spotify/login","get",session.get('spotify')]]})
 
 @app.route('/library', methods=['POST','GET'])
 @auth.require_login
 def library():
-  return render_template('user_library.html.jinja', user_id=session.get('user'))
+    print(session.get('user'))
+    #print(db.get_user_playlists(0))
+    return render_template('user_library.html.jinja', user_session=session.get('user'), user_id=session.get('user_id'))
 
-@app.route('/edit-playlist', methods=['POST','GET'])
+@app.route('/edit-playlist/<int:p_id>', methods=['POST','GET'])
+@app.route('/edit-playlist', methods=['POST','GET'])  # Incase user is making a completey new playlist
 @auth.require_login
-def editplaylist():
-  return render_template('create_edit_playlist.html.jinja', user_id=session.get('user'),searched_songs= ["Minnesota March","Minnesota Rouser"])
+def editplaylist(p_id=None):
+    print(p_id)
+    if p_id is None:  # New playlist
+        return render_template('create_edit_playlist.html.jinja', playlist_id=p_id, user_session=session.get('user'),playlistDetails= [],songs=[],user_id=session.get('user_id'))
+    
+    playlist_details = [{'playlistID': "someID", 'playlistPicture': "someImg", 'playlistName': "myPlaylist1"}]
+    songs = [{'songID': "", 'songName': "mySong1", 'songImage': ""}]
+    return render_template('create_edit_playlist.html.jinja', playlist_id=p_id, user_session=session.get('user'),playlistDetails=playlist_details, songs=songs, user_id=session.get('user_id'))
 
 # @app.route('/rate-playlist', methods=['POST'])
 def ratePlaylist():
@@ -125,3 +137,5 @@ def ratePlaylist():
         print("User has already left comment for playlist with id: " + str(playlist_id))
     else:
         db.insertNewComment(user_id, playlist_id, stars, comment)
+
+

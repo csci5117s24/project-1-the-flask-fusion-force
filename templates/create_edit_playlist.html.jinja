@@ -2,9 +2,13 @@
 {% extends "layout.html.jinja" %}
 {% block title %} Edit Playlist {% endblock %}
 {% block page_title %}
-<h1>&lt;Your Playlist Name Here &gt;</h1>
+<h1>
+{# {% playlistDetails.playlistName %} #}
+Playlist Name
+</h1>
 {% endblock %}
 {% block content %}
+{% if user_session != None %}
 <div class="pure-g horizontal-double-content" style="padding: 2em;">
     <div class="pure-u-5-12">
          <form class="pure-form pure-u-1" method = "POST" action = "/edit-playlist">
@@ -12,7 +16,7 @@
                     <button type="submit" class="pure-button">Search</button>
         </form>
         <div class = "songlst">
-            {% for song in searched_songs %}
+            {% for song in songs %}
                 {% include "addsongcard.html.jinja" ignore missing with context %}
             {% endfor %}
         </div>
@@ -25,17 +29,20 @@
               
             </div>
             <div class="pure-u-1-3">
-                Name of Playlist
+               <form class="pure-form pure-u-1" method = "POST" action = "/library">
+                    <input type="text" placeholder="name of playlist" value = "Name of playlist"/>
+                    
+        
             </div>
         </div>
       <div class = "songlst">
-            {% for song in added_songs %}
+            {% for song in songs %}
                 {% include "deletesongcard.html.jinja" ignore missing with context %}
             {% endfor %}
         </div>
         <div class = "right-align">
             <!-- Save Button (Bottom Right) -->
-            <form class="pure-form pure-u-1" method = "POST" action = "/library">
+           
                 <button onclick="savePlaylist()" class="save-button pure-button">Save Playlist</button>
             </form>
       </div>
@@ -43,6 +50,10 @@
      
     </div>
 </div>
+{% else %}
+    <p> You can't access this page with out loging in</p>
+    <a href="/login" class="pure-menu-link">Log in</a>
+{% endif %}
 
 
     <script>

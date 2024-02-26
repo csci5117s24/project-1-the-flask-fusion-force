@@ -4,33 +4,84 @@
 <h1>My Library</h1>
 {% endblock %}
 {% block content %}
+{% if user_session != None %}
 <div class="pure-menu pure-menu-horizontal">
     <ul class="pure-menu-list">
         <li class="pure-menu-item">
-            <a href="#" class="pure-menu-link tab">My Playlists</a>
+            <button id="myPlaylistsBtn" class="pure-menu-link tab">My Playlists</button>
         </li>
         <li class="pure-menu-item">
-            <a href="#" class="pure-menu-link tab">Saved Playlists</a>
+            <button id="savedPlaylistsBtn" class="pure-menu-link tab">Saved Playlists</button>
         </li>
         <li class="pure-menu-item">
-            <a href="#" class="pure-menu-link tab">Recently Played</a>
-        </li>
-        <li class="pure-menu-item">
-            <a href="#" class="pure-menu-link tab">Suprise Me</a>
+            <button id="randomPlaylistsBtn" class="pure-menu-link tab">Surprise Me</button>
         </li>
     </ul>
 </div>
 <div class="pure-u-1 pure-u-md-1-5 pure-u-lg-1-8 playlist-container">
-    <form class="pure-form pure-u-1" method = "GET" action = "/edit-playlist">
-                   
-    <button  type="submit" class = "playlist">
-        <h1>+</h1>  
-    </button >
-     </form>
+    <form class="pure-form pure-u-1" method="GET" action="/edit-playlist">
+        <button type="submit" class="playlist">
+            <h1>+</h1>
+        </button>
+    </form>
 </div>
 
-    {% for playlist in playlists %}
-        {% include "playlistcard.html.jinja" ignore missing with context %}
-    {% endfor %}
+{% for playlist in myPlaylists %}
+{% include "playlistcard.html.jinja" ignore missing with context %}
+{% endfor %}
 </div>
+<script src="{{ url_for('static', filename='playlistCard.js') }}"></script>
+<script>
+    const user_id = "{{ user_id }}"; 
+    document.addEventListener("DOMContentLoaded", function () {
+        // Get references to all buttons
+        const myPlaylistsBtn = document.getElementById("myPlaylistsBtn");
+        const savedPlaylistsBtn = document.getElementById("savedPlaylistsBtn");
+        const randomPlaylistsBtn = document.getElementById("randomPlaylistsBtn");
+        setActiveButton(myPlaylistsBtn);
+        changeContentToMyPlaylists();  // sets default tab content
+        // Add listeners to tab buttons
+        myPlaylistsBtn.addEventListener("click", function () {
+            setActiveButton(myPlaylistsBtn);
+            changeContentToMyPlaylists();
+        });
+        savedPlaylistsBtn.addEventListener("click", function () {
+            setActiveButton(savedPlaylistsBtn);
+            changeContentToSavedPlaylists();
+        });
+        randomPlaylistsBtn.addEventListener("click", function () {
+            setActiveButton(randomPlaylistsBtn);
+            changeContentToRandomPlaylists();
+        });
+
+        // Function to set active button and reset others
+        function setActiveButton(activeButton) {
+            const buttons = [myPlaylistsBtn, savedPlaylistsBtn, randomPlaylistsBtn];
+            buttons.forEach(button => {
+                if (button === activeButton) {
+                    button.style.backgroundColor = "white";
+                } else {
+                    button.style.backgroundColor = ""; // Reset to original color
+                }
+            });
+        }
+        function changeContentToMyPlaylists() {
+            console.log("Clicked savedPlaylists tab");
+            createPlaylistCard(myPlaylists, user_id);
+        }
+        function changeContentToSavedPlaylists() {
+            console.log("Clicked savedPlaylists tab");
+            createPlaylistCard(savedPlaylists, user_id);
+        }
+        function changeContentToRandomPlaylists() {
+            console.log("Clicked savedPlaylists tab");
+            createPlaylistCard(randomPlaylists, user_id);
+        }
+    });
+</script>
+
+{% else %}
+<p> You can't access this page without logging in</p>
+<a href="/login" class="pure-menu-link">Log in</a>
+{% endif %}
 {% endblock %}

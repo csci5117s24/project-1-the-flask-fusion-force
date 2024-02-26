@@ -87,6 +87,7 @@ def get_user_info(access_token):
    log_response(response)
    return json.loads(response.content)
 
+# TODO: Hook this to the DB, and call this in connect_spotify
 # Returns all of the users information on every playlist that they own
 def get_playlist_info(access_token):
   playlist_url = "https://api.spotify.com/v1/me/playlists"

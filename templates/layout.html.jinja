@@ -5,7 +5,7 @@
     
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/pure-min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/grids-responsive-min.css" />
-    <link rel="stylesheet" href="/static/Fancyattempt.css">
+    <link rel="stylesheet" href="/static/main.css">
     <title>{% block title %}{% endblock %} </title>
     {% endblock %}
   </head>
@@ -16,7 +16,7 @@
           <li class="pure-menu-item pure-menu-has-children pure-menu-allow-hover">
                 <a href="#" id="menuLink1" class="pure-menu-link">...</a>
                 <ul class="pure-menu-children">
-                    {% if user_id == 0 %}
+                    {% if user_session == None %}
                     {#  If user not signed in: #}
                     <li class="pure-menu-item">
                         <a href="/home" class="pure-menu-link">Home</a>
@@ -34,13 +34,8 @@
                     <li class="pure-menu-item">
                         <a href="/settings" class="pure-menu-link">Settings</a>
                     </li>
-                    <!-- Will need to change to log out method-->
                     <li class="pure-menu-item">
-                        {% if session %}
-                            <a href="/logout" class="pure-menu-link">Log Out</a>
-                        {% else %}
-                            <a href="/login" class="pure-menu-link">Log In</a>
-                        {% endif %}
+                        <a href="/logout" class="pure-menu-link">Log Out</a>
                     </li>
                     {% endif %}
 
@@ -54,7 +49,7 @@
             </li>
             <li class="pure-menu-item">
                 <form class="pure-form" method = "POST" action = "/search">
-                    <input type="text" class="pure-input-rounded" placeholder="Find a playlist..." />
+                    <input type="text" class="pure-input-rounded" name ="SerchBar" placeholder="Find a playlist..." />
                     <button type="submit" class="pure-button-rounded pure-menu-link" id="playlistSearchButton">Search</button>
                 </form>
             </li>

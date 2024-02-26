@@ -1,11 +1,9 @@
 /*color pallet
-Current
-#e7e0ff
-#b299fa
-#9883e5
-#512f94
-#222222
-
+#ffffff
+#98e8c1
+#26ceaa
+#5049cc
+#3d1a78
 */
 /*  -- Change this whenever, but we may want a font theme -- */
 h1 {  
@@ -15,13 +13,13 @@ h1 {
 
 /*Main page*/
 body{
-    background-color: #222222;
+    background-color: #3d1a78;
 }
 .home-menu {
     padding: 0.5em;
-    box-shadow: 2px 2px 2px  #222222;
-    background: #9883e5;
-    border: 0.07em solid #222222;
+    box-shadow: 2px 2px 2px  #3d1a78;
+    background: #26ceaa;
+    border: 0.07em solid #3d1a78;
     justify-content: center;
     display: flex;
     flex-wrap: wrap;
@@ -42,9 +40,9 @@ body{
     flex-wrap: wrap;
 }
 .pure-menu-link{
-    color: #512f94;
+    color: #5049cc;
 
-    background-color: #b299fa;;
+    background-color: #98e8c1;;
     border-radius: 1em;
     border-style: none;
     box-shadow: 0px 0px;
@@ -60,8 +58,8 @@ body{
       content: "";
   }
 .pure-menu-link:hover{
-    color: #b299fa;
-    background-color: #222222;
+    color: #98e8c1;
+    background-color: #3d1a78;
     border-radius: 0.5em;
     padding-left: 1em;
     padding-right: 1em;
@@ -78,8 +76,8 @@ body{
 #navbarWebsiteName{
     padding-left: 1em;
     padding-right: 1em;
-    color: #b299fa;
-    background-color: #222222;
+    color: #98e8c1;
+    background-color: #3d1a78;
     border-radius: 10px;
 }
 #navbarWebsiteName::before{
@@ -91,29 +89,29 @@ body{
 .page-title {
     margin-top: 7em;
     padding-left: 2em;
-    color: #b299fa;
+    color: #98e8c1;
 }
 .content {
-    background: #9883e5 ; /* Adjusted color */
+    background: #26ceaa ; /* Adjusted color */
     padding: 2em;
     text-align: center;
     justify-content: center;
-    box-shadow: 0em 0em  1.5em  #512f94  inset;
-    border-bottom: 6px inset #512f94;
-    border-top: 6px outset #b299fa;
-    border-left: 6px outset #b299fa;
-    border-right: 6px inset #512f94;
+    box-shadow: 0em 0em  1.5em  #5049cc  inset;
+    border-bottom: 6px inset #5049cc;
+    border-top: 6px outset #98e8c1;
+    border-left: 6px outset #98e8c1;
+    border-right: 6px inset #5049cc;
 }
 /*Playlist cards*/
 .playlist {
     padding: 2em;
-    background: #b299fa; /* Adjusted color */
+    background: #98e8c1; /* Adjusted color */
     border-radius: 2em;
     text-align: center;
-    border-bottom: 6px inset #e7e0ff;
-    border-top: 6px outset #9883e5;
-    border-left: 6px outset #9883e5;
-    border-right: 6px inset #e7e0ff;
+    border-bottom: 6px inset #ffffff;
+    border-top: 6px outset #26ceaa;
+    border-left: 6px outset #26ceaa;
+    border-right: 6px inset #ffffff;
 
 }
 .playlist-container {
@@ -124,38 +122,29 @@ body{
 
 }
 .playlist:hover{
-    background: #512f9488;
-    border-bottom: 6px inset #b299fa;
-    border-top: 6px outset #512f94;
-    border-left: 6px outset #512f94;
-    border-right: 6px inset #b299fa;
+    background: #5049cc88;
+    border-bottom: 6px inset #98e8c1;
+    border-top: 6px outset #5049cc;
+    border-left: 6px outset #5049cc;
+    border-right: 6px inset #98e8c1;
 }
 .tag {
     padding: 0.25em;
-    background: #e7e0ff; /* Adjusted color */
+    background: #ffffff; /* Adjusted color */
     border-radius: 0.5em;
     text-align: center;
 }
 /*Indiviual Playlist page*/
-.horizontal-double-content{
-    padding: 2em;
-    text-align: center;
-    justify-content: center;
-}
 .playlist-icon {
     border-style: solid;
     background: #ffffff; /* Adjusted color */
-    border-bottom: 6px inset #9883e5;
-    border-top: 6px outset #e7e0ff;
-    border-left: 6px outset #e7e0ff;
-    border-right: 6px inset #9883e5;
+    border-bottom: 6px inset #26ceaa;
+    border-top: 6px outset #ffffff;
+    border-left: 6px outset #ffffff;
+    border-right: 6px inset #26ceaa;
     border-radius: 1em;
     text-align: center;
-}
-.playlist-img {
-    max-width: 10em;
-    max-height: 10em;
-    border-radius: 1em;
+    padding: 2em;
 }
 
 .playlist-name{
@@ -169,29 +158,29 @@ body{
 .songlst{
     padding: 1em;
     border-radius: 0.2em;
-    background-color: #512f94;;
-    border-bottom: 6px inset #512f94;
-    border-top: 6px outset #b299fa;
-    border-left: 6px outset #b299fa;
-    border-right: 6px inset #512f94;
+    background-color: #5049cc;;
+    border-bottom: 6px inset #5049cc;
+    border-top: 6px outset #98e8c1;
+    border-left: 6px outset #98e8c1;
+    border-right: 6px inset #5049cc;
 }
 .song-icon{
     
     padding-top: 1em;
     padding-bottom: 1em;
     border-style: solid;
-    background: #e7e0ff; /* Adjusted color */
-    border-bottom: 6px inset #9883e5;
-    border-top: 6px outset #e7e0ff;
-    border-left: 6px outset #e7e0ff;
-    border-right: 6px inset #9883e5;
+    background: #ffffff; /* Adjusted color */
+    border-bottom: 6px inset #26ceaa;
+    border-top: 6px outset #ffffff;
+    border-left: 6px outset #ffffff;
+    border-right: 6px inset #26ceaa;
     border-radius: 1em;
     text-align: center;
 
     
 }
 .song-title{
-    color: #222222;
+    color: #3d1a78;
     padding:0.5em;
 }
 .song{
@@ -210,11 +199,11 @@ body{
     padding-top: 1em;
     padding-bottom: 1em;
     border-style: solid;
-    background: #e7e0ff; /* Adjusted color */
-    border-bottom: 6px inset #9883e5;
-    border-top: 6px outset #e7e0ff;
-    border-left: 6px outset #e7e0ff;
-    border-right: 6px inset #9883e5;
+    background: #ffffff; /* Adjusted color */
+    border-bottom: 6px inset #26ceaa;
+    border-top: 6px outset #ffffff;
+    border-left: 6px outset #ffffff;
+    border-right: 6px inset #26ceaa;
     border-radius: 1em;
     text-align: center;
 }
@@ -226,30 +215,30 @@ body{
     border-radius: 2em;
 }
 .newcomment{
-    background-color: #9883e5;
+    background-color: #26ceaa;
     border-radius: 2em;
-    border-bottom: 6px inset #9883e5;
-    border-top: 6px outset #e7e0ff;
-    border-left: 6px outset #e7e0ff;
-    border-right: 6px inset #9883e5;
+    border-bottom: 6px inset #26ceaa;
+    border-top: 6px outset #ffffff;
+    border-left: 6px outset #ffffff;
+    border-right: 6px inset #26ceaa;
 }
 .newcomment:hover{
-    color:#e7e0ff;
-    background-color: #512f94;
+    color:#ffffff;
+    background-color: #5049cc;
     border-radius: 2em;
-    border-bottom: 6px inset #e7e0ff;
-    border-top: 6px inset #512f94;
-    border-left: 6px inset #512f94;
-    border-right: 6px inset #e7e0ff;
+    border-bottom: 6px inset #ffffff;
+    border-top: 6px inset #5049cc;
+    border-left: 6px inset #5049cc;
+    border-right: 6px inset #ffffff;
 }
 .commentlst{
     padding: 1em;
-    background-color: #512f94;
+    background-color: #5049cc;
     border-radius: 0.2em;
-    border-bottom: 6px inset #512f94;
-    border-top: 6px outset #b299fa;
-    border-left: 6px outset #b299fa;
-    border-right: 6px inset #512f94;
+    border-bottom: 6px inset #5049cc;
+    border-top: 6px outset #98e8c1;
+    border-left: 6px outset #98e8c1;
+    border-right: 6px inset #5049cc;
 
 }
 .comment{
@@ -263,14 +252,14 @@ body{
     margin: 0.5em;
 }
 button .commentblock:hover{
-    background-color: #512f9489;
+    background-color: #5049cc89;
     border-radius: 1em;
 }
 .horizontal-double-content{
     padding: 2em; 
 }
 #comment-create-box{
-    background-color: #b299fa;
+    background-color: #98e8c1;
     position: fixed;
     top: 50%;
     left: 50%;
@@ -293,21 +282,21 @@ button .commentblock:hover{
 }
 .star-button:hover{
     padding: .6em .4em;
-    background-color: #222222;
+    background-color: #3d1a78;
     border-radius: 3em;
 
 }
 .star-button-selected{
     padding: .6em .4em;
     border-style: none;
-    background-color: #222222;
+    background-color: #3d1a78;
     border-radius: 3em;
 }
 .star-button-selected:hover{
     padding: .6em .4em;
-    background-color: #222222;
+    background-color: #3d1a78;
     border-radius: 3em;
-    background-image: radial-gradient(circle, #222222, #222222 50%, #9883e5 75%);;
+    background-image: radial-gradient(circle, #3d1a78, #3d1a78 50%, #26ceaa 75%);;
 
 }
 
@@ -316,17 +305,17 @@ button .commentblock:hover{
     margin: .1em -0.3em;
     position: relative;
     display: block;
-    color: #e7e0ff;
+    color: #ffffff;
     width: 0px;
     height: 0px;
     border-right: 1em solid transparent;
-    border-bottom: .7em solid #e7e0ff;
+    border-bottom: .7em solid #ffffff;
     border-left: 1em solid transparent;
     transform: rotate(35deg);
     border-radius: 3em;
   }
   .stars:before {
-    border-bottom: .8em solid #e7e0ff;
+    border-bottom: .8em solid #ffffff;
     border-left: .3em solid transparent;
     border-right: 0.3em solid transparent;
     position: absolute;
@@ -342,13 +331,13 @@ button .commentblock:hover{
   .stars:after {
     position: absolute;
     display: block;
-    color: #e7e0ff;
+    color: #ffffff;
     top: .03em;
     left: -1.05em;
     width: 0px;
     height: 0px;
     border-right: 1em solid transparent;
-    border-bottom: .70em solid #e7e0ff;
+    border-bottom: .70em solid #ffffff;
     border-left: 1em solid transparent;
     transform: rotate(-70deg);
     content: '';
@@ -358,17 +347,17 @@ button .commentblock:hover{
     margin: .1em -0.3em;
     position: relative;
     display: block;
-    color: #512f94;
+    color: #5049cc;
     width: 0px;
     height: 0px;
     border-right: 1em solid transparent;
-    border-bottom: .7em solid #512f94;
+    border-bottom: .7em solid #5049cc;
     border-left: 1em solid transparent;
     transform: rotate(35deg);
     border-radius: 3em;
   }
   .stars-filled:before {
-    border-bottom: .8em solid #512f94;
+    border-bottom: .8em solid #5049cc;
     border-left: .3em solid transparent;
     border-right: 0.3em solid transparent;
     position: absolute;
@@ -384,13 +373,13 @@ button .commentblock:hover{
   .stars-filled:after {
     position: absolute;
     display: block;
-    color: #512f94;
+    color: #5049cc;
     top: .03em;
     left: -1.05em;
     width: 0px;
     height: 0px;
     border-right: 1em solid transparent;
-    border-bottom: .70em solid #512f94;
+    border-bottom: .70em solid #5049cc;
     border-left: 1em solid transparent;
     transform: rotate(-70deg);
     content: '';
@@ -400,60 +389,50 @@ button .commentblock:hover{
 
 .add-song{
  
-    background-color: #9883e5;
+    background-color: #26ceaa;
     border-radius: 2em;
-    border-bottom: 6px inset #9883e5;
-    border-top: 6px outset #e7e0ff;
-    border-left: 6px outset #e7e0ff;
-    border-right: 6px inset #9883e5;
+    border-bottom: 6px inset #26ceaa;
+    border-top: 6px outset #ffffff;
+    border-left: 6px outset #ffffff;
+    border-right: 6px inset #26ceaa;
     
 }
 .add-song:hover{
-    color:#e7e0ff;
-    background-color: #512f9488;
+    color:#ffffff;
+    background-color: #5049cc88;
     border-radius: 2em;
-    border-bottom: 6px inset #9883e5;
-    border-top: 6px inset #512f94;
-    border-left: 6px inset #512f94;
-    border-right: 6px inset #9883e5;
+    border-bottom: 6px inset #26ceaa;
+    border-top: 6px inset #5049cc;
+    border-left: 6px inset #5049cc;
+    border-right: 6px inset #26ceaa;
 }
 
 .pure-menu-children{
     background-color: #00000000;
 }
 .pure-button{
-    color: #512f94;
+    color: #5049cc;
     margin: 1em;
-    background-color: #9883e5;
+    background-color: #26ceaa;
     border-radius: 2em;
-    border-bottom: 6px inset #9883e5;
-    border-top: 6px outset #e7e0ff;
-    border-left: 6px outset #e7e0ff;
-    border-right: 6px inset #9883e5;
+    border-bottom: 6px inset #26ceaa;
+    border-top: 6px outset #ffffff;
+    border-left: 6px outset #ffffff;
+    border-right: 6px inset #26ceaa;
 }
 .pure-button:hover{
-    color:#e7e0ff;
-    background-color: #512f94;
+    color:#ffffff;
+    background-color: #5049cc;
     border-radius: 2em;
-    border-bottom: 6px inset #e7e0ff;
-    border-top: 6px inset #512f94;
-    border-left: 6px inset #512f94;
-    border-right: 6px inset #e7e0ff;
-}
-.pure-button-disabled{
-    color:#e7e0ff;
-    background-color: #512f94;
-    border-radius: 2em;
-    border-bottom: 6px inset #e7e0ff;
-    border-top: 6px inset #512f94;
-    border-left: 6px inset #512f94;
-    border-right: 6px inset #e7e0ff;
+    border-bottom: 6px inset #ffffff;
+    border-top: 6px inset #5049cc;
+    border-left: 6px inset #5049cc;
+    border-right: 6px inset #ffffff;
 }
 .song-info-feild{
     padding: 1em;
     margin: 1em;
 }
-
 
   /*  -- TABLET (AND UP) MEDIA QUERIES -- */
  @media (min-width: 40em) {

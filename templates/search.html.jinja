@@ -7,19 +7,59 @@
 <div class="pure-menu pure-menu-horizontal">
     <ul class="pure-menu-list">
         <li class="pure-menu-item">
-            <a href="#" class="pure-menu-link tab">Playlist Name</a>
+            <a href="#" id="playlistNameBtn" class="pure-menu-link tab">Playlist Name</a>
         </li>
         <li class="pure-menu-item">
-            <a href="#" class="pure-menu-link tab">Tags</a>
+            <a href="#" id="tagsBtn" class="pure-menu-link tab">Tags</a>
         </li>
+        {% if user_id %}
         <li class="pure-menu-item">
-            <a href="#" class="pure-menu-link tab">Recently Played</a>
+            <a href="#" id="savedPlaylistsBtn" class="pure-menu-link tab">Saved Playlists</a>
         </li>
+        {% endif %}
     </ul>
 </div>
 <div class="pure-g">
     {% for playlist in playlists %}
-        {% include "playlistcard.html.jinja" ignore missing with context %}
+    {% include "playlistcard.html.jinja" ignore missing with context %}
     {% endfor %}
 </div>
+<script src="{{ url_for('static', filename='playlistCard.js') }}"></script>
+<script>
+    const user_id = "{{ user_id }}";
+    document.addEventListener("DOMContentLoaded", function () {
+        const playlistNameBtn = document.getElementById("playlistNameBtn");
+        const tagsBtn = document.getElementById("tagsBtn");
+        const savedPlaylistsBtn = document.getElementById("savedPlaylistsBtn");
+        // Sets default tab & info
+        setActiveButton(playlistNameBtn);
+        createPlaylistCard(nameResults, user_id);
+
+        playlistNameBtn.addEventListener("click", function () {
+            setActiveButton(playlistNameBtn);
+            createPlaylistCard(nameResults, user_id);
+        });
+        tagsBtn.addEventListener("click", function () {
+            setActiveButton(tagsBtn);
+            createPlaylistCard(tagResults, user_id);
+        });
+        {% if user_id %}
+        savedPlaylistsBtn.addEventListener("click", function () {
+            setActiveButton(savedPlaylistsBtn);
+            createPlaylistCard(savedResults, user_id);
+        });
+        {% endif %}
+
+        function setActiveButton(activeButton) {
+            const buttons = [playlistNameBtn, tagsBtn, savedPlaylistsBtn];
+            buttons.forEach(button => {
+                if (button === activeButton) {
+                    button.style.backgroundColor = "white";
+                } else {
+                    button.style.backgroundColor = ""; // Reset to original color
+                }
+            });
+        }
+    });
+</script>
 {% endblock %}
