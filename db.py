@@ -543,8 +543,8 @@ def insert_song(name, artist, album, genre, duration):
 def insertSong(name, artist, album, genre, duration):
   if (get_song_id(name, artist, album, genre, duration) == None):
     with get_db_cursor(True) as cursor:
-    cursor.execute("INSERT INTO mixtape_fm_songs (name, artist, album, genre, duration) VALUES (%s, %s, %s, %s, %s);", \
-    (name, artist, album, genre, duration))
+      cursor.execute("INSERT INTO mixtape_fm_songs (name, artist, album, genre, duration) VALUES (%s, %s, %s, %s, %s);", \
+      (name, artist, album, genre, duration))
     s_id = get_song_id(name, artist, album, genre, duration)
     return s_id[0]
 
