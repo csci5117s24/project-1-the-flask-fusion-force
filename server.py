@@ -126,7 +126,7 @@ def settings():
 def library():
     print(session.get('user'))
     #print(db.get_user_playlists(0))
-    return render_template('user_library.html.jinja', user_session=session.get('user'), user_id=session.get('user_id'))
+    return render_template('user_library.html.jinja',playlists=[[{'image':'image goes here','name':'playlist name goes here','rating':'rating goes here','tags':['tag1','tag2','tag3']}],[],[]], user_session=session.get('user'), user_id=session.get('user_id'))
 
 @app.route('/edit-playlist/<int:p_id>', methods=['POST','GET'])
 @app.route('/edit-playlist', methods=['POST','GET'])  # Incase user is making a completey new playlist
