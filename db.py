@@ -90,8 +90,12 @@ def getPlaylistSongId(playlist_id, song_id):
 
 def get_song_id(name, artist, album, genre, duration):
   with get_db_cursor(True) as cursor:
-    cursor.execute("SELECT song_id FROM mixtape_fm_songs WHERE name=%s AND artist=%s AND album=%s AND genre=%s AND duration=%s;", \
-    (name, artist, album, genre, duration))
+    if (genre == None):
+      cursor.execute("SELECT song_id FROM mixtape_fm_songs WHERE name=%s AND artist=%s AND album=%s AND duration=%s;", \
+      (name, artist, album, duration))
+    else:
+      cursor.execute("SELECT song_id FROM mixtape_fm_songs WHERE name=%s AND artist=%s AND album=%s AND genre=%s AND duration=%s;", \
+      (name, artist, album, genre, duration))
     return cursor.fetchone()
 
 def get_comment(commenter_id, playlist_id):
@@ -177,38 +181,90 @@ def get_playlist_from_playlist_id(playlist_id):
     cursor.execute("SELECT * FROM mixtape_fm_playlists WHERE playlist_id = %s;", (playlist_id, ))
     return cursor.fetchone()
 
+def get_playlists_from_tag_id_results(tag_id_results):
+  playlists = []
+  if (tag_id_results):
+    for tag_id_result in tag_id_results:
+      if (tag_id_result):
+        playlist_id = get_playlist_id_from_tag_id(tag_id_result[0])
+        if (playlist_id):
+          playlists.append(playlist_id[0])
+  return get_playlists_from_results(playlists)
+
+# TODO
+# def get_if_saved(playlist_result):
+#   with get_db_cursor(True) as cursor:
+#     cursor.execute("SELECT * FROM mixtape_fm_playlists WHERE playlist_id")
+
+# TODO
+# def get_playlists_from_saved_results(playlist_results):
+#   saved_results = []
+#   if (playlist_results):
+#     for playlist_result in playlist_results:
+#       saved_result = get_if_saved(playlist_result)
+#       if (saved_result != None and saved_result != []):
+#         saved_results.append(saved_result)
+#   return get_playlists_from_results(saved_results)
+
+
 # TODO: Create search keyword matching, using sql operators 'like' and 'ilike'
 ## Make a function compiling results from searching for songs in db and playlists, tags preferable
-def search(search_word):
+def search(user_id, search_word):
   ret_dict = {}
+  ret_dict['name_results'] = []
+  ret_dict['tag_results'] = []
+  ret_dict['saved_results'] = []
+  print(search_word)
   if (search_word == None or search_word == ''):
     return ret_dict
   playlist_results = []
-  tag_results = []
-  tag_ids = []
-  playlist_ids = []
+  tag_id_results = []
   for variation in range(1, 7):
-    # playlist_results = playlist_results + playlist_search(variation, search_word)
-    p_s_results = playlist_search(variation, search_word)
-    for result in p_s_results:
-      tags = []
-      db_tag_ids = get_tag_ids_from_playlist_id(result[0])
-      for db_tag_id in db_tag_ids:
-        db_tag = get_tag_from_id(db_tag_id[0])
-        tags.append(db_tag[0])
-      avg_rating = getRatingAvg(result[0])
-      playlist_results.append({'image': result[4],'name': result[2],'rating': avg_rating[0],'tags': tags})
-    tag_ids = tag_ids + tag_id_search(variation, search_word) # Need to get tag_ids
-  for tag_id in tag_ids:
-    p_t_id = get_playlist_id_from_tag_id(tag_id)
-    playlist_ids.append(p_t_id[0]) # Need to get playlist_ids corresponding to tag_ids
-  for playlist_id in playlist_ids:
-    db_playlist = get_playlist_from_playlist_id(playlist_id)
-    tag_results.append(db_playlist[0])
-    # tag_results = tag_results +  get_playlist_from_playlist_id(playlist_id) # Finally, need to get playlists based on initial tag search word
-  ret_dict["playlist_results"] = playlist_results
-  ret_dict["tag_results"] = tag_results
+    playlist_results = playlist_results + playlist_search(variation, search_word)
+    tag_id_results = tag_id_results + tag_id_search(variation, search_word)
+  name_results = get_playlists_from_results(playlist_results)
+  tag_results = get_playlists_from_tag_id_results(tag_id_results)
+  if (user_id != None):
+    saved_results = get_saved_playlists(user_id)
+  else:
+    saved_results = []
+  # saved_results = get_playlists_from_saved_results(playlist_results)
+  ret_dict['name_results'] = name_results
+  ret_dict['tag_results'] = tag_results
+  ret_dict['saved_results'] = saved_results
   return ret_dict
+
+
+# def search(search_word):
+#   ret_dict = {}
+#   if (search_word == None or search_word == ''):
+#     return ret_dict
+#   playlist_results = []
+#   tag_results = []
+#   tag_ids = []
+#   playlist_ids = []
+#   for variation in range(1, 7):
+#     # playlist_results = playlist_results + playlist_search(variation, search_word)
+#     p_s_results = playlist_search(variation, search_word)
+#     for result in p_s_results:
+#       tags = []
+#       db_tag_ids = get_tag_ids_from_playlist_id(result[0])
+#       for db_tag_id in db_tag_ids:
+#         db_tag = get_tag_from_id(db_tag_id[0])
+#         tags.append(db_tag[0])
+#       avg_rating = getRatingAvg(result[0])
+#       playlist_results.append({'image': result[4],'name': result[2],'rating': avg_rating[0],'tags': tags})
+#     tag_ids = tag_ids + tag_id_search(variation, search_word) # Need to get tag_ids
+#   for tag_id in tag_ids:
+#     p_t_id = get_playlist_id_from_tag_id(tag_id)
+#     playlist_ids.append(p_t_id[0]) # Need to get playlist_ids corresponding to tag_ids
+#   for playlist_id in playlist_ids:
+#     db_playlist = get_playlist_from_playlist_id(playlist_id)
+#     tag_results.append(db_playlist[0])
+#     # tag_results = tag_results +  get_playlist_from_playlist_id(playlist_id) # Finally, need to get playlists based on initial tag search word
+#   ret_dict["playlist_results"] = playlist_results
+#   ret_dict["tag_results"] = tag_results
+#   return ret_dict
 
 ## HELPER FUNCTION TO GET TAGS FOR PLAYLSITS
 def get_tag_ids_from_playlist_id(playlist_id):
@@ -479,24 +535,38 @@ def insert_playlist(user_id, playlist_name, image):
 def insert_song_into_playlist(playlist_id, song_id, position):
   with get_db_cursor(True) as cursor:
     cursor.execute("INSERT INTO mixtape_fm_playlist_songs (playlist_id, song_id, position) VALUES (%s, %s, %s);", (playlist_id, song_id, position))
-    p_s_id = get_playlist_song_id(playlist_id, song_id)
-    return p_s_id[0]
+  p_s_id = get_playlist_song_id(playlist_id, song_id)
+  return p_s_id[0]
 
 def insert_song(name, artist, album, genre, duration):
+  if (name == None or artist == None or album == None or duration == None):
+    print("Invalid parameters:")
+    print("  name= " + str(name))
+    print("  artist= " + str(artist))
+    print("  album= " + str(album))
+    print("  duration= " + str(duration))
+    return None
   if (get_song_id(name, artist, album, genre, duration) == None):
     with get_db_cursor(True) as cursor:
       cursor.execute("INSERT INTO mixtape_fm_songs (name, artist, album, genre, duration) VALUES (%s, %s, %s, %s, %s);", \
       (name, artist, album, genre, duration))
-    s_id = get_song_id(name, artist, album, genre, duration)
-    return s_id[0]
+  s_id = get_song_id(name, artist, album, genre, duration)
+  return s_id[0]
 
 def insertSong(name, artist, album, genre, duration):
+  if (name == None or artist == None or album == None or duration == None):
+    print("Invalid parameters:")
+    print("  name= " + str(name))
+    print("  artist= " + str(artist))
+    print("  album= " + str(album))
+    print("  duration= " + str(duration))
+    return None
   if (get_song_id(name, artist, album, genre, duration) == None):
     with get_db_cursor(True) as cursor:
       cursor.execute("INSERT INTO mixtape_fm_songs (name, artist, album, genre, duration) VALUES (%s, %s, %s, %s, %s);", \
       (name, artist, album, genre, duration))
-      s_id = get_song_id(name, artist, album, genre, duration)
-      return s_id[0]
+  s_id = get_song_id(name, artist, album, genre, duration)
+  return s_id[0]
 
 # def insert_new_user(user_id):
 #   with get_db_cursor(True) as cursor:
@@ -740,4 +810,14 @@ def getSavedPlaylists(user_id):
   playlists = get_playlists_from_results(playlist_results)
   return playlists
   # return jsonify(playlists)
+
+def unsavePlaylist(user_id, playlist_id):
+  if (user_id == None or playlist_id == None):
+    print("Invalid parameters:")
+    print("  user_id= " + str(user_id))
+    print("  playlist_id= " + str(playlist_id))
+    return
+  with get_db_cursor(True) as cursor:
+    cursor.execute("DELETE FROM mixtape_fm_playlists_saved WHERE playlist_id=%s AND user_id=%s;", (playlist_id, user_id))
+  return
   

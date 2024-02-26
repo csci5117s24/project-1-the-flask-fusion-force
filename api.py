@@ -37,7 +37,7 @@ def unsave_playlist():
         json = request.get_json()
         user_id = json['userID']
         playlist_id = json['playlistID']
-        #return wrapDBFunc(lambda: db.unsavePlaylist(user_id, playlist_id))
+        return wrapDBFunc(lambda: db.unsavePlaylist(user_id, playlist_id))
     return wrapReqChecking(f)
 
 @app.route("/playlist/unsave", methods=['POST'])

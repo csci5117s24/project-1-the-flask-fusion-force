@@ -112,8 +112,13 @@ def spotify_search():
 @app.route('/search', methods=['POST','GET'])
 def search():
     searchtext = request.form.get("SerchBar")
-    #print(db.search(searchtext))
-    return render_template('search.html.jinja',user_session = session.get('user'), playlists = [{'image':'image goes here','name':'playlist name goes here','rating':'rating goes here','tags':['tag1','tag2','tag3']}])
+    print("searchtext= " + str(searchtext))
+    if (session.get('user_id') != None):
+      searchResults = db.search(session['user_id'], searchtext)
+    else:
+      searchResults = db.search(None, searchtext)
+    print(searchResults)
+    return render_template('search.html.jinja',user_session = session.get('user'), playlists = [searchResults['name_results'], searchResults['tag_results'], searchResults['saved_results']])
 @app.route('/playlist/<int:p_id>', methods=['POST','GET'])
 def playlist(p_id):
     return render_template('playlist.html.jinja', playlist_id=p_id,user_session = session.get('user'), user_id=session.get('user_id'), songs= ["Minnesota March","Minnesota Rouser"],comments= ["Lovely","good vibes"])
@@ -128,7 +133,7 @@ def settings():
 def library():
     print(session.get('user'))
     #print(db.get_user_playlists(0))
-    return render_template('user_library.html.jinja', user_session=session.get('user'), user_id=session.get('user_id'))
+    return render_template('user_library.html.jinja',playlists=[[{'image':'image goes here','name':'playlist name goes here','rating':'rating goes here','tags':['tag1','tag2','tag3']}],[],[]], user_session=session.get('user'), user_id=session.get('user_id'))
 
 @app.route('/edit-playlist/<int:p_id>', methods=['POST','GET'])
 @app.route('/edit-playlist', methods=['POST','GET'])  # Incase user is making a completey new playlist
