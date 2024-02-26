@@ -372,6 +372,8 @@ def getUserPlaylists(user_id):
     return []
     # return jsonify([])
   db_playlists = get_user_playlists(user_id)
+  print("getUserPlaylists")
+  print(db_playlists)
   if (db_playlists == []):
     return []
     # return jsonify([])
@@ -485,8 +487,8 @@ def insert_song(name, artist, album, genre, duration):
     with get_db_cursor(True) as cursor:
       cursor.execute("INSERT INTO mixtape_fm_songs (name, artist, album, genre, duration) VALUES (%s, %s, %s, %s, %s);", \
       (name, artist, album, genre, duration))
-      s_id = get_song_id(name, artist, album, genre, duration)
-      return s_id[0]
+    s_id = get_song_id(name, artist, album, genre, duration)
+    return s_id[0]
 
 def insertSong(name, artist, album, genre, duration):
   if (get_song_id(name, artist, album, genre, duration) == None):

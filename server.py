@@ -33,10 +33,11 @@ def homepage():
     #print(db.get_top_playlists()) 
     playlists = []
     print('\nsession\n')
-    print(session)
     if (session.get('user_id') != None):
+      print("IN IF")
       playlists = db.getUserPlaylists(session['user_id'])
     else:
+      print("ELSE")
       playlists = db.getRandomPlaylists(10)
     print('\n\nPLAYLISTS\n')
     print(playlists)
@@ -80,10 +81,10 @@ def spotify_callback():
     # Makes it so the database won't add a duplicate playlist
     if playlist.get('name') not in db_playlist_names:
         print(playlist.get('name'))
-        db.insert_playlist(session['user_id'], playlist.get('name'))
+        db.insert_playlist(session['user_id'], playlist.get('name'), playlist.get('image'))
 
-#   for playlist_id in playlist_ids:
-#     spotify.get_songs_from_playlist(session["spotify"].get("access_token"), playlist_id)
+  for playlist_id in playlist_ids:
+    spotify.get_songs_from_playlist(session["spotify"].get("access_token"), playlist_id)
 #   playlist = [{'image': 'https://mosaic.scdn.co/640/ab67616d0000b2732887f8c05b5a9f1cb105be29ab67616d0000b273c4e6adea69105e6b6e214b96ab67616d0000b273d81a092eb373ded457d94eecab67616d0000b273e6d6d392a66a7f9172fe57c8',
 #               'name': 'Nebraska',
 #               'rating': 0}]
