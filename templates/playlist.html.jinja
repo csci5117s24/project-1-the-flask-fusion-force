@@ -10,13 +10,16 @@
     <div class="pure-u-6-12">
         <div class="pure-g">
             <div class="pure-u-1-6 small-playlist-icon">
-                Playlist icon
+                {# {% playlist.image %} #}
+                Picture of Playlist
             </div>
             <div class="pure-u-1-6 user-icon">
-                User icon
+                {# {% playlist.user_image %} #}
+                User's PFP
             </div>
             <div class="pure-u-3-6" style="padding: 2em 0.5em;">
-                Name of playlist
+                {# {% playlist.playlist_name %} #}
+                Name of Playlist
                 <div style="padding: 0.5em 1em;">
                     <button id="star1" class="star-button star-button-selected" onclick="addrating(1)">
                         <div class="stars-filled"></div>
@@ -70,11 +73,13 @@
         </div>
     </div>
 </div>
+{# JS handles the submission of these:  #}
 <div id="comment-create-box" style="display: none;">
-    <form class="pure-form pure-form-stacked">
+    <form id="comment-form" class="pure-form pure-form-stacked" onsubmit="toggleComment('comment-create-box')">
         <fieldset>
             <legend>Leave a comment</legend>
-            <textarea rows="4" cols="100" class="pure-input-1" placeholder="Write something"></textarea>
+            <textarea id="comment-text" rows="4" cols="100" class="pure-input-1" placeholder="Write something" minlength="1"></textarea>
+            <button type="submit" class="pure-button pure-button-primary">Cancel</button>
             <button type="submit" class="pure-button pure-button-primary">Post</button>
         </fieldset>
     </form>
@@ -82,6 +87,8 @@
 
 
 <script>
+    const userID = "{{ user_id }}"; 
+    var playlistID = "{{ playlist_id }}"; 
     var starButtons = document.querySelectorAll('.star-button');
     // spotify_connected=session['spotify'] is not None -> user not logged into spotify
     // if user_id is None -> user not logged into our site
@@ -103,19 +110,13 @@
         });
     }
     function addRating(stars) {
-        var userID = "{{ user_id }}"; 
-        if(userID===null){  // user not signed in ?
+        if (userID === undefined) {  // user not signed in ?
             return;
         }
-        var playlistID = "{{ playlist_id }}"; 
         var xhr = new XMLHttpRequest();
         xhr.open("POST", "/ratePlaylist", true);
-        xhr.setRequestHeader("Content-Type", "application/json");
-        var requestBody = JSON.stringify({
-            user_id: userID,
-            playlist_id: playlistID,
-            stars: stars
-        });
+        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded"); // Change content type
+        var requestBody = `user_id=${encodeURIComponent(userID)}&playlist_id=${encodeURIComponent(playlistID)}&stars=${encodeURIComponent(stars)}`; // Construct query parameters
         xhr.onreadystatechange = function () {
             if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
                 console.log(xhr.responseText);
@@ -125,11 +126,20 @@
     }
 
     function savePlaylist() {
-        console.log('User saved this playlist.');
-        // Save playlist for user:
-        var userID = "{{ user_id }}"; 
-        var playlistID = "{{ playlist_id }}"; 
-        // savePlaylist(userID, playlistID);
+        console.log('User saving this playlist...');
+        if (userID === undefined) {  // user not signed in ?
+            return;
+        }
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", "/savePlaylist", true);
+        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded"); // Change content type
+        var requestBody = `user_id=${encodeURIComponent(userID)}&playlist_id=${encodeURIComponent(playlistID)}`; // Construct query parameters
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+                console.log(xhr.responseText);
+            }
+        };
+        xhr.send(requestBody);
     }
 
     function toggleComment(id) {
@@ -140,5 +150,28 @@
             x.style.display = "none";
         }
     }
+
+    // Handle comment submissions:
+    document.addEventListener("DOMContentLoaded", function () {
+        const commentForm = document.getElementById("comment-form");
+        commentForm.addEventListener("submit", function (event) {
+            event.preventDefault(); // Prevent default form submission behavior
+            const commentText = document.getElementById("comment-text").value;
+            // Construct query parameters directly in the URL
+            const url = `/playlist/${encodeURIComponent(playlistId)}/addComment?userID=${encodeURIComponent(userId)}&commentText=${encodeURIComponent(commentText)}`;
+            
+            // POST to backend
+            const xhr = new XMLHttpRequest();
+            xhr.open("POST", url, true);
+            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded"); // Change content type
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    console.log("Comment added successfully");
+                }
+            };
+            xhr.send();
+        });
+    });
+
 </script>
 {% endblock %}

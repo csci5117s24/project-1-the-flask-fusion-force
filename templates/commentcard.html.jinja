@@ -1,10 +1,13 @@
-
-<!-- What an idiviual comment looks like on the comment page-->
 <div class="pure-g commentblock">
-    <div class="pure-u-1-5 user-icon ">
-        users icon
+    <div class="pure-u-1-5 user-icon">
+        {% if comment.commenterPFP %}
+            <img src="{{ comment.commenterPFP }}" alt="User Icon">
+        {# {% else %}
+            <img src="default_user_icon.jpg" alt="Default User Icon"> #}
+        {% endif %}
+        <p>{{ comment.commenterID }}</p>
     </div>
     <div class="pure-u-3-5 comment">
-        {{comment}}
+        <p>{{ comment.commentText }}</p>
     </div>
 </div>
