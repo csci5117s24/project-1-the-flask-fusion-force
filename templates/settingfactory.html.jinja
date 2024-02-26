@@ -25,7 +25,7 @@
 {% elif type[0]== "button" %}
 
     {% if type[1][2]%}
-    <button class = "pure-button-disabled pure-button" type="submit" formaction = {{type[1][0]}} formmettod = {{type[1][1]}}>{{settingName}}</button>
+    <button class = "pure-button-disabled" type="submit" formaction = {{type[1][0]}} formmettod = {{type[1][1]}}>{{settingName}}</button>
     {% else %}
      <button class = "pure-button" type="submit" formaction = {{type[1][0]}} formmettod = {{type[1][1]}}>{{settingName}}</button>
     {% endif %}

@@ -97,7 +97,7 @@ def spotify_search():
 @app.route('/search', methods=['POST','GET'])
 def search():
     searchtext = request.form.get("SerchBar")
-    print(db.search(searchtext))
+    #print(db.search(searchtext))
     return render_template('search.html.jinja',user_session = session.get('user'), playlists = [{'image':'image goes here','name':'playlist name goes here','rating':'rating goes here','tags':['tag1','tag2','tag3']}])
 @app.route('/playlist/<int:p_id>', methods=['POST','GET'])
 def playlist(p_id):
@@ -106,7 +106,7 @@ def playlist(p_id):
 @auth.require_login
 def settings():
     return render_template('settings.html.jinja', user_id=session.get('user_id'),settings = 
-  {"Login with spotify":["button",["/spotify/login","get",session.get('spotify')]]})
+  {"Import Spotify playlists":["button",["/spotify/login","get",session.get('spotify')]]})
 
 @app.route('/library', methods=['POST','GET'])
 @auth.require_login
