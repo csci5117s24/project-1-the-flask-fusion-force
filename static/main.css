@@ -3,7 +3,7 @@
 #b299fa
 #9883e5
 #512f94
-#2a1f48
+#222222
 */
 /*  -- Change this whenever, but we may want a font theme -- */
 h1 {  
@@ -13,13 +13,13 @@ h1 {
 
 /*Main page*/
 body{
-    background-color: #2a1f48;
+    background-color: #222222;
 }
 .home-menu {
     padding: 0.5em;
-    box-shadow: 2px 2px 2px  #2a1f48;
+    box-shadow: 2px 2px 2px  #222222;
     background: #9883e5;
-    border: 0.07em solid #2a1f48;
+    border: 0.07em solid #222222;
     justify-content: center;
     display: flex;
     flex-wrap: wrap;
@@ -51,25 +51,11 @@ body{
     display: flex;
     flex-wrap: wrap;
 }
-.pure-menu-link::before{
-    content: "";
-  }
-.pure-menu-link::after {
-      content: "";
-  }
+
 .pure-menu-link:hover{
     color: #b299fa;
-    background-color: #2a1f48;
-    border-radius: 0.5em;
-    padding-left: 1em;
-    padding-right: 1em;
+    background-color: #222222;
 }
-.pure-menu-link:hover::before{
-    content: "• ";
-  }
-.pure-menu-link:hover::after {
-      content: " •";
-  }
 .pure-menu-horizontal {
     margin-bottom: 1em;
 }
@@ -77,15 +63,10 @@ body{
     padding-left: 1em;
     padding-right: 1em;
     color: #b299fa;
-    background-color: #2a1f48;
+    background-color: #222222;
     border-radius: 10px;
 }
-#navbarWebsiteName::before{
-  content: "• ";
-}
-#navbarWebsiteName::after {
-    content: " •";
-}
+
 .page-title {
     margin-top: 7em;
     padding-left: 2em;
@@ -149,7 +130,12 @@ body{
     border-right: 6px inset #9883e5;
     border-radius: 1em;
     text-align: center;
-    padding: 2em;
+
+}
+.playlist-img{
+    max-width: 10em;
+    max-height: 10em;
+    border-radius: 0.5em;
 }
 
 .playlist-name{
@@ -185,7 +171,7 @@ body{
     
 }
 .song-title{
-    color: #2a1f48;
+    color: #222222;
     padding:0.5em;
 }
 .song{
@@ -287,21 +273,21 @@ button .commentblock:hover{
 }
 .star-button:hover{
     padding: .6em .4em;
-    background-color: #2a1f48;
+    background-color: #222222;
     border-radius: 3em;
 
 }
 .star-button-selected{
     padding: .6em .4em;
     border-style: none;
-    background-color: #2a1f48;
+    background-color: #222222;
     border-radius: 3em;
 }
 .star-button-selected:hover{
     padding: .6em .4em;
-    background-color: #2a1f48;
+    background-color: #222222;
     border-radius: 3em;
-    background-image: radial-gradient(circle, #2a1f48, #2a1f48 50%, #9883e5 75%);;
+    background-image: radial-gradient(circle, #222222, #222222 50%, #9883e5 75%);;
 
 }
 
