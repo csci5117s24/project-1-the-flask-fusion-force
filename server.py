@@ -6,11 +6,12 @@ from urllib.parse import quote_plus, urlencode
 from flask import Flask, request, render_template, redirect, session, Response, jsonify
 from spotify import get_playlist_info
 
-import auth, db, spotify
+import auth, db, spotify, api
 
 def create_app():
   app = Flask(__name__)
   app.register_blueprint(auth.app)
+  app.register_blueprint(api.app)
 
   # load flask secret key
   ENV_FILE = find_dotenv()
@@ -30,8 +31,19 @@ app = create_app()
 @app.route('/homepage', methods=['GET'])
 def homepage():
     #print(db.get_top_playlists()) 
+    playlists = []
+    print('\nsession\n')
+    print(session)
+    if (session.get('user_id') != None):
+      playlists = db.getUserPlaylists(session['user_id'])
+    else:
+      playlists = db.getTopRatedPlaylists()
+    print('\n\nPLAYLISTS\n')
+    print(playlists)
+    print('\n')
     return render_template('homepage.html.jinja', user_session=session.get('user'), pretty=json.dumps(session.get('user'), indent=4),
-    playlists = [{'image':'image goes here','name':'playlist name goes here','rating':'rating goes here','tags':['tag1','tag2','tag3']}])
+    playlists = playlists)
+    # playlists = [{'image':'image goes here','name':'playlist name goes here','rating':'rating goes here','tags':['tag1','tag2','tag3']}])
 
 @app.route('/spotify/login', methods=['GET'])
 @auth.require_login
