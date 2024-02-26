@@ -51,11 +51,28 @@ def spotify_login():
 def spotify_callback():
   code = request.args.get('code')
   session["spotify"] = spotify.connect_spotify(session['user_id'], code)
-  playlist_info = get_playlist_info(session["spotify"].get("access_token"))
+  playlist_json = get_playlist_info(session["spotify"].get("access_token"))
+  info = []
+  playlist_ids = []
+  for playlist_info in playlist_json.get('items'):
+    info.append({'image': playlist_info.get('images')[0].get('url'), 'name': playlist_info.get('name'), 'rating': 0})
+    playlist_ids.append(playlist_info.get('id'))
+
+  db_playlists = db.getPlaylists(session['user_id'])
+  db_playlist_names = [playlist.get('name') for playlist in db_playlists]
+  print(db_playlist_names)
+
+  for playlist in info:
+    # Makes it so the database won't add a duplicate playlist
+    if playlist.get('name') not in db_playlist_names:
+        db.insert_playlist(session['user_id'], playlist.get('name'))
+
+#   for playlist_id in playlist_ids:
+#     spotify.get_songs_from_playlist(session["spotify"].get("access_token"), playlist_id)
 #   playlist = [{'image': 'https://mosaic.scdn.co/640/ab67616d0000b2732887f8c05b5a9f1cb105be29ab67616d0000b273c4e6adea69105e6b6e214b96ab67616d0000b273d81a092eb373ded457d94eecab67616d0000b273e6d6d392a66a7f9172fe57c8',
 #               'name': 'Nebraska',
 #               'rating': 0}]
-  return render_template('homepage.html.jinja', playlists=playlist_info)
+  return render_template('homepage.html.jinja', playlists=info)
 
 # Call this route like:.../spotify/search?q=baby%20shark
 # The string after "?q=" must be url encoded

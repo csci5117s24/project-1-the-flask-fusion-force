@@ -94,16 +94,16 @@ def get_playlist_info(access_token):
   response = requests.get(url=playlist_url, headers=playlist_headers)
   log_response(response)
   playlist_json = response.json()
-  # print(playlist_json)
-  info = []
-  # for entry in playlist_json:
-  #    print(entry.get("items"))
-  # print(playlist_json.get('items'))
-  for playlist_info in playlist_json.get('items'):
-    # print(playlist_info.get('name'))
-    # print(playlist_info.get('images')[0].get('url'))
-    info.append({'image': playlist_info.get('images')[0].get('url'), 'name': playlist_info.get('name'), 'rating': 0})
-  return info
+  return playlist_json
+
+def get_songs_from_playlist(access_token, playlist_id):
+  playlist_songs_url = f"https://api.spotify.com/v1/playlists/{playlist_id}/tracks"
+  playlist_songs_headers = {'Authorization': 'Bearer ' + access_token}
+  response = requests.get(url=playlist_songs_url, headers=playlist_songs_headers)
+  log_response(response)
+  playlist_songs_json = response.json()
+  print(playlist_songs_json.get('id'))
+
 
 def search_song(access_token, search_string):
   search_url = "https://api.spotify.com/v1/search?type=track&q=" + requests.utils.quote(search_string)
