@@ -417,33 +417,31 @@ def insert_song(name, artist, album, genre, duration):
     with get_db_cursor(True) as cursor:
       cursor.execute("INSERT INTO mixtape_fm_songs (name, artist, album, genre, duration) VALUES (%s, %s, %s, %s, %s);", \
       (name, artist, album, genre, duration))
-      return get_song_id(name, artist, album, genre, duration)
+      s_id = get_song_id(name, artist, album, genre, duration)
+      return s_id[0]
+
+def insertSong(name, artist, album, genre, duration):
+  if (get_song_id(name, artist, album, genre, duration) == None):
+    with get_db_cursor(True) as cursor:
+      cursor.execute("INSERT INTO mixtape_fm_songs (name, artist, album, genre, duration) VALUES (%s, %s, %s, %s, %s);", \
+      (name, artist, album, genre, duration))
+      s_id = get_song_id(name, artist, album, genre, duration)
+      return s_id[0]
 
 # def insert_new_user(user_id):
 #   with get_db_cursor(True) as cursor:
 #     cursor.execute("INSERT INTO mixtape_fm_users (user_id, spotify_linked) VALUES (%s, %s);", (user_id, 'FALSE'))
 #     return
 
-def insertNewComment(commenter_id, playlist_id, stars, content):
-  # if (stars < 1 or stars > 5):
-  #   print("Invalid number of stars in review")
-  #   return None
-  if (get_comment(commenter_id, playlist_id) != []):
-    print("User has already left a review of this playlist")
-    return None
-  with get_db_cursor(True) as cursor:
-    if (stars == '' and content != ''):
-      cursor.execute("INSERT INTO mixtape_fm_comments (comment_user_id, playlist_id, content, timestamp) VALUES (%s, %s, %s, CURRENT_TIMESTAMP);", \
-      (commenter_id, playlist_id, content))
-    elif (content == '' and stars != ''):
-      cursor.execute("INSERT INTO mixtape_fm_comments (comment_user_id, playlist_id, stars, timestamp) VALUES (%s, %s, %s, CURRENT_TIMESTAMP);", \
-      (commenter_id, playlist_id, stars))
-    else:
-      cursor.execute("INSERT INTO mixtape_fm_comments (comment_user_id, playlist_id, stars, content, timestamp) VALUES (%s, %s, %s, %s, CURRENT_TIMESTAMP);", \
-      (commenter_id, playlist_id, stars, content))
 # def insertNewComment(commenter_id, playlist_id, stars, content):
 #   # if (stars < 1 or stars > 5):
 #   #   print("Invalid number of stars in review")
+#   #   return None
+#   if (get_comment(commenter_id, playlist_id) != []):
+#     print("User has already left a review of this playlist")
+#     return None
+#   with get_db_cursor(True) as cursor:
+#     if (stars == '' and content != ''):
 #       cursor.execute("INSERT INTO mixtape_fm_comments (comment_user_id, playlist_id, content, timestamp) VALUES (%s, %s, %s, CURRENT_TIMESTAMP);", \
 #       (commenter_id, playlist_id, content))
 #     elif (content == '' and stars != ''):
@@ -451,14 +449,14 @@ def insertNewComment(commenter_id, playlist_id, stars, content):
 #       (commenter_id, playlist_id, stars))
 #     else:
 #       cursor.execute("INSERT INTO mixtape_fm_comments (comment_user_id, playlist_id, stars, content, timestamp) VALUES (%s, %s, %s, %s, CURRENT_TIMESTAMP);", \
+#       (commenter_id, playlist_id, stars, content))
+#     return get_comment(commenter_id, playlist_id)
 
 def insert_tag(tag_name):
   with get_db_cursor(True) as cursor:
     cursor.execute("INSERT INTO mixtape_fm_tags (tag_name) VALUES (%s);", (tag_name,))
-  tag_ids = get_tag_id(tag_name)
-  if (len(tag_ids) == 1): # shouldn't != 1
-    return tag_ids[0]
-  else: return None
+  t_id = get_tag_id(tag_name)
+  return t_id[0]
 
 def insert_playlist_tag_id(playlist_id, tag_id):
   with get_db_cursor(True) as cursor:
@@ -489,6 +487,92 @@ def addPlaylistToRecent(user_id, playlist_id):
     insertPlaylistRecent(user_id, playlist_id)
   else:
     updatePlaylistRecent(user_id, playlist_id)
+
+def check_ratings(user_id, playlist_id):
+  with get_db_cursor(True) as cursor:
+    cursor.execute("SELECT * FROM mixtape_fm_ratings WHERE rating_user_id=%s, playlist_id=%s;", (user_id, playlist_id))
+    return cursor.fetchall()
+
+def updateRatings(user_id, playlist_id, rating, updating=False):
+  with get_db_cursor(True) as cursor:
+    if (updating):
+      cursor.execute("UPDATE mixtape_fm_ratings SET stars=%s WHERE rating_user_id=%s, playlist_id=%s;", \
+      (rating, user_id, playlist_id))
+    else:
+      cursor.execute("INSERT INTO mixtape_fm_ratings (rating_user_id, playlist_id, stars, timestamp) VALUES (%s, %s, %s, CURRENT_TIMESTAMP);", \
+      (user_id, playlist_id, rating))
+    return
+
+def ratePlaylist(user_id, playlist_id, rating):
+  if (user_id == None or playlist_id == None or rating == None):
+    print("Invalid parameters:")
+    print("  user_id= " + str(user_id))
+    print("  playlist_id= " + str(playlist_id))
+    print("  rating= " + str(rating))
+    return
+  if (rating < 1 or 5 > rating):
+    print("Invalid rating of " + str(rating) + " stars")
+    return
+  if (check_ratings(user_id, playlist_id) != []):
+    updateRatings(user_id, playlist_id, rating, True)
+  else:
+    updateRatings(user_id, playlist_id, rating, False)
+
+def insert_comment(user_id, playlist_id, comment):
+  with get_db_cursor(True) as cursor:
+    cursor.execute("INSERT INTO mixtape_fm_comments (comment_user_id, playlist_id, content, timestamp) VALUES (%s, %s, %s, CURRENT_TIMESTAMP);", \
+    (user_id, playlist_id, comment))
+    return
+
+def addComment(user_id, playlist_id, comment):
+  if (user_id == None or playlist_id == None or comment == None):
+    print("Invalid parameters:")
+    print("  user_id= " + str(user_id))
+    print("  playlist_id= " + str(playlist_id))
+    print("  comment= " + str(comment))
+    return
+  insert_comment(user_id, playlist_id, comment)
+
+def deleteRating(user_id, playlist_id):
+  with get_db_cursor(True) as cursor:
+    cursor.execute("DELETE * FROM mixtape_fm_ratings WHERE rating_user_id=%s, playlist_id=%s;", \
+    (user_id, playlist_id))
+    return
+
+def deleteComment(user_id, playlist_id, comment):
+  with get_db_cursor(True) as cursor:
+    cursor.execute("DELETE FROM mixtape_fm_comments WHERE comment_user_id=%s, playlist_id=%s, content=%s;", \
+    (user_id, playlist_id, comment))
+    return
+
+def deleteComments(user_id, playlist_id):
+  with get_db_cursor(True) as cursor:
+    cursor.execute("DELETE FROM mixtape_fm_comments WHERE comment_user_id=%s, playlist_id=%s;", \
+    (user_id, playlist_id))
+    return
+
+def create_playlist(user_id, playlist_name, image):
+  with get_db_cursor(True) as cursor:
+    cursor.execute("INSERT INTO mixtape_fm_playlists (user_id, playlist_name, creation_date, image) VALUES (%s, %s, CURRENT_TIMESTAMP, %s);",
+    (user_id, playlist_name, image))
+    return
+
+def createPlaylist(user_id, playlist_name, image, song_ids):
+  if (user_id == None or playlist_name == None):
+    print("Invalid parameters")
+    print("  user_id= " + str(user_id))
+    print("  playlist_name= " + str(playlist_name))
+    return None
+  if (check_playlists(user_id, playlist_name) != []):
+    print("Playlist already exists for user_id= %s, playlist_name= %s" % (user_id, playlist_name))
+    return None
+  create_playlist(user_id, playlist_name, image)
+  p_id = get_playlist_id(user_id, playlist_name)
+  playlist_id = p_id[0]
+  position = 0
+  for song_id in song_ids:
+    insert_song_into_playlist(playlist_id, song_id, position)
+    position += 1
   return playlist_id
 
 def delete_song(playlist_id, song_id):
@@ -560,3 +644,29 @@ def addTag(tag_name):
   else:
     add_tag(tag_name)
     return get_tag_id(tag_name)
+
+# POST savePlaylist(userID, playlistID): so we can keep track of the user’s saved playlists
+def savePlaylist(user_id, playlist_id):
+  if (user_id == None or playlist_id == None):
+    print("Invalid parameters:")
+    print("  user_id= " + str(user_id))
+    print("  playlist_id= " + str(playlist_id))
+    return
+  with get_db_cursor(True) as cursor:
+    cursor.execute("INSERT INTO mixtape_fm_playlists_saved (playlist_id, user_id) VALUES (%s, %s);", (playlist_id, user_id))
+    return
+
+def get_saved_playlists(user_id):
+  with get_db_cursor(True) as cursor:
+    cursor.execute("SELECT * FROM mixtape_fm_playlists_saved WHERE user_id = %s;", (user_id, ))
+    return cursor.fetchall()
+
+def getSavedPlaylists(user_id):
+  if (user_id == None):
+    print("Invalid parameter:")
+    print("  user_id= " + str(user_id))
+    return
+  playlist_results = get_saved_playlists(user_id)
+  playlists = get_playlists_from_results(playlist_results)
+  return jsonify(playlists)
+  
