@@ -244,14 +244,9 @@ def getRatingsNoUser(playlist_id):
 def get_playlists_from_results(playlist_results):
   playlists = []
   for playlist in playlist_results:
-<<<<<<< HEAD
-    ratings = get_comments(playlist[0])
-    tag_ids = get_tag_id_from_playlist_id(playlist[0])
-=======
     # ratings = get_comments(playlist[0]) TODO
     ratings = getRatingsNoUser(playlist[0])
-    tag_ids = get_tag_ids_from_playlist_id(playlist[0])
->>>>>>> bd7baf96c00f50f11b39f68e9f24f270a200bd94
+    tag_ids = get_tag_id_from_playlist_id(playlist[0])
     user = getUserFromPlaylistId(playlist[0])
     tags = []
     for tag_id in tag_ids:
