@@ -4,6 +4,7 @@ from os import environ as env
 from dotenv import find_dotenv, load_dotenv
 from urllib.parse import quote_plus, urlencode
 from flask import Flask, request, render_template, redirect, session, Response, jsonify
+from spotify import get_playlist_info
 
 import auth, db, spotify
 
@@ -50,7 +51,11 @@ def spotify_login():
 def spotify_callback():
   code = request.args.get('code')
   session["spotify"] = spotify.connect_spotify(session['user_id'], code)
-  return render_template('layout.html.jinja')
+  playlist_info = get_playlist_info(session["spotify"].get("access_token"))
+#   playlist = [{'image': 'https://mosaic.scdn.co/640/ab67616d0000b2732887f8c05b5a9f1cb105be29ab67616d0000b273c4e6adea69105e6b6e214b96ab67616d0000b273d81a092eb373ded457d94eecab67616d0000b273e6d6d392a66a7f9172fe57c8',
+#               'name': 'Nebraska',
+#               'rating': 0}]
+  return render_template('homepage.html.jinja', playlists=playlist_info)
 
 # Call this route like:.../spotify/search?q=baby%20shark
 # The string after "?q=" must be url encoded
