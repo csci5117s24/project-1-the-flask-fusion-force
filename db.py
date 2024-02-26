@@ -463,8 +463,8 @@ def insert_playlist(user_id, playlist_name):
   with get_db_cursor(True) as cursor:
     cursor.execute("INSERT INTO mixtape_fm_playlists (user_id, playlist_name, creation_date) VALUES (%s, %s, CURRENT_TIMESTAMP);", \
     (user_id, playlist_name))
-    playlist_id = get_playlist_id(user_id, playlist_name)
-    return playlist_id[0]
+  playlist_id = get_playlist_id(user_id, playlist_name)
+  return playlist_id[0]
 
 def insert_song_into_playlist(playlist_id, song_id, position):
   with get_db_cursor(True) as cursor:
