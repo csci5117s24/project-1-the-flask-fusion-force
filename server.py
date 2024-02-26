@@ -91,7 +91,7 @@ def playlist(p_id):
 @auth.require_login
 def settings():
     return render_template('settings.html.jinja', user_id=session.get('user_id'),settings = 
-  {"Login with spotify":["button",["/spotify/login","get",session.get('spotify')]]})
+  {"Import Spotify playlists":["button",["/spotify/login","get",session.get('spotify')]]})
 
 @app.route('/library', methods=['POST','GET'])
 @auth.require_login
