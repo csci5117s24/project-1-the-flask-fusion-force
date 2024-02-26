@@ -15,6 +15,7 @@ def base64_client_creds():
   return base64_bytes.decode("ascii")
 
 # Given a dict/json of spotify Oauth0 info, store it in session and DB and return an updated version of it(with user id)
+# user_id is db user id, not spotify user id
 def process_spotify_tokens(user_id, response_json):
   s_user_id = get_user_info(response_json["access_token"]).get('id')
 
@@ -46,7 +47,7 @@ def connect_spotify(user_id, code):
     "redirect_uri": spotify_redirect_uri,
     "grant_type": 'authorization_code'
   }
-  
+
   # First time login
   response = requests.post(url='https://accounts.spotify.com/api/token', data=data, headers=auth_options)
   log_response(response)
@@ -57,9 +58,9 @@ def connect_spotify(user_id, code):
 def refresh_spotify_tokens(user_id, spotify_session):
   # Check if need refresh
   if spotify_session is None: return
-  if time.time() < spotify_session["expire_time"]: return
+  if time.time() < spotify_session["expire_time"]: return spotify_session
 
-  print(f"refreshing token for user {spotify_session['user_id']}...")
+  print(f"refreshing token for user {user_id}...")
   auth_options = {
     'Content-Type': 'application/x-www-form-urlencoded',
     'Authorization': 'Basic ' + base64_client_creds()
@@ -71,8 +72,11 @@ def refresh_spotify_tokens(user_id, spotify_session):
   }
 
   response = requests.post(url='https://accounts.spotify.com/api/token', data=body, headers=auth_options)
-  log_response(response)
+  log_response(response,contentMaxLen=1000)
   response_json = json.loads(response.content)
+  # for some reason, spotify doesnt send refresh token back, so I have to manually add it
+  if (response_json.get('refresh_token') is None):
+    response_json['refresh_token'] = spotify_session['refresh_token']
   return process_spotify_tokens(user_id, response_json)
 
 # Returns user json object concerning their Spotify Account
@@ -101,7 +105,7 @@ def search_song(access_token, search_string):
   search_url = "https://api.spotify.com/v1/search?type=track&q=" + requests.utils.quote(search_string)
   search_headers = {'Authorization': 'Bearer ' + access_token}
   response = requests.get(url=search_url, headers=search_headers)
-  log_response(response)
+  log_response(response, contentMaxLen=1000)
   rsp_json = json.loads(response.content)
   return rsp_json
 
@@ -126,9 +130,9 @@ def db_get_tokens(user_id):
 def calc_expire_time():
   return time.time() + 55*60    # epoch time; 1 hour with leeway
 
-def log_response(response):
+def log_response(response, contentMaxLen=500):
   content = str(response.content)
   print('======response======')
   print(f'''From: {response.url}  Status msg: {response.reason}
-Content: {content[:500]}...''') #Headers: {response.headers}
+Content: {content[:contentMaxLen]}...''') #Headers: {response.headers}
   print('====================')
