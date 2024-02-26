@@ -60,13 +60,14 @@ def spotify_callback():
     playlist_ids.append(playlist_info.get('id'))
 
   db_playlists = db.getPlaylists(session['user_id'])
-  db_playlist_names = [playlist.get('name') for playlist in db_playlists]
-  print(db_playlist_names)
+  print(db_playlists)
+  # db_playlist_names = [playlist.get('name') for playlist in db_playlists]
+  # print(db_playlist_names)
 
-  for playlist in info:
-    # Makes it so the database won't add a duplicate playlist
-    if playlist.get('name') not in db_playlist_names:
-        db.insert_playlist(session['user_id'], playlist.get('name'))
+  # for playlist in info:
+  #   # Makes it so the database won't add a duplicate playlist
+  #   if playlist.get('name') not in db_playlist_names:
+  #       db.insert_playlist(session['user_id'], playlist.get('name'))
 
 #   for playlist_id in playlist_ids:
 #     spotify.get_songs_from_playlist(session["spotify"].get("access_token"), playlist_id)
