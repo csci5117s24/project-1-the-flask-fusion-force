@@ -31,6 +31,9 @@
         const playlistNameBtn = document.getElementById("playlistNameBtn");
         const tagsBtn = document.getElementById("tagsBtn");
         const savedPlaylistsBtn = document.getElementById("savedPlaylistsBtn");
+        // Sets default tab & info
+        setActiveButton(playlistNameBtn);
+        createPlaylistCard(nameResults, user_id);
 
         playlistNameBtn.addEventListener("click", function () {
             setActiveButton(playlistNameBtn);
