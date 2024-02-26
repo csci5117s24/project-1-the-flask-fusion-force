@@ -25,11 +25,26 @@
         </button>
     </form>
 </div>
-
-{% for playlist in myPlaylists %}
-{% include "playlistcard.html.jinja" ignore missing with context %}
-{% endfor %}
+<div id="myPlaylists">
+    {% for playlist in playlists[0] %}
+    {% include "playlistcard.html.jinja" ignore missing with context %}
+    {% endfor %}
 </div>
+<div id="SavedPlaylists" style = "display: hidden;">
+    {% for playlist in playlists[1] %}
+    {% include "playlistcard.html.jinja" ignore missing with context %}
+    {% endfor %}
+</div>
+<div id="RandomPlaylists" style = "display: hidden;">
+    {% for playlist in playlists[2] %}
+    {% include "playlistcard.html.jinja" ignore missing with context %}
+    {% endfor %}
+</div>
+</div>
+
+
+
+
 <script src="{{ url_for('static', filename='playlistCard.js') }}"></script>
 <script>
     const user_id = "{{ user_id }}"; 
