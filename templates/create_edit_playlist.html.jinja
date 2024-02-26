@@ -13,7 +13,7 @@
                     <button type="submit" class="pure-button">Search</button>
         </form>
         <div class = "songlst">
-            {% for song in searched_songs %}
+            {% for song in songs %}
                 {% include "addsongcard.html.jinja" ignore missing with context %}
             {% endfor %}
         </div>
@@ -33,7 +33,7 @@
             </div>
         </div>
       <div class = "songlst">
-            {% for song in added_songs %}
+            {% for song in songs %}
                 {% include "deletesongcard.html.jinja" ignore missing with context %}
             {% endfor %}
         </div>

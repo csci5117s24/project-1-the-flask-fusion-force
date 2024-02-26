@@ -64,3 +64,36 @@ function renderPlaylist(playlist) {
     // Append the playlistDiv to the container
     container.appendChild(playlistDiv);
 }
+
+
+
+
+        /*
+        // Gets all search results JSON from server for playlist results when page loads
+        function onPageLoad() {
+            fetch('/getSearchResults')  // can change to whatever the endpoint is
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('No search results response from server');
+                    }
+                    search_response = response.text();  // Stores entire search results for current query. Rudamentary.
+                    return search_response;
+                })
+                .then(data => { 
+                    document.getElementById('playlist').innerHTML = data['playlist'];
+                    document.getElementById('playlist').style.display = "block";
+                    activeTab = 'playlist';
+                })
+                .catch(error => {
+                    console.error('There was a problem with the fetch operation:', error);
+                });
+        }
+        // Alters display when user clicks a new tab
+        function changeTabs(newTab){
+            document.getElementById(current_tab).style.display = "none";
+            current_tab = newTab;
+            document.getElementById('playlist').innerHTML = data[newTab];
+            document.getElementById(newTab).style.display = "block";
+        }
+        window.onload = onPageLoad;
+        */

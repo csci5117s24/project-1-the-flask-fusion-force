@@ -12,12 +12,16 @@
         <li class="pure-menu-item">
             <a href="#" class="pure-menu-link tab">Tags</a>
         </li>
-       
+        {% if user_id != None %}
+        <li class="pure-menu-item">
+            <a href="#" class="pure-menu-link tab">Saved Playlists</a>
+        </li>
+        {% endif %}
     </ul>
 </div>
 <div class="pure-g">
     {% for playlist in playlists %}
-        {% include "playlistcard.html.jinja" ignore missing with context %}
+    {% include "playlistcard.html.jinja" ignore missing with context %}
     {% endfor %}
 </div>
 {% endblock %}

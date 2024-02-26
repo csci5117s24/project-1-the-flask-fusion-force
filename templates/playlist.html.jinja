@@ -41,16 +41,8 @@
             {% include "songcard.html.jinja" ignore missing with context %}
             {% endfor %}
         </div>
-    </div>
+    </div> 
     <div class="pure-u-6-12 horizontal-double-content">
-        <div class="pure-g song-feild">
-            <div class="pure-u-1-5 small-playlist-icon">
-                Song icon
-            </div>
-            <div class="pure-u-1-3">
-                Name of song
-            </div>
-        </div>
         <div class="commentlst">
             <div class="pure-g">
                 <div class="pure-u-1-2">
@@ -112,14 +104,12 @@
     }
     function addRating(stars) {
         var userID = "{{ user_id }}"; 
-        if(userID===null){  // user not signed in
+        if(userID===null){  // user not signed in ?
             return;
         }
-        console.log(userID);
         var playlistID = "{{ playlist_id }}"; 
-        console.log(playlist_id);
         var xhr = new XMLHttpRequest();
-        xhr.open("POST", "/rate-playlist", true);
+        xhr.open("POST", "/ratePlaylist", true);
         xhr.setRequestHeader("Content-Type", "application/json");
         var requestBody = JSON.stringify({
             user_id: userID,
