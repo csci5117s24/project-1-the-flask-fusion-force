@@ -275,7 +275,8 @@ def getPlaylists(user_id):
     return []
   playlist_results = get_user_playlists(user_id)
   playlists = get_playlists_from_results(playlist_results)
-  return jsonify(playlists)
+  return playlists
+  # return jsonify(playlists)
 
 def get_top_playlist_ids():
   with get_db_cursor(True) as cursor:
@@ -295,7 +296,8 @@ def get_top_playlists():
 def getTopRatedPlaylists():
   playlist_results = get_top_playlists()
   playlists = get_playlists_from_results(playlist_results)
-  return jsonify(playlists)
+  return playlists
+  # return jsonify(playlists)
 
 ## Gets n random playlists, returns array with {name, image, ratings, tags[], playlist_id}
 def getRandomPlaylists(user_id, n):
