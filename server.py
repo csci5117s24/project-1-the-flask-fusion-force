@@ -40,13 +40,6 @@ def spotify_login():
 
 @app.route('/spotify/callback', methods=['GET'])
 def spotify_callback():
-  # FIXME: See if the user has already connected their Spotify account, we'll assume that they have in our situation
-  #  if user has already linked their spotify account:
-  #    get tokens from database
-  #    call function that checks to see if we can use the access token or if we need to use the refresh token
-  #    call other functions that will returns the info we need
-  # else:
-  # if get_db_tokens
   code = request.args.get('code')
   session["spotify"] = connect_spotify(session['user_id'], code)
   return render_template('layout.html.jinja')
