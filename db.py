@@ -70,33 +70,33 @@ def get_user_playlists(user_id):
 
 def get_playlist_id(user_id, playlist_name):
   with get_db_cursor(True) as cursor:
-    cursor.execute("SELECT playlist_id FROM mixtape_fm_playlists WHERE user_id=%s, playlist_name=%s;", (user_id, playlist_name))
+    cursor.execute("SELECT playlist_id FROM mixtape_fm_playlists WHERE user_id=%s AND playlist_name=%s;", (user_id, playlist_name))
     return cursor.fetchone()
 
 def getPlaylistId(user_id, playlist_name):
   with get_db_cursor(True) as cursor:
-    cursor.execute("SELECT playlist_id FROM mixtape_fm_playlists WHERE user_id=%s, playlist_name=%s;", (user_id, playlist_name))
+    cursor.execute("SELECT playlist_id FROM mixtape_fm_playlists WHERE user_id=%s AND playlist_name=%s;", (user_id, playlist_name))
     return cursor.fetchone()
 
 def get_playlist_song_id(playlist_id, song_id):
   with get_db_cursor(True) as cursor:
-    cursor.execute("SELECT playlist_song_id FROM mixtape_fm_playlist_songs WHERE playlist_id=%s, song_id=%s;", (playlist_id, song_id))
+    cursor.execute("SELECT playlist_song_id FROM mixtape_fm_playlist_songs WHERE playlist_id=%s AND song_id=%s;", (playlist_id, song_id))
     return cursor.fetchone()
 
 def getPlaylistSongId(playlist_id, song_id):
   with get_db_cursor(True) as cursor:
-    cursor.execute("SELECT playlist_song_id FROM mixtape_fm_playlist_songs WHERE playlist_id=%s, song_id=%s;", (playlist_id, song_id))
+    cursor.execute("SELECT playlist_song_id FROM mixtape_fm_playlist_songs WHERE playlist_id=%s AND song_id=%s;", (playlist_id, song_id))
     return cursor.fetchone()
 
 def get_song_id(name, artist, album, genre, duration):
   with get_db_cursor(True) as cursor:
-    cursor.execute("SELECT song_id FROM mixtape_fm_songs WHERE name=%s, artist=%s, album=%s, genre=%s, duration=%s;", \
+    cursor.execute("SELECT song_id FROM mixtape_fm_songs WHERE name=%s AND artist=%s AND album=%s AND genre=%s AND duration=%s;", \
     (name, artist, album, genre, duration))
     return cursor.fetchone()
 
 def get_comment(commenter_id, playlist_id):
   with get_db_cursor(True) as cursor:
-    cursor.execute("SELECT * FROM mixtape_fm_comments WHERE comment_user_id=%s, playlist_id=%s;", (commenter_id, playlist_id))
+    cursor.execute("SELECT * FROM mixtape_fm_comments WHERE comment_user_id=%s AND playlist_id=%s;", (commenter_id, playlist_id))
     return cursor.fetchall()
 
 def get_tag_id(tag_name):
@@ -160,7 +160,7 @@ def tag_id_search(variation, search_word):
     else:
       print("variation value %d invalid", (variation))
       return None
-    cursor.execute("SELECT tag_id FROM mixtape_fm_tags WHERE tag_name LIKE '%s';", (search_symbol, ))
+    cursor.execute("SELECT tag_id FROM mixtape_fm_tags WHERE tag_name LIKE %s;", (search_symbol, ))
     return cursor.fetchall()
 
 def get_playlist_id_from_tag_id(tag_id):
@@ -295,12 +295,12 @@ def getRandomPlaylists(user_id, n):
 
 def isPlaylistRecent(user_id, playlist_id):
   with get_db_cursor(True) as cursor:
-    cursor.execute("SELECT * FROM mixtape_fm_user_recent_playlists WHERE user_id = %s, playlist_id = %s;", (user_id, playlist_id))
+    cursor.execute("SELECT * FROM mixtape_fm_user_recent_playlists WHERE user_id = %s AND playlist_id = %s;", (user_id, playlist_id))
     return cursor.fetchall()
 
 def updatePlaylistRecent(user_id, playlist_id):
   with get_db_cursor(True) as cursor:
-    cursor.execute("UPDATE mixtape_fm_user_recent_playlists SET timestamp = CURRENT_TIMESTAMP WHERE user_id = %s, playlist_id = %s;", \
+    cursor.execute("UPDATE mixtape_fm_user_recent_playlists SET timestamp = CURRENT_TIMESTAMP WHERE user_id = %s AND playlist_id = %s;", \
     (user_id, playlist_id))
     return
 
@@ -360,7 +360,7 @@ def getComments(user_id, playlist_id):
 
 def get_ratings(user_id, playlist_id):
   with get_db_cursor(True) as cursor:
-    cursor.execute("SELECT * FROM mixtape_fm_ratings WHERE rating_user_id=%s, playlist_id=%s;", (user_id, playlist_id))
+    cursor.execute("SELECT * FROM mixtape_fm_ratings WHERE rating_user_id=%s AND playlist_id=%s;", (user_id, playlist_id))
     cursor.fetchall()    
 
 def get_all_ratings(playlist_id):
@@ -472,7 +472,7 @@ def insert_playlist_tag(playlist_id, tag_name):
 
 def removePlaylistLeastRecent(user_id, playlist_id):
   with get_db_cursor(True) as cursor:
-    cursor.execute("DELETE FROM mixtape_fm_user_recent_playlists WHERE user_id = %s, playlist_id = %s;", (user_id, playlist_id))
+    cursor.execute("DELETE FROM mixtape_fm_user_recent_playlists WHERE user_id = %s AND playlist_id = %s;", (user_id, playlist_id))
     return
 
 def deletePlaylistRecent(user_id):
@@ -490,13 +490,13 @@ def addPlaylistToRecent(user_id, playlist_id):
 
 def check_ratings(user_id, playlist_id):
   with get_db_cursor(True) as cursor:
-    cursor.execute("SELECT * FROM mixtape_fm_ratings WHERE rating_user_id=%s, playlist_id=%s;", (user_id, playlist_id))
+    cursor.execute("SELECT * FROM mixtape_fm_ratings WHERE rating_user_id=%s AND playlist_id=%s;", (user_id, playlist_id))
     return cursor.fetchall()
 
 def updateRatings(user_id, playlist_id, rating, updating=False):
   with get_db_cursor(True) as cursor:
     if (updating):
-      cursor.execute("UPDATE mixtape_fm_ratings SET stars=%s WHERE rating_user_id=%s, playlist_id=%s;", \
+      cursor.execute("UPDATE mixtape_fm_ratings SET stars=%s WHERE rating_user_id=%s AND playlist_id=%s;", \
       (rating, user_id, playlist_id))
     else:
       cursor.execute("INSERT INTO mixtape_fm_ratings (rating_user_id, playlist_id, stars, timestamp) VALUES (%s, %s, %s, CURRENT_TIMESTAMP);", \
@@ -535,19 +535,19 @@ def addComment(user_id, playlist_id, comment):
 
 def deleteRating(user_id, playlist_id):
   with get_db_cursor(True) as cursor:
-    cursor.execute("DELETE * FROM mixtape_fm_ratings WHERE rating_user_id=%s, playlist_id=%s;", \
+    cursor.execute("DELETE * FROM mixtape_fm_ratings WHERE rating_user_id=%s AND playlist_id=%s;", \
     (user_id, playlist_id))
     return
 
 def deleteComment(user_id, playlist_id, comment):
   with get_db_cursor(True) as cursor:
-    cursor.execute("DELETE FROM mixtape_fm_comments WHERE comment_user_id=%s, playlist_id=%s, content=%s;", \
+    cursor.execute("DELETE FROM mixtape_fm_comments WHERE comment_user_id=%s AND playlist_id=%s AND content=%s;", \
     (user_id, playlist_id, comment))
     return
 
 def deleteComments(user_id, playlist_id):
   with get_db_cursor(True) as cursor:
-    cursor.execute("DELETE FROM mixtape_fm_comments WHERE comment_user_id=%s, playlist_id=%s;", \
+    cursor.execute("DELETE FROM mixtape_fm_comments WHERE comment_user_id=%s AND playlist_id=%s;", \
     (user_id, playlist_id))
     return
 
@@ -577,7 +577,7 @@ def createPlaylist(user_id, playlist_name, image, song_ids):
 
 def delete_song(playlist_id, song_id):
   with get_db_cursor(True) as cursor:
-    cursor.execute("DELETE FROM mixtape_fm_playlist_songs WHERE playlist_id=%s, song_id=%s;", \
+    cursor.execute("DELETE FROM mixtape_fm_playlist_songs WHERE playlist_id=%s AND song_id=%s;", \
     (playlist_id, song_id))
 
 # TODO
@@ -601,10 +601,10 @@ def delete_playlist_songs(playlist_id):
 def update_playlist(user_id, playlist_id, playlist_name, playlist_image=None):
   with get_db_cursor(True) as cursor:
     if (playlist_image == None):
-      cursor.execute("UPDATE mixtape_fm_playlists SET playlist_name=%s WHERE user_id=%s, playlist_id=%s;", \
+      cursor.execute("UPDATE mixtape_fm_playlists SET playlist_name=%s WHERE user_id=%s AND playlist_id=%s;", \
       (playlist_name, user_id, playlist_id))
     else:
-      cursor.execute("UPDATE mixtape_fm_playlists SET playlist_name=%s, image=%s WHERE user_id=%s, playlist_id=%s;", \
+      cursor.execute("UPDATE mixtape_fm_playlists SET playlist_name=%s, image=%s WHERE user_id=%s AND playlist_id=%s;", \
       (playlist_name, playlist_image, user_id, playlist_id))
     return
 
