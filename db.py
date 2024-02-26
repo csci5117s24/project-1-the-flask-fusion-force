@@ -738,4 +738,14 @@ def getSavedPlaylists(user_id):
   playlists = get_playlists_from_results(playlist_results)
   return playlists
   # return jsonify(playlists)
+
+def unsavePlaylist(user_id, playlist_id):
+  if (user_id == None or playlist_id == None):
+    print("Invalid parameters:")
+    print("  user_id= " + str(user_id))
+    print("  playlist_id= " + str(playlist_id))
+    return
+  with get_db_cursor(True) as cursor:
+    cursor.execute("DELETE FROM mixtape_fm_playlists_saved WHERE playlist_id=%s AND user_id=%s;", (playlist_id, user_id))
+  return
   
