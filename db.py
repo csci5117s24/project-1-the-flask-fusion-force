@@ -568,6 +568,41 @@ def insertSong(name, artist, album, genre, duration):
   s_id = get_song_id(name, artist, album, genre, duration)
   return s_id[0]
 
+def insertSongs(songs):
+    # FUTURE: break this into chunks?
+    with get_db_cursor(True) as cursor:
+        values_str = ",".join([
+            cursor.mogrify(
+                f"(%s,%s,%s,%s,%s)", 
+                (song.get("name"), song.get("artist") , song.get("album"),
+                "NULL" if song.get("genre") is None else song.get("genre"),
+                song.get("duration"))
+            ).decode('utf-8')
+            for song in songs
+        ])
+        cursor.execute("INSERT INTO mixtape_fm_songs (name, artist, album, genre, duration) VALUES" + values_str)
+    return
+
+# each entry in songs contains: name, artist, album, duration
+def insertSongsToPlaylist(playlist_id, songs):
+    songs_compact = []
+    for song in songs:
+            # WARNING: extremely inefficient
+            song_id = get_song_id(song.get("name"), song.get("artist"), song.get("album"), None, song.get("duration"))
+            if (song_id is not None and len(song_id) != 0):
+                print(song_id)
+                songs_compact.append(song_id[0])
+    with get_db_cursor(True) as cursor:
+        value_str = ",".join([
+            cursor.mogrify(
+                f"(%s,%s,%s)",
+                (str(playlist_id), str(song), str(i)))
+            .decode('utf-8')
+            for i, song in enumerate(songs_compact)
+        ])
+        cursor.execute("INSERT INTO mixtape_fm_playlist_songs (playlist_id, song_id, position) VALUES" + value_str)
+    return 0
+
 # def insert_new_user(user_id):
 #   with get_db_cursor(True) as cursor:
 #     cursor.execute("INSERT INTO mixtape_fm_users (user_id, spotify_linked) VALUES (%s, %s);", (user_id, 'FALSE'))

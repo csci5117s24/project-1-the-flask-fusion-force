@@ -67,13 +67,10 @@ def spotify_callback():
   session["spotify"] = spotify.connect_spotify(session['user_id'], code)
   playlist_json = get_playlist_info(session["spotify"].get("access_token"))
   info = []
-  playlist_ids = []
-  playlist_songs = []
-  
+
   # Gets all the playlist information for us in a list of dictionaries where each entry is its own playlist
   for playlist_info in playlist_json.get('items'):
-    info.append({'image': playlist_info.get('images')[0].get('url'), 'name': playlist_info.get('name'), 'rating': 0})
-    playlist_ids.append(playlist_info.get('id'))
+    info.append({'id':playlist_info.get('id'),'image': playlist_info.get('images')[0].get('url'), 'name': playlist_info.get('name'), 'rating': 0})
 
   # These are the playlists that are already in the database that we use to check for
   db_playlists = db.getPlaylists(session['user_id'])
@@ -81,20 +78,33 @@ def spotify_callback():
 
   for playlist in info:
     # Makes it so the database won't add a duplicate playlist
-    if playlist.get('name') not in db_playlist_names:
-        print(playlist.get('name'))
-        db.insert_playlist(session['user_id'], playlist.get('name'), playlist.get('image'))
+    if playlist.get('name') in db_playlist_names:
+        continue
+    print(playlist.get('name'))
+    playlist_id = db.insert_playlist(session['user_id'], playlist.get('name'), playlist.get('image'))
+
+    songs = spotify.get_songs_from_playlist(session["spotify"].get("access_token"), playlist.get('id'))
+    print("SONGS")
+    print(songs)
+
+    # db.insertSongs(songs)
+    db.insertSongsToPlaylist(playlist_id, songs)
   
   # TODO: Can definitely organize it in a better way, I was just strapped for time
   # Gets songs organized by playlist in a nested list of dictionaries -> [[{playlist1_info}], [{playlist2_info}]]
-  for playlist_id in playlist_ids:
-    playlist_songs.append(spotify.get_songs_from_playlist(session["spotify"].get("access_token"), playlist_id))
+#   for playlist_id in playlist_ids:
+#     # playlist_songs.append(spotify.get_songs_from_playlist(session["spotify"].get("access_token"), playlist_id))
+#     songs = spotify.get_songs_from_playlist(session["spotify"].get("access_token"), playlist_id)
+#     print("SONGS")
+#     print(songs)
+#     # db.insertSongs(songs)
+#     db.insertSongsToPlaylist(playlist_id, songs)
 
   # TODO: Do I need to insert every song in each playlist to the database or insert it once?
   # TODO: If it's only once then how will we know if that singular song is in the playlist when populating the tracks in the front end
   # TODO: If it's more than once then this will make the website exrtremely slow
   # Brute force method that I think should work but we could definitely improve
-  # for playlist in playlist_songs:
+#   for playlist in playlist_songs:
   #    for song in playlist:
     # Checks if a song is already in the database or not
   #       if db.get_song_id(song['name'], song['artist'], song['album'], None, song['duration']) == None:
