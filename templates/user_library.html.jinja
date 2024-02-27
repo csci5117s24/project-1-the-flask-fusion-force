@@ -26,34 +26,36 @@
     </form>
 </div>
 <div id="myPlaylists">
-    {% for playlist in playlists[0] %}
+    {# {% for playlist in myPlaylists %}
     {% include "playlistcard.html.jinja" ignore missing with context %}
-    {% endfor %}
+    {% endfor %} #}
 </div>
-<div id="SavedPlaylists" style = "display: hidden;">
-    {% for playlist in playlists[1] %}
+<div id="SavedPlaylists" style="display: none;">
+    {# {% for playlist in savedPlaylists %}
     {% include "playlistcard.html.jinja" ignore missing with context %}
-    {% endfor %}
+    {% endfor %} #}
 </div>
-<div id="RandomPlaylists" style = "display: hidden;">
-    {% for playlist in playlists[2] %}
+<div id="RandomPlaylists" style="display: none;">
+    {# {% for playlist in randomPlaylists %}
     {% include "playlistcard.html.jinja" ignore missing with context %}
-    {% endfor %}
+    {% endfor %} #}
 </div>
 </div>
-
 
 <script src="{{ url_for('static', filename='playlistCard.js') }}"></script>
 <script>
-    const user_id = "{{ user_id }}"; 
+    const user_id = "{{ user_id }}";
+    var myPlaylists = {{ myPlaylists | tojson }};
+    var savedPlaylists = {{ savedPlaylists | tojson }};
+    var randomPlaylists = {{ randomPlaylists | tojson }};
+
     document.addEventListener("DOMContentLoaded", function () {
-        // Get references to all buttons
         const myPlaylistsBtn = document.getElementById("myPlaylistsBtn");
         const savedPlaylistsBtn = document.getElementById("savedPlaylistsBtn");
         const randomPlaylistsBtn = document.getElementById("randomPlaylistsBtn");
-        // setActiveButton(myPlaylistsBtn);
-        changeContentToMyPlaylists();  // sets default tab content
-        // Add listeners to tab buttons
+
+        setActiveButton(myPlaylistsBtn); // Highlight My Playlists button upon loading
+
         myPlaylistsBtn.addEventListener("click", function () {
             setActiveButton(myPlaylistsBtn);
             changeContentToMyPlaylists();
@@ -67,34 +69,55 @@
             changeContentToRandomPlaylists();
         });
 
-        // Function to set active button and reset others
+        // Highlighting current tab stuff:
+        document.body.addEventListener("click", function () {
+            setActiveButton(document.querySelector(".tab.active"));
+        });
         function setActiveButton(activeButton) {
             const buttons = [myPlaylistsBtn, savedPlaylistsBtn, randomPlaylistsBtn];
             buttons.forEach(button => {
                 if (button === activeButton) {
+                    button.classList.add("active");
                     button.style.backgroundColor = "white";
                 } else {
+                    button.classList.remove("active");
                     button.style.backgroundColor = ""; // Reset to original color
                 }
             });
         }
+
+        // This is NOT working. Do whatever will work. Dummy data is currently for myPlaylists
         function changeContentToMyPlaylists() {
-            console.log("Clicked savedPlaylists tab");
-            createPlaylistCard(myPlaylists, user_id);
+            console.log("Clicked My Playlists tab");
+            myPlaylists.forEach(function (playlist) {
+                console.log(playlist);
+                console.log(playlist.name);
+                // const newDiv = document.createElement("div");
+                // const newContent = document.createTextNode("Hi there and greetings!");
+                // newDiv.appendChild(newContent);
+
+                createPlaylistCard(playlist, user_id);
+                x = document.getElementById("myPlaylists");
+                x.appendChild(playlist);
+            });
         }
         function changeContentToSavedPlaylists() {
-            console.log("Clicked savedPlaylists tab");
-            createPlaylistCard(savedPlaylists, user_id);
+            console.log("Clicked Saved Playlists tab");
+            savedPlaylists.forEach(function (playlist) {
+                createPlaylistCard(playlist, user_id);
+            });
         }
         function changeContentToRandomPlaylists() {
-            console.log("Clicked savedPlaylists tab");
-            createPlaylistCard(randomPlaylists, user_id);
+            console.log("Clicked Random Playlists tab");
+            randomPlaylists.forEach(function (playlist) {
+                createPlaylistCard(playlist, user_id);
+            });
         }
     });
 </script>
 
 {% else %}
-<p> You can't access this page without logging in</p>
+<p>You can't access this page without logging in</p>
 <a href="/login" class="pure-menu-link">Log in</a>
 {% endif %}
 {% endblock %}

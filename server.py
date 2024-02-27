@@ -116,7 +116,7 @@ def search():
     else:
       searchResults = db.search(None, searchtext)
     print(searchResults)
-    return render_template('search.html.jinja',user_session = session.get('user'), playlists = [searchResults['name_results'], searchResults['tag_results'], searchResults['saved_results']])
+    return render_template('search.html.jinja',user_id=session.get('user_id'), playlists = [searchResults['name_results'], searchResults['tag_results'], searchResults['saved_results']])
 @app.route('/playlist/<int:p_id>', methods=['POST','GET'])
 def playlist(p_id):
     print("p_id= " + str(p_id))
@@ -136,7 +136,7 @@ def settings():
 def library():
     print(session.get('user'))
     #print(db.get_user_playlists(0))
-    return render_template('user_library.html.jinja',playlists=[[{'image':'image goes here','name':'playlist name goes here','rating':'rating goes here','tags':['tag1','tag2','tag3']}],[],[]], user_session=session.get('user'), user_id=session.get('user_id'))
+    return render_template('user_library.html.jinja', myPlaylists=[{'image':'image goes here','name':'playlist name goes here','rating':'rating goes here','tags':['tag1','tag2','tag3'],'userID':'-1','playlistID':'72',}], savedPlaylists=[{}], randomPlaylists=[{}], user_session=session.get('user'), user_id=session.get('user_id'))
 
 @app.route('/edit-playlist/<int:p_id>', methods=['POST','GET'])
 @app.route('/edit-playlist', methods=['POST','GET'])  # Incase user is making a completey new playlist
@@ -170,8 +170,8 @@ def addComment():
     comment = data.get('comment')
     print(user_id)
     print(comment)
-    if (db.addComment(user_id, 72, comment) != []):  # TODO fix this. We are adding a rating, not a comment.
+    if (db.addComment(user_id, playlist_id, comment) != []):
         print("User has already left comment for playlist with id: " + str(playlist_id))
     else:
-        db.addComment(user_id, 72, comment)
+        db.addComment(user_id, playlist_id, comment)
 

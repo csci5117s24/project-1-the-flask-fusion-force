@@ -27,13 +27,30 @@
 <script src="{{ url_for('static', filename='playlistCard.js') }}"></script>
 <script>
     const user_id = "{{ user_id }}";
+    console.log("User id : ", user_id);
+    function setActiveButton(activeButton) {
+        console.log("Setting active button:");
+        console.log(activeButton);
+        if (signedIn){
+            const buttons = [playlistNameBtn, tagsBtn, savedPlaylistsBtn];
+        } 
+        else{
+            const buttons = [playlistNameBtn, tagsBtn];
+        }
+        buttons.forEach(button => {
+            if (button === activeButton) {
+                button.classList.add("active");
+                button.style.backgroundColor = "white";
+            } else {
+                button.classList.remove("active");
+                button.style.backgroundColor = ""; // Reset to original color
+            }
+        });
+    }
     document.addEventListener("DOMContentLoaded", function () {
         const playlistNameBtn = document.getElementById("playlistNameBtn");
         const tagsBtn = document.getElementById("tagsBtn");
-        const savedPlaylistsBtn = document.getElementById("savedPlaylistsBtn");
-        // Sets default tab & info
-        // setActiveButton(playlistNameBtn);
-        createPlaylistCard(nameResults, user_id);
+        setActiveButton(playlistNameBtn); // Highlight Playlist Name button upon loading
 
         playlistNameBtn.addEventListener("click", function () {
             setActiveButton(playlistNameBtn);
@@ -44,22 +61,18 @@
             createPlaylistCard(tagResults, user_id);
         });
         {% if user_id %}
+        const savedPlaylistsBtn = document.getElementById("savedPlaylistsBtn");
         savedPlaylistsBtn.addEventListener("click", function () {
             setActiveButton(savedPlaylistsBtn);
             createPlaylistCard(savedResults, user_id);
         });
         {% endif %}
 
-        function setActiveButton(activeButton) {
-            const buttons = [playlistNameBtn, tagsBtn, savedPlaylistsBtn];
-            buttons.forEach(button => {
-                if (button === activeButton) {
-                    button.style.backgroundColor = "white";
-                } else {
-                    button.style.backgroundColor = ""; // Reset to original color
-                }
-            });
-        }
+        // Add event listener to the document body
+        document.body.addEventListener("click", function () {
+            setActiveButton(document.querySelector(".tab.active"));
+        });
+
     });
 </script>
 {% endblock %}
