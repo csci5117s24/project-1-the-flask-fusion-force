@@ -162,7 +162,7 @@ def settings():
 @auth.require_login
 def library():
     user_id = session['user']['userinfo']['email']
-    my_playlists_dicts = []
+    
     # List of dictionaries where each nested list has a playlist's information
     myPlaylists = db.getUserPlaylists(user_id)
     savedPlaylists = db.getSavedPlaylists(user_id)
