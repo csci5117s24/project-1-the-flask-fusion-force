@@ -348,7 +348,7 @@ def get_playlist_from_result(playlist_result):
     ratingAvg = 0
     if (db_ratingAvg[0]):
       ratingAvg = str(round(float(db_ratingAvg[0]), 2))
-    playlist = {'playlistID': playlist_result[0], 'image': playlist_result[4], 'name': playlist_result[2], 'ratingAvg': ratingAvg, \
+    playlist = {'playlistID': playlist_result[0], 'userID': user[0], 'image': playlist_result[4], 'name': playlist_result[2], 'ratingAvg': ratingAvg, \
     'numRatings': len(ratings), 'tags': tags, 'userDisplayName': user[3]}
     return playlist
 
@@ -370,7 +370,7 @@ def get_playlists_from_results(playlist_results):
     ratingAvg = 0
     if (db_ratingAvg[0]):
       ratingAvg = str(round(float(db_ratingAvg[0]), 2))
-    playlists.append({'playlistID': playlist[0], 'image': playlist[4], 'name': playlist[2], 'ratingAvg': ratingAvg, \
+    playlists.append({'playlistID': playlist[0], 'userID': user[0], 'image': playlist[4], 'name': playlist[2], 'ratingAvg': ratingAvg, \
     'numRatings': len(ratings), 'tags': tags, 'userDisplayName': user[3]})
   return playlists
 
