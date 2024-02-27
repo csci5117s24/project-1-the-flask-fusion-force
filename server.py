@@ -101,10 +101,11 @@ def spotify_search():
     spotify.refresh_spotify_tokens(session['user_id'], session['spotify'])
 
     search_string = request.args.get('q')
+    num_results = request.args.get('n')
     if (search_string is None): 
        return Response("Need to pass in a query string!", status=400, mimetype='text/plain')
 
-    search_res = spotify.search_song(session['spotify']['access_token'], search_string)  # flask jsonifies this
+    search_res = spotify.search_song(session['spotify']['access_token'], search_string, num_results)  # flask jsonifies this
     return jsonify(search_res)
 
 @app.route('/search', methods=['POST','GET'])
