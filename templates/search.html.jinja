@@ -27,14 +27,20 @@
 <script src="{{ url_for('static', filename='playlistCard.js') }}"></script>
 <script>
     const user_id = "{{ user_id }}";
+    const signedIn = user_id !== "" ? true : false;
+    var nameResults = {{ nameResults | tojson }};
+    var tagResults = {{ tagResults | tojson }};
+    var savedResults= {{ savedResults | tojson }};
+    console.log(nameResults);
     console.log("User id : ", user_id);
+
     function setActiveButton(activeButton) {
         console.log("Setting active button:");
         console.log(activeButton);
-        if (signedIn){
+        if (signedIn) {
             const buttons = [playlistNameBtn, tagsBtn, savedPlaylistsBtn];
-        } 
-        else{
+        }
+        else {
             const buttons = [playlistNameBtn, tagsBtn];
         }
         buttons.forEach(button => {
@@ -54,17 +60,23 @@
 
         playlistNameBtn.addEventListener("click", function () {
             setActiveButton(playlistNameBtn);
-            createPlaylistCard(nameResults, user_id);
+            nameResults.forEach(result => {
+                createPlaylistCard(result, user_id);
+            });
         });
         tagsBtn.addEventListener("click", function () {
             setActiveButton(tagsBtn);
-            createPlaylistCard(tagResults, user_id);
+            tagResults.forEach(result => {
+                createPlaylistCard(result, user_id);
+            });
         });
         {% if user_id %}
         const savedPlaylistsBtn = document.getElementById("savedPlaylistsBtn");
         savedPlaylistsBtn.addEventListener("click", function () {
             setActiveButton(savedPlaylistsBtn);
-            createPlaylistCard(savedResults, user_id);
+            savedResults.forEach(result => {
+                createPlaylistCard(result, user_id);
+            });
         });
         {% endif %}
 
