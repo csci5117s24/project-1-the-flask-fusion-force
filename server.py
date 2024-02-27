@@ -157,11 +157,12 @@ def settings():
 @app.route('/library', methods=['POST','GET'])
 @auth.require_login
 def library():
-    print(session.get('user'))
-    #print(db.get_user_playlists(0))
-    myPlaylists=[{'image':'image goes here','name':'playlist name goes here','rating':'rating goes here','tags':['tag1','tag2','tag3'],'userID':'-1','playlistID':'72',}]
-    randomPlaylists=[{}]
-    savedPlaylists=[{}]
+    user_id = session['user']['userinfo']['email']
+    my_playlists_dicts = []
+    # List of dictionaries where each nested list has a playlist's information
+    myPlaylists = db.getUserPlaylists(user_id)
+    savedPlaylists = db.getSavedPlaylists(user_id)
+    randomPlaylists = db.getRandomPlaylists(10)
     return render_template('user_library.html.jinja', myPlaylists=myPlaylists, savedPlaylists=savedPlaylists, randomPlaylists=randomPlaylists, user_session=session.get('user'), user_id=session.get('user_id'))
 
 @app.route('/edit-playlist/<int:p_id>', methods=['POST','GET'])
