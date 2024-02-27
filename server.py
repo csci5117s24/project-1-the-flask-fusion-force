@@ -147,13 +147,29 @@ def editplaylist(p_id=None):
 
 @app.route('/rate-playlist', methods=['POST'])
 def ratePlaylist():
-    user_id = request.args.get('user_id')
-    playlist_id = request.args.get('playlist_id')
-    stars = request.args.get('stars')
-    comment = request.args.get('comment')
-    if (db.get_comment(user_id, playlist_id) != []):
+    data = request.json
+    user_id = data.get('user_id')
+    playlist_id = data.get('playlist_id')
+    stars = data.get('stars')
+    print(user_id)
+    print(playlist_id)
+    comment = data.get('comment')
+    if (db.get_comment(user_id, playlist_id) != []):  # TODO fix this to add rating instead of a comment
         print("User has already left comment for playlist with id: " + str(playlist_id))
     else:
         db.insertNewComment(user_id, playlist_id, stars, comment)
 
+
+@app.route('/add-comment', methods=['POST'])
+def addComment():
+    data = request.json
+    user_id = data.get('user_id')
+    playlist_id = data.get('playlist_id')
+    comment = data.get('comment')
+    print(user_id)
+    print(comment)
+    if (db.addComment(user_id, 72, comment) != []):  # TODO fix this. We are adding a rating, not a comment.
+        print("User has already left comment for playlist with id: " + str(playlist_id))
+    else:
+        db.addComment(user_id, 72, comment)
 
