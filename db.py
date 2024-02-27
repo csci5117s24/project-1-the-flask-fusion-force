@@ -58,7 +58,7 @@ def get_playlist_songs(playlist_id):
   playlist_songs_ids = get_playlist_songs_ids(playlist_id)
   playlist_songs = []
   for song_id_arr in playlist_songs_ids:
-    song_id = song_id_arr[6]
+    song_id = song_id_arr[0]
     song_result = get_song_from_song_id(song_id)
     # songs: [song_id:””, name:””, picture:”img”, artist:’’”, album:””, genre:””|null, duration:””|null]
     duration = None
