@@ -43,8 +43,6 @@
 </div>
 
 
-
-
 <script src="{{ url_for('static', filename='playlistCard.js') }}"></script>
 <script>
     const user_id = "{{ user_id }}"; 
@@ -53,7 +51,7 @@
         const myPlaylistsBtn = document.getElementById("myPlaylistsBtn");
         const savedPlaylistsBtn = document.getElementById("savedPlaylistsBtn");
         const randomPlaylistsBtn = document.getElementById("randomPlaylistsBtn");
-        setActiveButton(myPlaylistsBtn);
+        // setActiveButton(myPlaylistsBtn);
         changeContentToMyPlaylists();  // sets default tab content
         // Add listeners to tab buttons
         myPlaylistsBtn.addEventListener("click", function () {
