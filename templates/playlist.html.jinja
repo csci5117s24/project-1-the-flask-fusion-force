@@ -123,7 +123,6 @@
             stars: stars,
             comment: comment
         };
-        console.log(data);
         fetch('/rate-playlist', {
             method: 'POST',
             headers: {
@@ -160,6 +159,7 @@
             .then(response => {
                 if (response.ok) {
                     console.log('Playlist saved successfully');
+                    // TODO: add success message to front-end ?
                 } else {
                     throw new Error('Network response was not ok');
                 }
@@ -185,7 +185,7 @@
         commentForm.addEventListener("submit", function (event) {
             event.preventDefault(); // Prevent default form submission behavior
             toggleComment("comment-form");
-            
+
             const commentText = document.getElementById("comment-text").value;
             if (userID === undefined) {
                 console.error('User not signed in');
@@ -207,6 +207,10 @@
                 .then(response => {
                     if (!response.ok) {
                         throw new Error('Network response was not ok');
+                    }
+                    else{
+                        // TODO: add success message to front-end ?
+                        console.log("comment submission successful");
                     }
                 })
                 .catch(error => {

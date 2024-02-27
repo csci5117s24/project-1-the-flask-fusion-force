@@ -95,6 +95,7 @@ def spotify_callback():
 @app.route('/spotify/search', methods=['GET'])
 @auth.require_login
 def spotify_search():
+    print("Spotify searching...")
     if session.get('spotify') is None:
        return Response("Need to be logged in to Spotify to use this feature!", status=400, mimetype='text/plain')
 
@@ -106,7 +107,9 @@ def spotify_search():
        return Response("Need to pass in a query string!", status=400, mimetype='text/plain')
     if (num_results is None): num_results = 20
 
-    search_res = spotify.search_song(session['spotify']['access_token'], search_string, num_results=num_results)  # flask jsonifies this
+    search_res = spotify.search_song(session['spotify']['access_token'], search_string)  # flask jsonifies this
+    print("Search Results:")
+    print(search_res)
     return jsonify(search_res)
 
 @app.route('/search', methods=['POST','GET'])
@@ -177,4 +180,18 @@ def addComment():
     #     print("User has already left comment for playlist with id: " + str(playlist_id))
     # else:
         # db.addComment(user_id, playlist_id, comment)
+
+@app.route('/save-playlist', methods=['POST'])
+def savePlaylist():
+    data = request.json
+    user_id = data.get('user_id')
+    playlist_id = data.get('playlist_id')
+    db.savePlaylist(user_id, playlist_id)
+
+@app.route('/save-playlist', methods=['POST'])
+def savePlaylist():
+    data = request.json
+    user_id = data.get('user_id')
+    playlist_id = data.get('playlist_id')
+    db.savePlaylist(user_id, playlist_id)
 
