@@ -3,7 +3,7 @@ import json
 from os import environ as env
 from dotenv import find_dotenv, load_dotenv
 from urllib.parse import quote_plus, urlencode
-from flask import Flask, request, render_template, redirect, session, Response, jsonify
+from flask import Flask, request, render_template, redirect, session, Response, jsonify, url_for
 from spotify import get_playlist_info
 
 import auth, db, spotify, api
@@ -70,7 +70,9 @@ def spotify_callback():
 
   # Gets all the playlist information for us in a list of dictionaries where each entry is its own playlist
   for playlist_info in playlist_json.get('items'):
-    info.append({'id':playlist_info.get('id'),'image': playlist_info.get('images')[0].get('url'), 'name': playlist_info.get('name'), 'rating': 0})
+    images = playlist_info.get('images')
+    image = images[0].get('url') if images is not None or len(images) else "NULL"
+    info.append({'id':playlist_info.get('id'),'image': image, 'name': playlist_info.get('name'), 'rating': 0})
 
   # These are the playlists that are already in the database that we use to check for
   db_playlists = db.getPlaylists(session['user_id'])
@@ -110,7 +112,7 @@ def spotify_callback():
   #       if db.get_song_id(song['name'], song['artist'], song['album'], None, song['duration']) == None:
   #          db.insert_song(song['name'], song['artist'], song['album'], None, song['duration'])
 
-  return render_template('user_library.html.jinja', playlists=info)
+  return redirect(url_for("library"))
 
 # Call this route like:.../spotify/search?q=baby%20shark
 # The string after "?q=" must be url encoded
