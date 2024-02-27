@@ -93,11 +93,12 @@ def spotify_callback():
   # TODO: Do I need to insert every song in each playlist to the database or insert it once?
   # TODO: If it's only once then how will we know if that singular song is in the playlist when populating the tracks in the front end
   # TODO: If it's more than once then this will make the website exrtremely slow
+  # Brute force method that I think should work but we could definitely improve
   # for playlist in playlist_songs:
   #    for song in playlist:
     # Checks if a song is already in the database or not
   #       if db.get_song_id(song['name'], song['artist'], song['album'], None, song['duration']) == None:
-  #          db.insert_song(song['name'], song[''])
+  #          db.insert_song(song['name'], song['artist'], song['album'], None, song['duration'])
 
   return render_template('user_library.html.jinja', playlists=info)
 
