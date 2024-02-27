@@ -162,9 +162,10 @@ def settings():
 @auth.require_login
 def library():
     user_id = session['user']['userinfo']['email']
-    
+
     # List of dictionaries where each nested list has a playlist's information
     myPlaylists = db.getUserPlaylists(user_id)
+    print(myPlaylists)
     savedPlaylists = db.getSavedPlaylists(user_id)
     randomPlaylists = db.getRandomPlaylists(10)
     return render_template('user_library.html.jinja', myPlaylists=myPlaylists, savedPlaylists=savedPlaylists, randomPlaylists=randomPlaylists, user_session=session.get('user'), user_id=session.get('user_id'))
