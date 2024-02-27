@@ -153,12 +153,9 @@ def ratePlaylist():
     stars = data.get('stars')
     print(user_id)
     print(playlist_id)
+    print("stars= " + str(stars))
     comment = data.get('comment')
-    if (db.get_comment(user_id, playlist_id) != []):  # TODO fix this to add rating instead of a comment
-        print("User has already left comment for playlist with id: " + str(playlist_id))
-    else:
-        db.insertNewComment(user_id, playlist_id, stars, comment)
-
+    db.ratePlaylist(user_id, playlist_id, stars)
 
 @app.route('/add-comment', methods=['POST'])
 def addComment():

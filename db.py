@@ -649,7 +649,7 @@ def ratePlaylist(user_id, playlist_id, rating):
     print("  playlist_id= " + str(playlist_id))
     print("  rating= " + str(rating))
     return
-  if (rating < 1 or 5 > rating):
+  if (rating < 1 or rating > 5):
     print("Invalid rating of " + str(rating) + " stars")
     return
   if (check_ratings(user_id, playlist_id) != []):
