@@ -408,7 +408,7 @@ def playlistLeastRecent(user_id):
 def retrieveRecentPlaylists():
   with get_db_cursor(True) as cursor:
     cursor.execute("SELECT playlist_id FROM mixtape_fm_user_recent_playlists;")
-    cursor.fetchall()
+    return cursor.fetchall()
 
 def getRecentPlaylists(n):
   recent_playlist_ids = retrieveRecentPlaylists()
@@ -465,17 +465,17 @@ def getComments(user_id, playlist_id):
 def get_ratings(user_id, playlist_id):
   with get_db_cursor(True) as cursor:
     cursor.execute("SELECT * FROM mixtape_fm_ratings WHERE rating_user_id=%s AND playlist_id=%s;", (user_id, playlist_id))
-    cursor.fetchall()    
+    return cursor.fetchall()    
 
 def get_ratings_no_user(playlist_id):
   with get_db_cursor(True) as cursor:
     cursor.execute("SELECT * FROM mixtape_fm_ratings WHERE playlist_id=%s;", (playlist_id, ))
-    cursor.fetchall()  
+    return cursor.fetchall()  
 
 def get_all_ratings(playlist_id):
   with get_db_cursor(True) as cursor:
     cursor.execute("SELECT * FROM mixtape_fm_ratings WHERE playlist_id=%s;", (playlist_id, ))
-    cursor.fetchall()    
+    return cursor.fetchall()    
 
 def get_ratings_from_db_ratings(db_ratings):
   ratings = []
@@ -611,7 +611,7 @@ def insert_playlist_tag(playlist_id, tag_name):
 def removePlaylistLeastRecent(user_id, playlist_id):
   with get_db_cursor(True) as cursor:
     cursor.execute("DELETE FROM mixtape_fm_user_recent_playlists WHERE user_id = %s AND playlist_id = %s;", (user_id, playlist_id))
-    return
+  return
 
 def deletePlaylistRecent(user_id):
   least_recent = playlistLeastRecent(user_id)
@@ -625,6 +625,7 @@ def addPlaylistToRecent(user_id, playlist_id):
     insertPlaylistRecent(user_id, playlist_id)
   else:
     updatePlaylistRecent(user_id, playlist_id)
+  return
 
 def check_ratings(user_id, playlist_id):
   with get_db_cursor(True) as cursor:
@@ -639,7 +640,7 @@ def updateRatings(user_id, playlist_id, rating, updating=False):
     else:
       cursor.execute("INSERT INTO mixtape_fm_ratings (rating_user_id, playlist_id, stars, timestamp) VALUES (%s, %s, %s, CURRENT_TIMESTAMP);", \
       (user_id, playlist_id, rating))
-    return
+  return
 
 def ratePlaylist(user_id, playlist_id, rating):
   if (user_id == None or playlist_id == None or rating == None):
@@ -655,12 +656,13 @@ def ratePlaylist(user_id, playlist_id, rating):
     updateRatings(user_id, playlist_id, rating, True)
   else:
     updateRatings(user_id, playlist_id, rating, False)
+  return
 
 def insert_comment(user_id, playlist_id, comment):
   with get_db_cursor(True) as cursor:
     cursor.execute("INSERT INTO mixtape_fm_comments (comment_user_id, playlist_id, content, timestamp) VALUES (%s, %s, %s, CURRENT_TIMESTAMP);", \
     (user_id, playlist_id, comment))
-    return
+  return
 
 def addComment(user_id, playlist_id, comment):
   if (user_id == None or playlist_id == None or comment == None):
@@ -670,30 +672,31 @@ def addComment(user_id, playlist_id, comment):
     print("  comment= " + str(comment))
     return
   insert_comment(user_id, playlist_id, comment)
+  return
 
 def deleteRating(user_id, playlist_id):
   with get_db_cursor(True) as cursor:
     cursor.execute("DELETE * FROM mixtape_fm_ratings WHERE rating_user_id=%s AND playlist_id=%s;", \
     (user_id, playlist_id))
-    return
+  return
 
 def deleteComment(user_id, playlist_id, comment):
   with get_db_cursor(True) as cursor:
     cursor.execute("DELETE FROM mixtape_fm_comments WHERE comment_user_id=%s AND playlist_id=%s AND content=%s;", \
     (user_id, playlist_id, comment))
-    return
+  return
 
 def deleteComments(user_id, playlist_id):
   with get_db_cursor(True) as cursor:
     cursor.execute("DELETE FROM mixtape_fm_comments WHERE comment_user_id=%s AND playlist_id=%s;", \
     (user_id, playlist_id))
-    return
+  return
 
 def create_playlist(user_id, playlist_name, image):
   with get_db_cursor(True) as cursor:
     cursor.execute("INSERT INTO mixtape_fm_playlists (user_id, playlist_name, creation_date, image) VALUES (%s, %s, CURRENT_TIMESTAMP, %s);",
     (user_id, playlist_name, image))
-    return
+  return
 
 def createPlaylist(user_id, playlist_name, image, song_ids):
   if (user_id == None or playlist_name == None):
@@ -717,8 +720,8 @@ def delete_song(playlist_id, song_id):
   with get_db_cursor(True) as cursor:
     cursor.execute("DELETE FROM mixtape_fm_playlist_songs WHERE playlist_id=%s AND song_id=%s;", \
     (playlist_id, song_id))
+  return
 
-# TODO
 def deleteSongs(user_id, playlist_id, song_ids):
   if (user_id == None or playlist_id == None or song_ids == []):
     print("Invalid parameters")
@@ -734,7 +737,7 @@ def deleteSongs(user_id, playlist_id, song_ids):
 def delete_playlist_songs(playlist_id):
   with get_db_cursor(True) as cursor:
     cursor.execute("DELETE FROM mixtape_fm_playlist_songs WHERE playlist_id=%s;", (playlist_id, ))
-    return
+  return
 
 def update_playlist(user_id, playlist_id, playlist_name, playlist_image=None):
   with get_db_cursor(True) as cursor:
@@ -744,7 +747,7 @@ def update_playlist(user_id, playlist_id, playlist_name, playlist_image=None):
     else:
       cursor.execute("UPDATE mixtape_fm_playlists SET playlist_name=%s, image=%s WHERE user_id=%s AND playlist_id=%s;", \
       (playlist_name, playlist_image, user_id, playlist_id))
-    return
+  return
 
 
 # def updatePlaylist(user_id, playlist_id, added_song_ids, deleted_song_ids, playlist_name, playlist_image):
@@ -771,7 +774,7 @@ def updatePlaylist(user_id, playlist_id, song_ids, playlist_name, playlist_image
 def add_tag(tag_name):
   with get_db_cursor(True) as cursor:
     cursor.execute("INSERT INTO mixtape_fm_tags (tag_name) VALUES (%s);", (tag_name, ))
-    return
+  return
 
 def addTag(tag_name):
   if (tag_name == None):
@@ -792,12 +795,12 @@ def savePlaylist(user_id, playlist_id):
     return
   with get_db_cursor(True) as cursor:
     cursor.execute("INSERT INTO mixtape_fm_playlists_saved (playlist_id, user_id) VALUES (%s, %s);", (playlist_id, user_id))
-    return
+  return
 
 def get_saved_playlists(user_id):
   with get_db_cursor(True) as cursor:
     cursor.execute("SELECT * FROM mixtape_fm_playlists_saved WHERE user_id = %s;", (user_id, ))
-    return cursor.fetchall()
+  return cursor.fetchall()
 
 def getSavedPlaylists(user_id):
   if (user_id == None):
