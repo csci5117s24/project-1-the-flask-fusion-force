@@ -45,7 +45,6 @@
 <script src="{{ url_for('static', filename='playlistCard.js') }}"></script>
 <script>
     const user_id = "{{ user_id }}";
-    console.log(myPlaylists)
     var myPlaylists = {{ myPlaylists | tojson }};
     var savedPlaylists = {{ savedPlaylists | tojson }};
     var randomPlaylists = {{ randomPlaylists | tojson }};

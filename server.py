@@ -3,7 +3,7 @@ import json
 from os import environ as env
 from dotenv import find_dotenv, load_dotenv
 from urllib.parse import quote_plus, urlencode
-from flask import Flask, request, render_template, redirect, session, Response, jsonify, url_for
+from flask import Flask, request, render_template, redirect, session, Response, jsonify
 from spotify import get_playlist_info
 
 import auth, db, spotify, api
@@ -59,31 +59,27 @@ def spotify_callback():
   session["spotify"] = spotify.connect_spotify(session['user_id'], code)
   playlist_json = get_playlist_info(session["spotify"].get("access_token"))
   info = []
-
-  # Gets all the playlist information for us in a list of dictionaries where each entry is its own playlist
+  playlist_ids = []
   for playlist_info in playlist_json.get('items'):
-    images = playlist_info.get('images')
-    image = images[0].get('url') if images is not None or len(images) > 0 else "NULL"
-    info.append({'id':playlist_info.get('id'),'image': image, 'name': playlist_info.get('name')})
+    info.append({'image': playlist_info.get('images')[0].get('url'), 'name': playlist_info.get('name'), 'rating': 0})
+    playlist_ids.append(playlist_info.get('id'))
 
   db_playlists = db.getPlaylists(session['user_id'])
-  db_playlist_ids = [playlist.get('name') for playlist in db_playlists]
+  
+#   db_playlist_names = [playlist.get('name') for playlist in db_playlists]
+#   print(db_playlist_names)
 
-  for playlist in info:
-    # Makes it so the database won't add a duplicate playlist
-    if playlist.get('name') in db_playlist_ids:
-        continue
-    print(playlist.get('name'))
-    playlist_id = db.insert_playlist(session['user_id'], playlist.get('name'), playlist.get('image'))
+#   for playlist in info:
+#     # Makes it so the database won't add a duplicate playlist
+#     if playlist.get('name') not in db_playlist_names:
+#         db.insert_playlist(session['user_id'], playlist.get('name'))
 
-    songs = spotify.get_songs_from_playlist(session["spotify"].get("access_token"), playlist.get('id'))
-    print("SONGS")
-    print(songs)
-
-    db.insertSongs(songs)
-    db.insertSongsToPlaylist(playlist_id, songs)
-
-  return redirect(url_for("library"))
+#   for playlist_id in playlist_ids:
+#     spotify.get_songs_from_playlist(session["spotify"].get("access_token"), playlist_id)
+#   playlist = [{'image': 'https://mosaic.scdn.co/640/ab67616d0000b2732887f8c05b5a9f1cb105be29ab67616d0000b273c4e6adea69105e6b6e214b96ab67616d0000b273d81a092eb373ded457d94eecab67616d0000b273e6d6d392a66a7f9172fe57c8',
+#               'name': 'Nebraska',
+#               'rating': 0}]
+  return render_template('homepage.html.jinja', playlists=info)
 
 # Call this route like:.../spotify/search?q=baby%20shark
 # The string after "?q=" must be url encoded
@@ -142,14 +138,15 @@ def settings():
 @app.route('/library', methods=['POST','GET'])
 @auth.require_login
 def library():
-    user_id = session['user']['userinfo']['email']
+    user_id=session.get('user_id')
+    #print(db.get_user_playlists(0))
+    # myPlaylists=[{'image':'image goes here','name':'playlist name goes here','rating':'rating goes here','tags':['tag1','tag2','tag3'],'userID':'-1','playlistID':'72',}]
+    myPlaylists = db.get_user_playlists(user_id)
+    randomPlaylists = db.get_random_playlists(10)
+    print(randomPlaylists)
+    savedPlaylists=db.get_saved_playlists(user_id)
 
-    # List of dictionaries where each nested list has a playlist's information
-    myPlaylists = db.getUserPlaylists(user_id)
-    print(myPlaylists)
-    savedPlaylists = db.getSavedPlaylists(user_id)
-    randomPlaylists = db.getRandomPlaylists(10)
-    return render_template('user_library.html.jinja', myPlaylists=myPlaylists, savedPlaylists=savedPlaylists, randomPlaylists=randomPlaylists, user_session=session.get('user'), user_id=session.get('user_id'))
+    return render_template('user_library.html.jinja', myPlaylists=myPlaylists, savedPlaylists=savedPlaylists, randomPlaylists=randomPlaylists, user_session=session.get('user'), user_id=user_id)
 
 @app.route('/edit-playlist/<int:p_id>', methods=['POST','GET'])
 @app.route('/edit-playlist', methods=['POST','GET'])  # Incase user is making a completey new playlist
