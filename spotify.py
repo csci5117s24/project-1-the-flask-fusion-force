@@ -107,7 +107,7 @@ def get_songs_from_playlist(access_token, playlist_id):
 
 
 def search_song(access_token, search_string, num_results=20):
-  search_url = f"https://api.spotify.com/v1/search?type=track&q={requests.utils.quote(search_string)}&n={num_results}"
+  search_url = f"https://api.spotify.com/v1/search?type=track&q={requests.utils.quote(search_string)}&limit={num_results}"
   search_headers = {'Authorization': 'Bearer ' + access_token}
   response = requests.get(url=search_url, headers=search_headers)
   log_response(response, contentMaxLen=1000)
