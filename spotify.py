@@ -103,7 +103,18 @@ def get_songs_from_playlist(access_token, playlist_id):
   response = requests.get(url=playlist_songs_url, headers=playlist_songs_headers)
   log_response(response)
   playlist_songs_json = response.json()
-  print(playlist_songs_json.get('id'))
+  # print(playlist_songs_json['items'])
+  songs = []
+  for song in playlist_songs_json['items']:
+    song_name = song['track']['name']
+    song_artist = song['track']['artists'][0]['name']
+    song_album = song['track']['album']['name']
+    song_duration = song['track']['duration_ms']
+    songs.append({"name": song_name, "artist": song_artist, "album": song_album, "duration": song_duration})
+    # print(song_album)
+    # db.insert_song(song_name, song_artist, song_album, None, song_duration)
+
+  return songs
 
 
 def search_song(access_token, search_string, num_results=20):

@@ -33,10 +33,11 @@ def homepage():
     #print(db.get_top_playlists()) 
     playlists = []
     print('\nsession\n')
-    print(session)
     if (session.get('user_id') != None):
+      print("IN IF")
       playlists = db.getUserPlaylists(session['user_id'])
     else:
+      print("ELSE")
       playlists = db.getRandomPlaylists(10)
     print('\n\nPLAYLISTS\n')
     print(playlists)
@@ -67,26 +68,39 @@ def spotify_callback():
   playlist_json = get_playlist_info(session["spotify"].get("access_token"))
   info = []
   playlist_ids = []
+  playlist_songs = []
+  
+  # Gets all the playlist information for us in a list of dictionaries where each entry is its own playlist
   for playlist_info in playlist_json.get('items'):
     info.append({'image': playlist_info.get('images')[0].get('url'), 'name': playlist_info.get('name'), 'rating': 0})
     playlist_ids.append(playlist_info.get('id'))
 
+  # These are the playlists that are already in the database that we use to check for
   db_playlists = db.getPlaylists(session['user_id'])
+  db_playlist_names = [playlist.get('name') for playlist in db_playlists]
+
+  for playlist in info:
+    # Makes it so the database won't add a duplicate playlist
+    if playlist.get('name') not in db_playlist_names:
+        print(playlist.get('name'))
+        db.insert_playlist(session['user_id'], playlist.get('name'), playlist.get('image'))
   
-#   db_playlist_names = [playlist.get('name') for playlist in db_playlists]
-#   print(db_playlist_names)
+  # TODO: Can definitely organize it in a better way, I was just strapped for time
+  # Gets songs organized by playlist in a nested list of dictionaries -> [[{playlist1_info}], [{playlist2_info}]]
+  for playlist_id in playlist_ids:
+    playlist_songs.append(spotify.get_songs_from_playlist(session["spotify"].get("access_token"), playlist_id))
 
-#   for playlist in info:
-#     # Makes it so the database won't add a duplicate playlist
-#     if playlist.get('name') not in db_playlist_names:
-#         db.insert_playlist(session['user_id'], playlist.get('name'))
+  # TODO: Do I need to insert every song in each playlist to the database or insert it once?
+  # TODO: If it's only once then how will we know if that singular song is in the playlist when populating the tracks in the front end
+  # TODO: If it's more than once then this will make the website exrtremely slow
+  # Brute force method that I think should work but we could definitely improve
+  # for playlist in playlist_songs:
+  #    for song in playlist:
+    # Checks if a song is already in the database or not
+  #       if db.get_song_id(song['name'], song['artist'], song['album'], None, song['duration']) == None:
+  #          db.insert_song(song['name'], song['artist'], song['album'], None, song['duration'])
 
-#   for playlist_id in playlist_ids:
-#     spotify.get_songs_from_playlist(session["spotify"].get("access_token"), playlist_id)
-#   playlist = [{'image': 'https://mosaic.scdn.co/640/ab67616d0000b2732887f8c05b5a9f1cb105be29ab67616d0000b273c4e6adea69105e6b6e214b96ab67616d0000b273d81a092eb373ded457d94eecab67616d0000b273e6d6d392a66a7f9172fe57c8',
-#               'name': 'Nebraska',
-#               'rating': 0}]
-  return render_template('homepage.html.jinja', playlists=info)
+  return render_template('user_library.html.jinja', playlists=info)
 
 # Call this route like:.../spotify/search?q=baby%20shark
 # The string after "?q=" must be url encoded
@@ -142,20 +156,18 @@ def playlist(p_id):
 @auth.require_login
 def settings():
     return render_template('settings.html.jinja', user_id=session.get('user_id'),settings = 
-  {"Import Spotify playlists":["button",["/spotify/login","get",session.get('spotify')]]})
+  {"Import Spotify playlists":["button",["/spotify/login","get",False]]})
 
 @app.route('/library', methods=['POST','GET'])
 @auth.require_login
 def library():
-    user_id=session.get('user_id')
-    #print(db.get_user_playlists(0))
-    # myPlaylists=[{'image':'image goes here','name':'playlist name goes here','rating':'rating goes here','tags':['tag1','tag2','tag3'],'userID':'-1','playlistID':'72',}]
-    myPlaylists = db.get_user_playlists(user_id)
-    randomPlaylists = db.get_random_playlists(10)
-    print(randomPlaylists)
-    savedPlaylists=db.get_saved_playlists(user_id)
-
-    return render_template('user_library.html.jinja', myPlaylists=myPlaylists, savedPlaylists=savedPlaylists, randomPlaylists=randomPlaylists, user_session=session.get('user'), user_id=user_id)
+    user_id = session['user']['userinfo']['email']
+    
+    # List of dictionaries where each nested list has a playlist's information
+    myPlaylists = db.getUserPlaylists(user_id)
+    savedPlaylists = db.getSavedPlaylists(user_id)
+    randomPlaylists = db.getRandomPlaylists(10)
+    return render_template('user_library.html.jinja', myPlaylists=myPlaylists, savedPlaylists=savedPlaylists, randomPlaylists=randomPlaylists, user_session=session.get('user'), user_id=session.get('user_id'))
 
 @app.route('/edit-playlist/<int:p_id>', methods=['POST','GET'])
 @app.route('/edit-playlist', methods=['POST','GET'])  # Incase user is making a completey new playlist

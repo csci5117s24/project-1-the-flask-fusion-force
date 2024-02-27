@@ -465,6 +465,8 @@ def getUserPlaylists(user_id):
     return []
     # return jsonify([])
   db_playlists = get_user_playlists(user_id)
+  print("getUserPlaylists")
+  print(db_playlists)
   if (db_playlists == []):
     return []
     # return jsonify([])
