@@ -134,8 +134,12 @@ def search():
       searchResults = db.search(session['user_id'], searchtext)
     else:
       searchResults = db.search(None, searchtext)
-    print(searchResults)
-    return render_template('search.html.jinja',user_id=session.get('user_id'), playlists = [searchResults['name_results'], searchResults['tag_results'], searchResults['saved_results']])
+    print(f"Search results:\n{searchResults}")
+    nameResults = searchResults['name_results']
+    tagResults = searchResults['tag_results']
+    savedResults = searchResults['saved_results']
+    return render_template('search.html.jinja',user_id=session.get('user_id'), nameResults=nameResults, tagResults=tagResults, savedResults=savedResults)
+
 @app.route('/playlist/<int:p_id>', methods=['POST','GET'])
 def playlist(p_id):
     songs = db.get_playlist_songs(p_id)
