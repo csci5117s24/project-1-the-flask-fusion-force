@@ -188,10 +188,4 @@ def savePlaylist():
     playlist_id = data.get('playlist_id')
     db.savePlaylist(user_id, playlist_id)
 
-@app.route('/save-playlist', methods=['POST'])
-def savePlaylist():
-    data = request.json
-    user_id = data.get('user_id')
-    playlist_id = data.get('playlist_id')
-    db.savePlaylist(user_id, playlist_id)
 
