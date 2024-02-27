@@ -200,7 +200,8 @@ def get_playlists_from_tag_id_results(tag_id_results):
       if (tag_id_result):
         playlist_id = get_playlist_id_from_tag_id(tag_id_result[0])
         if (playlist_id):
-          playlists.append(playlist_id[0])
+          playlist = get_playlist_from_playlist_id(playlist_id[0])
+          playlists.append(playlist)
   return get_playlists_from_results(playlists)
 
 # TODO
