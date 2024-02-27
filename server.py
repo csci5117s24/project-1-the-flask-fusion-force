@@ -74,11 +74,11 @@ def spotify_callback():
 
   # These are the playlists that are already in the database that we use to check for
   db_playlists = db.getPlaylists(session['user_id'])
-  db_playlist_names = [playlist.get('name') for playlist in db_playlists]
+  db_playlist_ids = [playlist.get('name') for playlist in db_playlists]
 
   for playlist in info:
     # Makes it so the database won't add a duplicate playlist
-    if playlist.get('name') in db_playlist_names:
+    if playlist.get('name') in db_playlist_ids:
         continue
     print(playlist.get('name'))
     playlist_id = db.insert_playlist(session['user_id'], playlist.get('name'), playlist.get('image'))
@@ -87,7 +87,7 @@ def spotify_callback():
     print("SONGS")
     print(songs)
 
-    # db.insertSongs(songs)
+    db.insertSongs(songs)
     db.insertSongsToPlaylist(playlist_id, songs)
   
   # TODO: Can definitely organize it in a better way, I was just strapped for time
