@@ -5,7 +5,7 @@ from flask import current_app, jsonify
 import psycopg2
 from psycopg2.pool import ThreadedConnectionPool
 from psycopg2.extras import DictCursor
-
+import math
 pool = None
 
 def setup():
@@ -59,8 +59,14 @@ def get_playlist_songs(playlist_id):
   playlist_songs = []
   for song_id_arr in playlist_songs_ids:
     song_id = song_id_arr[0]
-    song = get_song_from_song_id(song_id)
-    playlist_songs.append(song[0])
+    song_result = get_song_from_song_id(song_id)
+    # songs: [song_id:””, name:””, picture:”img”, artist:’’”, album:””, genre:””|null, duration:””|null]
+    duration = None
+    if (song_result[5]):
+      duration = str(math.floor(int(song_result[5]) / 60000)) + ':' + str(int(song_result[5]) % 60000)
+      print("duration= " + duration)
+    song = {'song_id': song_result[0], 'name': song_result[1], 'picture': None, 'artist': song_result[2], 'album': song_result[3], 'genre': song_result[4], 'duration': duration}
+    playlist_songs.append(song)
   return playlist_songs
 
 def get_user_playlists(user_id):
@@ -449,16 +455,17 @@ def format_db_comments(db_comments):
   for comment in db_comments:
     commenter_id = comment[1]
     commenter = getUserFromUserId(commenter_id)
-    commenter_text = comment[4]
+    commenter_text = comment[3]
     comments.append({'commenterID': commenter_id, 'commenterPFP': commenter[5], 'commentText': commenter_text})
   return comments
 
-def getComments(user_id, playlist_id):
+def getComments(playlist_id):
   if (playlist_id == None or playlist_id == ''):
     return []
     # return jsonify([])
   db_comments = get_comments(playlist_id)
   comments = format_db_comments(db_comments)
+  print("comments= " + str(comments))
   return comments
   # return jsonify(comments)
 

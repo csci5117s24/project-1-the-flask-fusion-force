@@ -119,7 +119,12 @@ def search():
     return render_template('search.html.jinja',user_session = session.get('user'), playlists = [searchResults['name_results'], searchResults['tag_results'], searchResults['saved_results']])
 @app.route('/playlist/<int:p_id>', methods=['POST','GET'])
 def playlist(p_id):
-    return render_template('playlist.html.jinja', playlist_id=p_id,user_session = session.get('user'), user_id=session.get('user_id'), songs= ["Minnesota March","Minnesota Rouser"],comments= ["Lovely","good vibes"])
+    print("p_id= " + str(p_id))
+    songs = db.get_playlist_songs(p_id)
+    print(songs)
+    comments = db.getComments(p_id)
+    print(comments)
+    return render_template('playlist.html.jinja', playlist_id=p_id,user_session = session.get('user'), user_id=session.get('user_id'), songs = songs,comments = comments)
 @app.route('/settings', methods=['GET'])
 @auth.require_login
 def settings():
