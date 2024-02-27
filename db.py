@@ -851,7 +851,7 @@ def savePlaylist(user_id, playlist_id):
 def get_saved_playlists(user_id):
   with get_db_cursor(True) as cursor:
     cursor.execute("SELECT * FROM mixtape_fm_playlists_saved WHERE user_id = %s;", (user_id, ))
-  return cursor.fetchall()
+    return cursor.fetchall()
 
 def getSavedPlaylists(user_id):
   if (user_id == None):
