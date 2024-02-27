@@ -604,35 +604,38 @@ def insertSongs(songs):
     with get_db_cursor(True) as cursor:
         values_str = ",".join([
             cursor.mogrify(
-                f"(%s,%s,%s,%s,%s)", 
-                (song.get("name"), song.get("artist") , song.get("album"),
-                "NULL" if song.get("genre") is None else song.get("genre"),
-                song.get("duration"))
+                "(%s,%s,%s,%s,%s,%s,%s)", 
+                (song.get("id"),
+                 song.get("name"),
+                 song.get("artist"),
+                 song.get("album"),
+                 song.get("duration"),
+                 nullIfNone(song.get("genre")),
+                 nullIfNone(song.get("image")))
             ).decode('utf-8')
             for song in songs
         ])
-        cursor.execute("INSERT INTO mixtape_fm_songs (name, artist, album, genre, duration) VALUES" + values_str)
+        cursor.execute("INSERT INTO mixtape_fm_songs (song_id, name, artist, album, duration, genre, image) VALUES" 
+                       + values_str
+                       + " ON CONFLICT (song_id) DO UPDATE SET name = excluded.name, artist = excluded.song_id,"
+                       + "album = excluded.album, duration = excluded.duration, genre = excluded.genre, image = excluded.image")
     return
 
 # each entry in songs contains: name, artist, album, duration
 def insertSongsToPlaylist(playlist_id, songs):
-    songs_compact = []
-    for song in songs:
-            # WARNING: extremely inefficient
-            song_id = get_song_id(song.get("name"), song.get("artist"), song.get("album"), None, song.get("duration"))
-            if (song_id is not None and len(song_id) != 0):
-                print(song_id)
-                songs_compact.append(song_id[0])
+    print([i for i,_ in enumerate(songs)])
     with get_db_cursor(True) as cursor:
         value_str = ",".join([
             cursor.mogrify(
-                f"(%s,%s,%s)",
-                (str(playlist_id), str(song), str(i)))
+                "(%s,%s,%s)",
+                (playlist_id, song.get("id"), i))
             .decode('utf-8')
-            for i, song in enumerate(songs_compact)
+            for i, song in enumerate(songs)
         ])
-        cursor.execute("INSERT INTO mixtape_fm_playlist_songs (playlist_id, song_id, position) VALUES" + value_str)
-    return 0
+        cursor.execute("INSERT INTO mixtape_fm_playlist_songs (playlist_id, song_id, position) VALUES" 
+                       + value_str 
+                       + " ON CONFLICT (playlist_id, position) DO NOTHING"); # unique constraint on this combo of columns
+    return
 
 # def insert_new_user(user_id):
 #   with get_db_cursor(True) as cursor:
@@ -889,4 +892,7 @@ def unsavePlaylist(user_id, playlist_id):
   with get_db_cursor(True) as cursor:
     cursor.execute("DELETE FROM mixtape_fm_playlists_saved WHERE playlist_id=%s AND user_id=%s;", (playlist_id, user_id))
   return
-  
+
+def nullIfNone(arg):
+  if arg is None: return "NULL"
+  else: return arg

@@ -106,11 +106,12 @@ def get_songs_from_playlist(access_token, playlist_id):
   # print(playlist_songs_json['items'])
   songs = []
   for song in playlist_songs_json['items']:
+    song_id = song['track']['id']
     song_name = song['track']['name']
     song_artist = song['track']['artists'][0]['name']
     song_album = song['track']['album']['name']
     song_duration = song['track']['duration_ms']
-    songs.append({"name": song_name, "artist": song_artist, "album": song_album, "duration": song_duration})
+    songs.append({"id": song_id, "name": song_name, "artist": song_artist, "album": song_album, "duration": song_duration})
     # print(song_album)
     # db.insert_song(song_name, song_artist, song_album, None, song_duration)
 
