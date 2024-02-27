@@ -104,7 +104,7 @@ def spotify_search():
     num_results = request.args.get('n')
     if (search_string is None): 
        return Response("Need to pass in a query string!", status=400, mimetype='text/plain')
-    if (num_results is None or num_results < 0 or num_results > 50): num_results = 20
+    if (num_results is None): num_results = 20
 
     search_res = spotify.search_song(session['spotify']['access_token'], search_string, num_results=num_results)  # flask jsonifies this
     return jsonify(search_res)
