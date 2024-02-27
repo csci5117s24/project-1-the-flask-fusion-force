@@ -63,9 +63,9 @@ def get_playlist_songs(playlist_id):
     # songs: [song_id:””, name:””, picture:”img”, artist:’’”, album:””, genre:””|null, duration:””|null]
     duration = None
     if (song_result[5]):
-      duration = str(math.floor(int(song_result[5]) / 60000)) + ':' + str(int(song_result[5]) % 60000)
+      duration = str(math.floor(int(song_result[4]) / 60000)) + ':' + str(int(song_result[4]) % 60000)
       # print("duration= " + duration)
-    song = {'song_id': song_result[0], 'name': song_result[1], 'picture': song_result[6], 'artist': song_result[2], 'album': song_result[3], 'genre': song_result[4], 'duration': duration}
+    song = {'song_id': song_result[6], 'name': song_result[0], 'picture': song_result[5], 'artist': song_result[1], 'album': song_result[2], 'genre': song_result[3], 'duration': duration}
     playlist_songs.append(song)
   return playlist_songs
 
@@ -96,12 +96,18 @@ def getPlaylistSongId(playlist_id, song_id):
 
 def get_song_id(name, artist, album, genre, duration, image):
   with get_db_cursor(True) as cursor:
-    if (genre == None):
+    if (genre == None and image == None):
       cursor.execute("SELECT song_id FROM mixtape_fm_songs WHERE name=%s AND artist=%s AND album=%s AND duration=%s;", \
       (name, artist, album, duration))
-    else:
+    elif (genre == None and image != None):
+      cursor.execute("SELECT song_id FROM mixtape_fm_songs WHERE name=%s AND artist=%s AND album=%s AND image=%s AND duration=%s;", \
+      (name, artist, album, image, duration))
+    elif (genre != None and image == None):
       cursor.execute("SELECT song_id FROM mixtape_fm_songs WHERE name=%s AND artist=%s AND album=%s AND genre=%s AND duration=%s;", \
       (name, artist, album, genre, duration))
+    else:
+      cursor.execute("SELECT song_id FROM mixtape_fm_songs WHERE name=%s AND artist=%s AND album=%s AND genre=%s AND image=%s AND duration=%s;", \
+      (name, artist, album, genre, image, duration))
     return cursor.fetchone()
 
 def get_comment(commenter_id, playlist_id):
@@ -194,7 +200,8 @@ def get_playlists_from_tag_id_results(tag_id_results):
       if (tag_id_result):
         playlist_id = get_playlist_id_from_tag_id(tag_id_result[0])
         if (playlist_id):
-          playlists.append(playlist_id[0])
+          playlist = get_playlist_from_playlist_id(playlist_id[0])
+          playlists.append(playlist)
   return get_playlists_from_results(playlists)
 
 # TODO
