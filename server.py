@@ -120,7 +120,7 @@ def search():
       searchResults = db.search(session['user_id'], searchtext)
     else:
       searchResults = db.search(None, searchtext)
-    print(searchResults)
+    print(f"Search results:\n{searchResults}")
     return render_template('search.html.jinja',user_id=session.get('user_id'), playlists = [searchResults['name_results'], searchResults['tag_results'], searchResults['saved_results']])
 @app.route('/playlist/<int:p_id>', methods=['POST','GET'])
 def playlist(p_id):
@@ -143,12 +143,15 @@ def settings():
 @app.route('/library', methods=['POST','GET'])
 @auth.require_login
 def library():
-    print(session.get('user'))
+    user_id=session.get('user_id')
     #print(db.get_user_playlists(0))
-    myPlaylists=[{'image':'image goes here','name':'playlist name goes here','rating':'rating goes here','tags':['tag1','tag2','tag3'],'userID':'-1','playlistID':'72',}]
-    randomPlaylists=[{}]
-    savedPlaylists=[{}]
-    return render_template('user_library.html.jinja', myPlaylists=myPlaylists, savedPlaylists=savedPlaylists, randomPlaylists=randomPlaylists, user_session=session.get('user'), user_id=session.get('user_id'))
+    # myPlaylists=[{'image':'image goes here','name':'playlist name goes here','rating':'rating goes here','tags':['tag1','tag2','tag3'],'userID':'-1','playlistID':'72',}]
+    myPlaylists = db.get_user_playlists(user_id)
+    randomPlaylists = db.get_random_playlists(10)
+    print(randomPlaylists)
+    savedPlaylists=db.get_saved_playlists(user_id)
+
+    return render_template('user_library.html.jinja', myPlaylists=myPlaylists, savedPlaylists=savedPlaylists, randomPlaylists=randomPlaylists, user_session=session.get('user'), user_id=user_id)
 
 @app.route('/edit-playlist/<int:p_id>', methods=['POST','GET'])
 @app.route('/edit-playlist', methods=['POST','GET'])  # Incase user is making a completey new playlist
