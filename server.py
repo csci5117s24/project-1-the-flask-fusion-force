@@ -145,7 +145,7 @@ def editplaylist(p_id=None):
     songs = [{'songID': "", 'songName': "mySong1", 'songImage': ""}]
     return render_template('create_edit_playlist.html.jinja', playlist_id=p_id, user_session=session.get('user'),playlistDetails=playlist_details, songs=songs, user_id=session.get('user_id'))
 
-# @app.route('/rate-playlist', methods=['POST'])
+@app.route('/rate-playlist', methods=['POST'])
 def ratePlaylist():
     user_id = request.args.get('user_id')
     playlist_id = request.args.get('playlist_id')
