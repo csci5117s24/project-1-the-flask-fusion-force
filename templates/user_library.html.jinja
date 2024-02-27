@@ -8,13 +8,13 @@
 <div class="pure-menu pure-menu-horizontal">
     <ul class="pure-menu-list">
         <li class="pure-menu-item">
-            <button id="myPlaylistsBtn" class="pure-menu-link tab">My Playlists</button>
+            <button id="myPlaylistsBtn" class="pure-menu-link tab" onclick="changeContentToMyPlaylists()">My Playlists</button>
         </li>
         <li class="pure-menu-item">
-            <button id="savedPlaylistsBtn" class="pure-menu-link tab">Saved Playlists</button>
+            <button id="savedPlaylistsBtn" class="pure-menu-link tab" onclick="changeContentToSavedPlaylists()">Saved Playlists</button>
         </li>
         <li class="pure-menu-item">
-            <button id="randomPlaylistsBtn" class="pure-menu-link tab">Surprise Me</button>
+            <button id="randomPlaylistsBtn" class="pure-menu-link tab" onclick="changeContentToRandomPlaylists()">Surprise Me</button>
         </li>
     </ul>
 </div>
@@ -26,19 +26,19 @@
     </form>
 </div>
 <div id="myPlaylists">
-    {# {% for playlist in myPlaylists %}
+     {% for playlist in myPlaylists %}
     {% include "playlistcard.html.jinja" ignore missing with context %}
-    {% endfor %} #}
+    {% endfor %} 
 </div>
 <div id="SavedPlaylists" style="display: none;">
-    {# {% for playlist in savedPlaylists %}
+   {% for playlist in savedPlaylists %}
     {% include "playlistcard.html.jinja" ignore missing with context %}
-    {% endfor %} #}
+    {% endfor %}
 </div>
 <div id="RandomPlaylists" style="display: none;">
-    {# {% for playlist in randomPlaylists %}
+     {% for playlist in randomPlaylists %}
     {% include "playlistcard.html.jinja" ignore missing with context %}
-    {% endfor %} #}
+    {% endfor %}
 </div>
 </div>
 
@@ -89,29 +89,41 @@
         // This is NOT working. Do whatever will work. Dummy data is currently for myPlaylists
         function changeContentToMyPlaylists() {
             console.log("Clicked My Playlists tab");
-            myPlaylists.forEach(function (playlist) {
-                console.log(playlist);
-                console.log(playlist.name);
-                // const newDiv = document.createElement("div");
-                // const newContent = document.createTextNode("Hi there and greetings!");
-                // newDiv.appendChild(newContent);
-
-                createPlaylistCard(playlist, user_id);
-                x = document.getElementById("myPlaylists");
-                x.appendChild(playlist);
-            });
+            
+            let x = document.getElementById("myPlaylists");
+            let y = document.getElementById("SavedPlaylists");
+            let z = document.getElementById("RandomPlaylists");
+            if (x.style.display === "none") {
+                x.style.display = "block";
+            }
+                y.style.display = "none";
+                z.style.display = "none";
+                
+         
         }
         function changeContentToSavedPlaylists() {
             console.log("Clicked Saved Playlists tab");
-            savedPlaylists.forEach(function (playlist) {
-                createPlaylistCard(playlist, user_id);
-            });
+            let y = document.getElementById("myPlaylists");
+            let x = document.getElementById("SavedPlaylists");
+            let z = document.getElementById("RandomPlaylists");
+            if (x.style.display === "none") {
+                x.style.display = "block";
+            }
+                y.style.display = "none";
+                z.style.display = "none";
+             
         }
         function changeContentToRandomPlaylists() {
             console.log("Clicked Random Playlists tab");
-            randomPlaylists.forEach(function (playlist) {
-                createPlaylistCard(playlist, user_id);
-            });
+            let z = document.getElementById("myPlaylists");
+            let y = document.getElementById("SavedPlaylists");
+            let x = document.getElementById("RandomPlaylists");
+            if (x.style.display === "none") {
+                x.style.display = "block";
+            }
+                y.style.display = "none";
+                z.style.display = "none";
+             
         }
     });
 </script>
