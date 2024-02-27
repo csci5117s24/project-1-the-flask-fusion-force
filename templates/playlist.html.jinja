@@ -1,7 +1,7 @@
 {% extends "layout.html.jinja" %}
 {% block title %}Home{% endblock %}
 {% block page_title %}
-<h1>Playlist</h1>
+<h1> {{playlist.name}}</h1>
 {% endblock %}
 
 
@@ -19,7 +19,7 @@
                 {# {{ user_image }} #}
             </div>
             <div class="pure-u-3-6" style="padding: 2em 0.5em;">
-                {{ playlist.name }}
+                {{ playlist.ratingAvg }}
                 <div style="padding: 0.5em 1em;">
                     <button id="star1" class="star-button star-button-selected" onclick="addrating(1)">
                         <div class="stars-filled"></div>
