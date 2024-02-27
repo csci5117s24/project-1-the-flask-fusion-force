@@ -119,12 +119,12 @@ def search():
     return render_template('search.html.jinja',user_id=session.get('user_id'), playlists = [searchResults['name_results'], searchResults['tag_results'], searchResults['saved_results']])
 @app.route('/playlist/<int:p_id>', methods=['POST','GET'])
 def playlist(p_id):
-    print("p_id= " + str(p_id))
     songs = db.get_playlist_songs(p_id)
-    print(songs)
     comments = db.getComments(p_id)
-    print(comments)
-    return render_template('playlist.html.jinja', playlist_id=p_id,user_session = session.get('user'), user_id=session.get('user_id'), songs = songs,comments = comments)
+    db_playlist = db.get_playlist_from_playlist_id(p_id)
+    playlist = db.get_playlist_from_result(db_playlist)
+    user = db.getUserFromPlaylistId(db_playlist[0])
+    return render_template('playlist.html.jinja', playlist = playlist, user_image = user[5], playlist_id=p_id,user_session = session.get('user'), user_id=session.get('user_id'), songs = songs,comments = comments)
 @app.route('/settings', methods=['GET'])
 @auth.require_login
 def settings():
@@ -170,8 +170,9 @@ def addComment():
     comment = data.get('comment')
     print(user_id)
     print(comment)
-    if (db.addComment(user_id, playlist_id, comment) != []):
-        print("User has already left comment for playlist with id: " + str(playlist_id))
-    else:
-        db.addComment(user_id, playlist_id, comment)
+    db.addComment(user_id, playlist_id, comment)
+    # if (db.addComment(user_id, playlist_id, comment) != []):  # TODO fix this. We are adding a rating, not a comment.
+    #     print("User has already left comment for playlist with id: " + str(playlist_id))
+    # else:
+        # db.addComment(user_id, playlist_id, comment)
 

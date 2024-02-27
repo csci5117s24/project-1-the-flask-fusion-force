@@ -324,6 +324,24 @@ def getRatingsNoUser(playlist_id):
   return ratings
   # return jsonify(ratings) 
 
+def get_playlist_from_result(playlist_result):
+  playlist = {'playlistID': None, 'image': None, 'name': None, 'ratingAvg': None, \
+    'numRatings': None, 'tags': None, 'userDisplayName': None}
+  if (playlist_result == [] or playlist_result == None):
+    return playlist
+  else:
+    ratings = getRatingsNoUser(playlist_result[0])
+    tag_ids = get_tag_ids_from_playlist_id(playlist_result[0])
+    user = getUserFromPlaylistId(playlist_result[0])
+    tags = []
+    for tag_id in tag_ids:
+      db_tag = get_tag_from_id(tag_id[0])
+      tags.append(db_tag[0])
+    ratingAvg = getRatingAvg(playlist_result[0])
+    playlist = {'playlistID': playlist_result[0], 'image': playlist_result[4], 'name': playlist_result[2], 'ratingAvg': ratingAvg[0], \
+    'numRatings': len(ratings), 'tags': tags, 'userDisplayName': user[3]}
+    return playlist
+
 ## HELPER FUNCTION TO GET PLAYLISTS
 def get_playlists_from_results(playlist_results):
   playlists = []

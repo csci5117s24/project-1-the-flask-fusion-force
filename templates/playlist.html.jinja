@@ -10,16 +10,16 @@
     <div class="pure-u-6-12">
         <div class="pure-g">
             <div class="pure-u-1-6 small-playlist-icon">
-                {# {% playlist.image %} #}
-                Picture of Playlist
+                <img src="{{ playlist.image }}" alt="User Icon">
+                {# {{ playlist.image }} #}
+                {# Picture of Playlist #}
             </div>
             <div class="pure-u-1-6 user-icon">
-                {# {% playlist.user_image %} #}
-                User's PFP
+                <img src="{{ user_image }}" alt="User Icon">
+                {# {{ user_image }} #}
             </div>
             <div class="pure-u-3-6" style="padding: 2em 0.5em;">
-                {# {% playlist.playlist_name %} #}
-                Name of Playlist
+                {{ playlist.name }}
                 <div style="padding: 0.5em 1em;">
                     <button id="star1" class="star-button star-button-selected" onclick="addrating(1)">
                         <div class="stars-filled"></div>
