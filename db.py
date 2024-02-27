@@ -333,7 +333,7 @@ def get_playlists_from_results(playlist_results):
       # tags = tags + get_tag_from_id(tag_id[0])
     # Get average from ratings
     ratingAvg = getRatingAvg(playlist[0])
-    playlists.append({'image': playlist[4], 'name': playlist[2], 'ratingAvg': ratingAvg[0], \
+    playlists.append({'playlistID': playlist[0], 'image': playlist[4], 'name': playlist[2], 'ratingAvg': ratingAvg[0], \
     'numRatings': len(ratings), 'tags': tags, 'userDisplayName': user[3]})
   return playlists
 
