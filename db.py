@@ -58,14 +58,14 @@ def get_playlist_songs(playlist_id):
   playlist_songs_ids = get_playlist_songs_ids(playlist_id)
   playlist_songs = []
   for song_id_arr in playlist_songs_ids:
-    song_id = song_id_arr[0]
+    song_id = song_id_arr[6]
     song_result = get_song_from_song_id(song_id)
     # songs: [song_id:””, name:””, picture:”img”, artist:’’”, album:””, genre:””|null, duration:””|null]
     duration = None
     if (song_result[5]):
-      duration = str(math.floor(int(song_result[5]) / 60000)) + ':' + str(int(song_result[5]) % 60000)
+      duration = str(math.floor(int(song_result[4]) / 60000)) + ':' + str(int(song_result[4]) % 60000)
       # print("duration= " + duration)
-    song = {'song_id': song_result[0], 'name': song_result[1], 'picture': song_result[6], 'artist': song_result[2], 'album': song_result[3], 'genre': song_result[4], 'duration': duration}
+    song = {'song_id': song_result[6], 'name': song_result[0], 'picture': song_result[5], 'artist': song_result[1], 'album': song_result[2], 'genre': song_result[3], 'duration': duration}
     playlist_songs.append(song)
   return playlist_songs
 
@@ -96,12 +96,18 @@ def getPlaylistSongId(playlist_id, song_id):
 
 def get_song_id(name, artist, album, genre, duration, image):
   with get_db_cursor(True) as cursor:
-    if (genre == None):
+    if (genre == None and image == None):
       cursor.execute("SELECT song_id FROM mixtape_fm_songs WHERE name=%s AND artist=%s AND album=%s AND duration=%s;", \
       (name, artist, album, duration))
-    else:
+    elif (genre == None and image != None):
+      cursor.execute("SELECT song_id FROM mixtape_fm_songs WHERE name=%s AND artist=%s AND album=%s AND image=%s AND duration=%s;", \
+      (name, artist, album, image, duration))
+    elif (genre != None and image == None):
       cursor.execute("SELECT song_id FROM mixtape_fm_songs WHERE name=%s AND artist=%s AND album=%s AND genre=%s AND duration=%s;", \
       (name, artist, album, genre, duration))
+    else:
+      cursor.execute("SELECT song_id FROM mixtape_fm_songs WHERE name=%s AND artist=%s AND album=%s AND genre=%s AND image=%s AND duration=%s;", \
+      (name, artist, album, genre, image, duration))
     return cursor.fetchone()
 
 def get_comment(commenter_id, playlist_id):
