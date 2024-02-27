@@ -6,8 +6,8 @@
 
 
 {% block content %}
-<div class="pure-g horizontal-double-content">
-    <div class="pure-u-6-12">
+<div class="pure-g ">
+    <div class="pure-u-6-12 horizontal-double-content">
         <div class="pure-g">
             <div class="pure-u-1-6">
                 <img src="{{ playlist.image }}" alt="User Icon" class="small-playlist-icon">
@@ -15,7 +15,7 @@
                 {# Picture of Playlist #}
             </div>
             <div class="pure-u-1-6">
-                <img src="{{ user_image }}" alt="User Icon" class = "user-icon">
+                <img src="{{ user_image }}" alt="User Icon" class = "small-playlist-icon">
                 {# {{ user_image }} #}
             </div>
             <div class="pure-u-3-6" style="padding: 2em 0.5em;  margin-left: 2.5em;">
@@ -48,6 +48,7 @@
     <div class="pure-u-6-12 horizontal-double-content">
         <div class="commentlst">
             <div class="pure-g">
+             {% if user_session != None %}
                 <div class="pure-u-1-2">
                     <button class="newcomment" onclick="toggleComment('comment-create-box')">
                         + Add a comment
@@ -58,18 +59,23 @@
                         + Add a rating
                     </button>
                 </div> #}
+            {% endif %}
+                
+            </div>
+            <div class="right-align">
+                <!-- Save Button (Bottom Right) -->
+                {% if user_session != None %}
+                <form class="pure-form pure-u-1" method="POST" action="/library">
+                    <button onclick="savePlaylist()" class="save-button pure-button">Save Playlist</button>
+                </form>
+                {% endif %}
             </div>
             <div>
                 {% for comment in comments %}
                 {% include "commentcard.html.jinja" ignore missing with context %}
                 {% endfor %}
             </div>
-            <div class="right-align">
-                <!-- Save Button (Bottom Right) -->
-                <form class="pure-form pure-u-1" method="POST" action="/library">
-                    <button onclick="savePlaylist()" class="save-button pure-button">Save Playlist</button>
-                </form>
-            </div>
+            
         </div>
     </div>
 </div>

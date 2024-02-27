@@ -156,7 +156,8 @@ def editPlaylist(p_id=None):
     db_playlist = db.get_playlist_from_playlist_id(p_id)
     playlist = db.get_playlist_from_result(db_playlist)
     print(playlist)
-    if (playlist)
+    if (playlist):
+      pass
     # TODO: uncomment, have playlist as param
     # if userID != session.get('user_id'):
     #    return render_template('403.html.jinja')
