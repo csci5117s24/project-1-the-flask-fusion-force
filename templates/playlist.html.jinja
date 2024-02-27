@@ -9,19 +9,19 @@
 <div class="pure-g horizontal-double-content">
     <div class="pure-u-6-12">
         <div class="pure-g">
-            <div class="pure-u-1-6 small-playlist-icon">
-                <img src="{{ playlist.image }}" alt="User Icon">
+            <div class="pure-u-1-6">
+                <img src="{{ playlist.image }}" alt="User Icon" class="small-playlist-icon">
                 {# {{ playlist.image }} #}
                 {# Picture of Playlist #}
             </div>
-            <div class="pure-u-1-6 user-icon">
-                <img src="{{ user_image }}" alt="User Icon">
+            <div class="pure-u-1-6">
+                <img src="{{ user_image }}" alt="User Icon" class = "user-icon">
                 {# {{ user_image }} #}
             </div>
-            <div class="pure-u-3-6" style="padding: 2em 0.5em;">
+            <div class="pure-u-3-6" style="padding: 2em 0.5em;  margin-left: 2.5em;">
                 {{ playlist.ratingAvg }}
                 <div style="padding: 0.5em 1em;">
-                    <button id="star1" class="star-button star-button-selected" onclick="addrating(1)">
+                    <button id="star1" class="star-button" onclick="addrating(1)">
                         <div class="stars-filled"></div>
                     </button>
                     <button id="star2" class="star-button" onclick="addrating(2)">
