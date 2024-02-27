@@ -182,9 +182,7 @@ body{
 }
 .small-playlist-icon{
 
-    padding: 0.5em;
-    padding-top: 1em;
-    padding-bottom: 1em;
+   
     margin: 0.5em;
     padding-top: 1em;
     padding-bottom: 1em;
@@ -196,13 +194,14 @@ body{
     border-right: 6px inset #512f98;
     border-radius: 1em;
     text-align: center;
+    max-width: 5em;
+    max-height: 5em;
 }
 .user-icon{
-    background-color: #ffffff;
-    padding: 0.5em;
+    background-color: #00000000;
     padding-top: 1em;
     padding-bottom: 1em;
-    border-radius: 2em;
+    margin-left: 1.5em;
 }
 .newcomment{
     background-color: #512f98;
@@ -262,6 +261,7 @@ body{
     margin-left: auto; 
 }
 .star-button{
+    margin: -0.2em;
     padding: .6em .4em;
     border-style: none;
     background-color: #00000000;
@@ -334,17 +334,17 @@ body{
     margin: .1em -0.3em;
     position: relative;
     display: block;
-    color: #9883e5;
+    color: #512f98;
     width: 0px;
     height: 0px;
     border-right: 1em solid transparent;
-    border-bottom: .7em solid #9883e5;
+    border-bottom: .7em solid #512f98;
     border-left: 1em solid transparent;
     transform: rotate(35deg);
     border-radius: 3em;
   }
   .stars-filled:before {
-    border-bottom: .8em solid #9883e5;
+    border-bottom: .8em solid #512f98;
     border-left: .3em solid transparent;
     border-right: 0.3em solid transparent;
     position: absolute;
@@ -360,13 +360,13 @@ body{
   .stars-filled:after {
     position: absolute;
     display: block;
-    color: #9883e5;
+    color: #512f98;
     top: .03em;
     left: -1.05em;
     width: 0px;
     height: 0px;
     border-right: 1em solid transparent;
-    border-bottom: .70em solid #9883e5;
+    border-bottom: .70em solid #512f98;
     border-left: 1em solid transparent;
     transform: rotate(-70deg);
     content: '';

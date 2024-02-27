@@ -1,5 +1,5 @@
 <div class="pure-u-1 pure-u-md-1-3 pure-u-lg-1-5 playlist-container">
-    <button class="playlist" onclick="redirectToPlaylist({{ playlist.id }})">
+    <button class="playlist" onclick="redirectToPlaylist({{ playlist.playlistID }})">
         <div class="playlist-icon">
             <img src="{{ playlist.image }}" class = "playlist-img" alt="Playlist Image">
         </div>
@@ -23,6 +23,7 @@
 </div>
 <script>
     function redirectToPlaylist(playlistId) {
+        console.log(playlistId);
         window.location.href = "/playlist/" + playlistId;
     }
 </script>

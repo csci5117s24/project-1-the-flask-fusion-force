@@ -1,95 +1,141 @@
-
 {% extends "layout.html.jinja" %}
 {% block title %} Edit Playlist {% endblock %}
 {% block page_title %}
 <h1>
-{# {% playlistDetails.playlistName %} #}
-Playlist Name
+    {# {% playlistDetails.playlistName %} #}
+    Playlist Name
 </h1>
 {% endblock %}
 {% block content %}
 {% if user_session != None %}
 <div class="pure-g horizontal-double-content" style="padding: 2em;">
     <div class="pure-u-5-12">
-         <form class="pure-form pure-u-1" method = "POST" action = "/edit-playlist">
-                    <input type="text" class="pure-input-rounded" placeholder="Find a Song..."/>
-                    <button type="submit" class="pure-button">Search</button>
-        </form>
-        <div class = "songlst">
-            {% for song in songs %}
-                {% include "addsongcard.html.jinja" ignore missing with context %}
-            {% endfor %}
+        <div class="pure-form pure-u-1">
+            <input type="text" class="pure-input-rounded" placeholder="Find a Song..." id="songSearch" />
+            <button type="submit" class="pure-button" onclick="searchForSong()">Search</button>
         </div>
-        
+        <div class="songlst" id="searchedSongsDiv">
+            {# {% for song in searchedSongs %}
+            {% include "addsongcard.html.jinja" ignore missing with context %}
+            {% endfor %} #}
+        </div>
+
     </div>
-    <div class="pure-u-5-12 horizontal-double-content" >
+    <div class="pure-u-5-12 horizontal-double-content">
         <div class="pure-g song-feild">
-            <div class="pure-u-1-5 small-playlist-icon">
-                <img src="playlist_image.jpg" alt="Playlist Image">
-              
+            <div class="pure-u-1-5 small-playlist-icon" id="playlistImageDiv" onclick="changePlaylistImage()">
+                <img src="playlist_image.jpg" alt="Playlist Image" id="playlistImage">
             </div>
             <div class="pure-u-1-3">
-               <form class="pure-form pure-u-1" method = "POST" action = "/library">
-                    <input type="text" placeholder="name of playlist" value = "Name of playlist"/>
-                    
-        
+                <div class="pure-form pure-u-1">
+                    <input type="text" placeholder="name of playlist" value="Name of playlist" />
+                </div>
             </div>
         </div>
-      <div class = "songlst">
-            {% for song in songs %}
-                {% include "deletesongcard.html.jinja" ignore missing with context %}
+        <div class="songlst" id="currentSongsDiv">
+            {% for song in songs.songs %}
+            {% include "deletesongcard.html.jinja" ignore missing with context %}
             {% endfor %}
         </div>
-        <div class = "right-align">
-            <!-- Save Button (Bottom Right) -->
-           
-                <button onclick="savePlaylist()" class="save-button pure-button">Save Playlist</button>
-            </form>
-      </div>
+        <div class="right-align">
+            <button onclick="saveChanges()" class="save-button pure-button">Save Changes</button>
+        </div>
     </div>
-     
-    </div>
+
+</div>
 </div>
 {% else %}
-    <p> You can't access this page with out loging in</p>
-    <a href="/login" class="pure-menu-link">Log in</a>
+<p> You can't access this page with out loging in</p>
+<a href="/login" class="pure-menu-link">Log in</a>
 {% endif %}
 
 
-    <script>
-        /*
-        // Function to get playlist data from the server
-        function getPlaylist() {
-            fetch('/getPlaylist')
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('No search results for playlist from server');
-                    }
-                    return response.json(); // Read the response body as JSON
-                })
-                .then(data => { 
-                    // Display playlist details and songs
-                    document.getElementById('playlistSongs').innerHTML = renderPlaylistSongs(data.songs);
-                    document.querySelector('h1').innerText = data.playlistName;
-                })
-                .catch(error => {
-                    console.error('There was a problem with the fetch operation:', error);
+<script>
+    var playlistSongIDs = [];
+    const userID = "{{ user_id }}";
+    const playlistID = "{{ playlist_id }}";
+    var songs = {{ songs }};
+    var playlistDetails = {{ playlistDetails }};
+    songs.songs.forEach(song =>{
+        console.log(song);
+        playlistSongIDs.push(song.songID);
+    })
+    // extract playlist name and image
+    var playlistImageData = null;
+
+    console.log(songs);
+    console.log(playlistDetails);
+
+
+    function searchForSong() {
+        const searchQuery = document.getElementById("songSearch").value;
+        const fetchURL = `/spotify/search?q=${encodeURIComponent(searchQuery)}`;
+        console.log(fetchURL);
+        fetch(fetchURL, {
+            method: 'GET', // Ensure method is specified as 'GET'
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(searchRes => {
+                console.log(searchRes);
+                // Do something with the search results
+                searchRes.forEach(function (searchedSong) {
+                    console.log(searchedSong);
                 });
+            })
+            .catch(error => {
+                console.error('Error fetching data:', error);
+            });
+    }
+
+    function addSong(id, name, image) {
+        console.log("song being added");
+        // Add song to arrays, reset HTML for songs section
+        playlistSongIDs.push(id);
+        songs.push(id, name, image);
+        document.getElementById("currentSongsDiv").innerHTML = `{% for song in songs %}{% include "deletesongcard.html.jinja" ignore missing with context %}{% endfor %}`;
+    }
+    function deleteSong(id, name, image) {
+        console.log("song will be removed");
+        console.log(playlistSongIDs);
+        // Remove song from arrays, reset HTML for songs section
+        let idx = playlistSongIDs.indexOf(id);
+        playlistSongIDs = playlistSongIDs.splice(idx, 1);
+        songs.songs.splice(idx, 1);
+        document.getElementById("currentSongsDiv").innerHTML = `{% for song in songs.songs %}{% include "deletesongcard.html.jinja" ignore missing with context %}{% endfor %}`;
+        console.log("Songs is now: ", songs.songs.length);
+    }
+
+    function changePlaylistImage() {
+        console.log("Changing playlist pfp");
+        document.getElementById('imageUpload').click(); // Trigger the file input click event
+    }
+
+    function previewImage(input) {
+        const file = input.files[0];
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            document.getElementById("playlistImage").src = e.target.result;
+            playlistImageData = e.target.result.split(',')[1]; // Save only the base64 encoded image data
         }
-        // Alters display when user clicks a new tab
-        function searchSong(newTab){
+        reader.readAsDataURL(file);
+    }
+
+    function saveChanges() {
+
+        if (playlistID === null) {  // make a completeley new playlist
 
         }
-        function addSong(newTab){
+        else {  // update an existing playlist
 
         }
-        function editSong(newTab){
-
-        }
-        function savePlaylist(newTab){
-
-        }
-        window.onload = getPlaylist();
-        */
-    </script>
+    }
+</script>
 {% endblock %}
