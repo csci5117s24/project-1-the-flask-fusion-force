@@ -140,10 +140,15 @@ def search():
     else:
       searchResults = db.search(None, searchtext)
     print(searchResults)
-    return render_template('search.html.jinja',user_session = session.get('user'), playlists = [searchResults['name_results'], searchResults['tag_results'], searchResults['saved_results']])
+    return render_template('search.html.jinja',user_id=session.get('user_id'), playlists = [searchResults['name_results'], searchResults['tag_results'], searchResults['saved_results']])
 @app.route('/playlist/<int:p_id>', methods=['POST','GET'])
 def playlist(p_id):
-    return render_template('playlist.html.jinja', playlist_id=p_id,user_session = session.get('user'), user_id=session.get('user_id'), songs= ["Minnesota March","Minnesota Rouser"],comments= ["Lovely","good vibes"])
+    songs = db.get_playlist_songs(p_id)
+    comments = db.getComments(p_id)
+    db_playlist = db.get_playlist_from_playlist_id(p_id)
+    playlist = db.get_playlist_from_result(db_playlist)
+    user = db.getUserFromPlaylistId(db_playlist[0])
+    return render_template('playlist.html.jinja', playlist = playlist, user_image = user[5], playlist_id=p_id,user_session = session.get('user'), user_id=session.get('user_id'), songs = songs,comments = comments)
 @app.route('/settings', methods=['GET'])
 @auth.require_login
 def settings():
@@ -155,7 +160,7 @@ def settings():
 def library():
     print(session.get('user'))
     #print(db.get_user_playlists(0))
-    return render_template('user_library.html.jinja',playlists=[[{'image':'image goes here','name':'playlist name goes here','rating':'rating goes here','tags':['tag1','tag2','tag3']}],[],[]], user_session=session.get('user'), user_id=session.get('user_id'))
+    return render_template('user_library.html.jinja', myPlaylists=[{'image':'image goes here','name':'playlist name goes here','rating':'rating goes here','tags':['tag1','tag2','tag3'],'userID':'-1','playlistID':'72',}], savedPlaylists=[{}], randomPlaylists=[{}], user_session=session.get('user'), user_id=session.get('user_id'))
 
 @app.route('/edit-playlist/<int:p_id>', methods=['POST','GET'])
 @app.route('/edit-playlist', methods=['POST','GET'])  # Incase user is making a completey new playlist
@@ -169,15 +174,29 @@ def editplaylist(p_id=None):
     songs = [{'songID': "", 'songName': "mySong1", 'songImage': ""}]
     return render_template('create_edit_playlist.html.jinja', playlist_id=p_id, user_session=session.get('user'),playlistDetails=playlist_details, songs=songs, user_id=session.get('user_id'))
 
-# @app.route('/rate-playlist', methods=['POST'])
+@app.route('/rate-playlist', methods=['POST'])
 def ratePlaylist():
-    user_id = request.args.get('user_id')
-    playlist_id = request.args.get('playlist_id')
-    stars = request.args.get('stars')
-    comment = request.args.get('comment')
-    if (db.get_comment(user_id, playlist_id) != []):
-        print("User has already left comment for playlist with id: " + str(playlist_id))
-    else:
-        db.insertNewComment(user_id, playlist_id, stars, comment)
+    data = request.json
+    user_id = data.get('user_id')
+    playlist_id = data.get('playlist_id')
+    stars = data.get('stars')
+    print(user_id)
+    print(playlist_id)
+    print("stars= " + str(stars))
+    comment = data.get('comment')
+    db.ratePlaylist(user_id, playlist_id, stars)
 
+@app.route('/add-comment', methods=['POST'])
+def addComment():
+    data = request.json
+    user_id = data.get('user_id')
+    playlist_id = data.get('playlist_id')
+    comment = data.get('comment')
+    print(user_id)
+    print(comment)
+    db.addComment(user_id, playlist_id, comment)
+    # if (db.addComment(user_id, playlist_id, comment) != []):  # TODO fix this. We are adding a rating, not a comment.
+    #     print("User has already left comment for playlist with id: " + str(playlist_id))
+    # else:
+        # db.addComment(user_id, playlist_id, comment)
 

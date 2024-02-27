@@ -11,9 +11,9 @@ Playlist Name
 {% if user_session != None %}
 <div class="pure-g horizontal-double-content" style="padding: 2em;">
     <div class="pure-u-5-12">
-         <form class="pure-form pure-u-1" method = "POST" action = "/edit-playlist">
-                    <input type="text" class="pure-input-rounded" placeholder="Find a Song..."/>
-                    <button type="submit" class="pure-button">Search</button>
+         <form class="pure-form pure-u-1" method = "GET" action = "/edit-playlist">
+            <input type="text" class="pure-input-rounded" placeholder="Find a Song..."/>
+            <button type="submit" class="pure-button">Search</button>
         </form>
         <div class = "songlst">
             {% for song in songs %}

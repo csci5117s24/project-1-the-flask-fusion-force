@@ -1,7 +1,7 @@
 {% extends "layout.html.jinja" %}
 {% block title %}Home{% endblock %}
 {% block page_title %}
-<h1>Playlist</h1>
+<h1> {{playlist.name}}</h1>
 {% endblock %}
 
 
@@ -10,16 +10,16 @@
     <div class="pure-u-6-12">
         <div class="pure-g">
             <div class="pure-u-1-6 small-playlist-icon">
-                {# {% playlist.image %} #}
-                Picture of Playlist
+                <img src="{{ playlist.image }}" alt="User Icon">
+                {# {{ playlist.image }} #}
+                {# Picture of Playlist #}
             </div>
             <div class="pure-u-1-6 user-icon">
-                {# {% playlist.user_image %} #}
-                User's PFP
+                <img src="{{ user_image }}" alt="User Icon">
+                {# {{ user_image }} #}
             </div>
             <div class="pure-u-3-6" style="padding: 2em 0.5em;">
-                {# {% playlist.playlist_name %} #}
-                Name of Playlist
+                {{ playlist.ratingAvg }}
                 <div style="padding: 0.5em 1em;">
                     <button id="star1" class="star-button star-button-selected" onclick="addrating(1)">
                         <div class="stars-filled"></div>
@@ -44,7 +44,7 @@
             {% include "songcard.html.jinja" ignore missing with context %}
             {% endfor %}
         </div>
-    </div> 
+    </div>
     <div class="pure-u-6-12 horizontal-double-content">
         <div class="commentlst">
             <div class="pure-g">
@@ -53,11 +53,11 @@
                         + Add a comment
                     </button>
                 </div>
-                <div class="pure-u-1-2">
+                {# <div class="pure-u-1-2">
                     <button class="newcomment" onclick="toggleComment('comment-create-box')">
                         + Add a rating
                     </button>
-                </div>
+                </div> #}
             </div>
             <div>
                 {% for comment in comments %}
@@ -73,25 +73,28 @@
         </div>
     </div>
 </div>
-{# JS handles the submission of these:  #}
+{# JS handles the submission of these: #}
 <div id="comment-create-box" style="display: none;">
-    <form id="comment-form" class="pure-form pure-form-stacked" onsubmit="toggleComment('comment-create-box')">
+    <form id="comment-form" class="pure-form pure-form-stacked">
         <fieldset>
             <legend>Leave a comment</legend>
-            <textarea id="comment-text" rows="4" cols="100" class="pure-input-1" placeholder="Write something" minlength="1"></textarea>
-            <button type="submit" class="pure-button pure-button-primary">Cancel</button>
-            <button type="submit" class="pure-button pure-button-primary">Post</button>
+            <textarea id="comment-text" rows="4" cols="100" class="pure-input-1" placeholder="Write something"
+                minlength="1"></textarea>
+            <button type="button" id="cancel-button" class="pure-button pure-button-primary"
+                onclick="toggleComment('comment-create-box')">Cancel</button>
+            <button type="submit" class="pure-button pure-button-primary"
+                onclick="toggleComment('comment-create-box')">Post</button>
         </fieldset>
     </form>
 </div>
 
-
 <script>
-    const userID = "{{ user_id }}"; 
-    var playlistID = "{{ playlist_id }}"; 
+    const userID = "{{ user_id }}";
+    var playlistID = "{{ playlist_id }}";
     var starButtons = document.querySelectorAll('.star-button');
     // spotify_connected=session['spotify'] is not None -> user not logged into spotify
     // if user_id is None -> user not logged into our site
+
     starButtons.forEach(function (star, index) {
         star.onclick = function () {
             addRating(index + 1);  // add rating to back-end
@@ -109,38 +112,63 @@
             }
         });
     }
-    function addRating(stars) {
-        if (userID === undefined) {  // user not signed in ?
+    function addRating(stars, comment) {
+        if (userID === undefined) {
+            console.error('User not signed in');
             return;
         }
-        var xhr = new XMLHttpRequest();
-        xhr.open("POST", "/ratePlaylist", true);
-        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded"); // Change content type
-        var requestBody = `user_id=${encodeURIComponent(userID)}&playlist_id=${encodeURIComponent(playlistID)}&stars=${encodeURIComponent(stars)}`; // Construct query parameters
-        xhr.onreadystatechange = function () {
-            if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
-                console.log(xhr.responseText);
-            }
+        const data = {
+            user_id: userID,
+            playlist_id: playlistID,
+            stars: stars,
+            comment: comment
         };
-        xhr.send(requestBody);
+        console.log(data);
+        fetch('/rate-playlist', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+            })
+            .catch(error => {
+                console.error('There was a problem with the fetch operation:', error);
+            });
     }
-
     function savePlaylist() {
         console.log('User saving this playlist...');
-        if (userID === undefined) {  // user not signed in ?
+        if (userID === undefined) {
+            console.error('User not signed in');
             return;
         }
-        var xhr = new XMLHttpRequest();
-        xhr.open("POST", "/savePlaylist", true);
-        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded"); // Change content type
-        var requestBody = `user_id=${encodeURIComponent(userID)}&playlist_id=${encodeURIComponent(playlistID)}`; // Construct query parameters
-        xhr.onreadystatechange = function () {
-            if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
-                console.log(xhr.responseText);
-            }
+        const data = {
+            user_id: userID,
+            playlist_id: playlistID
         };
-        xhr.send(requestBody);
+        fetch('/savePlaylist', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+            .then(response => {
+                if (response.ok) {
+                    console.log('Playlist saved successfully');
+                } else {
+                    throw new Error('Network response was not ok');
+                }
+            })
+            .catch(error => {
+                console.error('There was a problem with the fetch operation:', error);
+            });
     }
+
 
     function toggleComment(id) {
         var x = document.getElementById(id);
@@ -156,21 +184,35 @@
         const commentForm = document.getElementById("comment-form");
         commentForm.addEventListener("submit", function (event) {
             event.preventDefault(); // Prevent default form submission behavior
-            const commentText = document.getElementById("comment-text").value;
-            // Construct query parameters directly in the URL
-            const url = `/playlist/${encodeURIComponent(playlistId)}/addComment?userID=${encodeURIComponent(userId)}&commentText=${encodeURIComponent(commentText)}`;
+            toggleComment("comment-form");
             
-            // POST to backend
-            const xhr = new XMLHttpRequest();
-            xhr.open("POST", url, true);
-            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded"); // Change content type
-            xhr.onreadystatechange = function () {
-                if (xhr.readyState === 4 && xhr.status === 200) {
-                    console.log("Comment added successfully");
-                }
+            const commentText = document.getElementById("comment-text").value;
+            if (userID === undefined) {
+                console.error('User not signed in');
+                return;
+            }
+            const data = {
+                user_id: userID,
+                playlist_id: playlistID,
+                comment: commentText
             };
-            xhr.send();
-        });
+            console.log(data);
+            fetch('/add-comment', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                })
+                .catch(error => {
+                    console.error('There was a problem with the fetch operation:', error);
+                });
+        })
     });
 
 </script>
