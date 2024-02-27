@@ -127,6 +127,8 @@ def playlist(p_id):
     songs = db.get_playlist_songs(p_id)
     comments = db.getComments(p_id)
     db_playlist = db.get_playlist_from_playlist_id(p_id)
+    if db_playlist == None:  # playlist w/ playlistID p_id not found
+        return render_template('403.html.jinja')
     playlist = db.get_playlist_from_result(db_playlist)
     print("DB_PLAYLIST:")
     print(db_playlist)
