@@ -38,7 +38,7 @@
             {% endfor %}
         </div>
         <div class="right-align">
-            <button onclick="saveChanges()" class="save-button pure-button">Save Changes</button>
+            <button onclick="saveChanges({{user_action}})" class="save-button pure-button">Save Changes</button>
         </div>
     </div>
 
@@ -128,10 +128,10 @@
         reader.readAsDataURL(file);
     }
 
-    function saveChanges() {
+    function saveChanges(user_action) {
 
-        if (playlistID === null) {  // make a completeley new playlist
-
+        if (user_action == 'create') {  // make a completeley new playlist
+            
         }
         else {  // update an existing playlist
 
