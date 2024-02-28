@@ -154,7 +154,7 @@
         songDiv.id = song.id;
 
         var songIconDiv = document.createElement("div");
-        songIconDiv.className = "pure-u-1-5 song-icon";
+        songIconDiv.className = "pure-u-1-5";
         var songIconImg = document.createElement("img");
         songIconImg.className = "small-playlist-icon"
         songIconImg.src = song.image;
@@ -167,6 +167,7 @@
 
         var addButton = document.createElement("button");
         addButton.className = "add-song";
+        addButton.setAttribute("id", song.id);
         addButton.setAttribute("onclick", "addNewSong('" + song.id + "', '" + song.name + "', '" + song.image + "', '" + true + "', '" + song.artist + "', '" + song.album + "', '" + song.duration +"')");
         var addButtonText = document.createElement("h1");
         addButtonText.textContent = "+";
@@ -188,8 +189,11 @@
     }
 
     function addNewSong(id, name, image, remove, artist, album, duration) {
+
+        document.getElementById(id).classList.add("pure-button-disabled")
         console.log(remove)
         console.log(album)
+        console.log(  document.getElementById(id))
         //let newSong = {}
         //if (artist != "") {
         //    console.log("IN IF")
