@@ -39,13 +39,13 @@ CSCI 5117, Spring 2024, [assignment description](https://canvas.umn.edu/courses/
 **[Add a screenshot of each key page (around 4)](https://stackoverflow.com/questions/10189356/how-to-add-screenshot-to-readmes-in-github-repository)
 along with a very brief caption:**
 Playlist Page
-/mnt/c/Users/moekm/OneDrive/Desktop/Interactive Programing/project-1-the-flask-fusion-force/FinalScreenshots/Screenshot 2024-02-28 
+https://github.com/csci5117s24/project-1-the-flask-fusion-force/blob/main/FinalScreenshots/Screenshot%202024-02-28%20162241.png
 Edit playlist page
-161707.png/mnt/c/Users/moekm/OneDrive/Desktop/Interactive Programing/project-1-the-flask-fusion-force/FinalScreenshots/Screenshot 2024-02-28 161742.png
+https://github.com/csci5117s24/project-1-the-flask-fusion-force/blob/main/FinalScreenshots/Screenshot%202024-02-28%20161854.png
 Library page
-/mnt/c/Users/moekm/OneDrive/Desktop/Interactive Programing/project-1-the-flask-fusion-force/FinalScreenshots/Screenshot 2024-02-28 161854.png
+https://github.com/csci5117s24/project-1-the-flask-fusion-force/blob/main/FinalScreenshots/Screenshot%202024-02-28%20161742.png
 Home page
-/mnt/c/Users/moekm/OneDrive/Desktop/Interactive Programing/project-1-the-flask-fusion-force/FinalScreenshots/Screenshot 2024-02-28 162241.png
+https://github.com/csci5117s24/project-1-the-flask-fusion-force/blob/main/FinalScreenshots/Screenshot%202024-02-28%20161707.png
 ![](https://media.giphy.com/media/o0vwzuFwCGAFO/giphy.gif)
 
 
