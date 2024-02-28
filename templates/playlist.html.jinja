@@ -22,19 +22,39 @@
                 {{ playlist.ratingAvg }}
                 <div style="padding: 0.5em 1em;">
                     <button id="star1" class="star-button" onclick="addrating(1)">
+                    {%if playlist.ratingAvg >= 1 %}
                         <div class="stars-filled"></div>
+                    {%else%}
+                        <div class="stars"></div>
+                    {%endif%}
                     </button>
                     <button id="star2" class="star-button" onclick="addrating(2)">
-                        <div class="stars-filled"></div>
+                        {%if playlist.ratingAvg >= 2 %}
+                            <div class="stars-filled"></div>
+                        {%else%}
+                            <div class="stars"></div>
+                        {%endif%}
                     </button>
                     <button id="star3" class="star-button" onclick="addrating(3)">
-                        <div class="stars-filled"></div>
+                        {%if playlist.ratingAvg >= 3 %}
+                            <div class="stars-filled"></div>
+                        {%else%}
+                            <div class="stars"></div>
+                        {%endif%}
                     </button>
                     <button id="star4" class="star-button" onclick="addrating(4)">
-                        <div class="stars"></div>
+                        {%if playlist.ratingAvg >=4 %}
+                            <div class="stars-filled"></div>
+                        {%else%}
+                            <div class="stars"></div>
+                        {%endif%}
                     </button>
                     <button id="star5" class="star-button" onclick="addrating(5)">
-                        <div class="stars"></div>
+                        {%if playlist.ratingAvg >= 5 %}
+                            <div class="stars-filled"></div>
+                        {%else%}
+                            <div class="stars"></div>
+                        {%endif%}
                     </button>
                 </div>
             </div>
