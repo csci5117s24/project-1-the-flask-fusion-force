@@ -156,15 +156,14 @@
     }
 
     function previewImage(input) {
-        console.log("previewImage triggered")
+        console.log("Previewing image");
         const file = input.files[0]; // Get selected file
         const reader = new FileReader(); 
         reader.onload = function (e) {
-            playlistImageData = e.target.result; // encode
+            playlistImageData = e.target.result; // get data
+            playlistImageElem.src = playlistImageData
         };
         reader.readAsDataURL(file);
-        console.log("FILE: ", file);
-        playlistImageElem.src = file.name;
     }
 
     function changeTitle(){
@@ -196,7 +195,8 @@
                     throw new Error('Network response was not ok');
                 }
                 else {
-                    newPlaylist===true ? window.alert("Playlist created") : window.alert("Playlist updated");
+                    // newPlaylist===true ? window.alert("Playlist created") : window.alert("Playlist updated");
+                    window.location.reload();
                 }
             })
             .catch(error => {

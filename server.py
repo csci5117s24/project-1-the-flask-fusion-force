@@ -214,6 +214,7 @@ def ratePlaylist():
     print(playlist_id)
     print("stars= " + str(stars))
     db.ratePlaylist(user_id, playlist_id, stars)
+    return Response(status=201)
 
 @app.route('/add-comment', methods=['POST'])
 def addComment():
@@ -224,6 +225,7 @@ def addComment():
     print(user_id)
     print(comment)
     db.addComment(user_id, playlist_id, comment)
+    return Response(status=201)
     # if (db.addComment(user_id, playlist_id, comment) != []):  # TODO fix this. We are adding a rating, not a comment.
     #     print("User has already left comment for playlist with id: " + str(playlist_id))
     # else:
@@ -236,7 +238,6 @@ def savePlaylist():
     playlist_id = data.get('playlist_id')
     db.savePlaylist(user_id, playlist_id)
     return redirect(url_for("library"))
-
 
 @app.route('/test-json')
 def send_json():

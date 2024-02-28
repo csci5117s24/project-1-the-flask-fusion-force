@@ -1026,14 +1026,17 @@ s.genre AS genre,
 s.image AS picture,
 s.duration AS duration
 FROM mixtape_fm_playlists pl
-LEFT JOIN mixtape_fm_playlist_songs ps ON pl.playlist_id = ps.playlist_id
-LEFT JOIN mixtape_fm_songs s ON ps.song_id = s.song_id
+RIGHT JOIN mixtape_fm_playlist_songs ps ON pl.playlist_id = ps.playlist_id
+RIGHT JOIN mixtape_fm_songs s ON ps.song_id = s.song_id
 WHERE pl.playlist_id = %s
 ORDER BY ps.position""", (playlist_id,))
         songs = cursor.fetchall()
         for song in songs:
+            print(song)
             renameKeyInRealDict(song, 'song_id', 'songID')
             song_dir = song.get('duration')
+            if (song_dir is None):
+                continue
             duration = None              # not null in DB
             seconds = int(song_dir) % 60000
             while (seconds >= 100):
