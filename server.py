@@ -121,6 +121,7 @@ def search():
     nameResults = searchResults['name_results']
     tagResults = searchResults['tag_results']
     savedResults = searchResults['saved_results']
+    print(nameResults)
     return render_template('search.html.jinja',user_id=session.get('user_id'), nameResults=nameResults, tagResults=tagResults, savedResults=savedResults)
 
 @app.route('/playlist/<int:p_id>', methods=['POST','GET'])
