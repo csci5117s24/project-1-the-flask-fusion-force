@@ -30,7 +30,6 @@ app = create_app()
 @app.route('/home', methods=['GET'])
 @app.route('/homepage', methods=['GET'])
 def homepage():
-    session['spotify'] = False
     playlists = db.getRandomPlaylistsOpt(10)
     return render_template('homepage.html.jinja', user_session=session.get('user'), pretty=json.dumps(session.get('user'), indent=4),
     playlists = playlists)
