@@ -5,6 +5,9 @@
 {% endblock %}
 {% block content %}
 <div class="pure-g">
+        {% if playlists == []%}
+        <h3> No playlist currently exist</h3>
+        {% endif %}
 
         {% for playlist in playlists %}
         {% include "playlistcard.html.jinja" ignore missing with context %}

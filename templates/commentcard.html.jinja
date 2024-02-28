@@ -1,13 +1,17 @@
-<div class="pure-g commentblock">
-    <div class="pure-u-1-5 user-icon">
+<div class=" commentblock">
+    
+    <div class=" comment-body">
         {% if comment.commenterPFP %}
-            <img src="{{ comment.commenterPFP }}" alt="User Icon">
+            <img src="{{ comment.commenterPFP }}" alt="User Icon" class = "small-playlist-icon">
         {# {% else %}
             <img src="default_user_icon.jpg" alt="Default User Icon"> #}
         {% endif %}
+
+        <div class="comment">
+            <p>{{ comment.commentText }}</p>
+        </div>
+     </div>
+     <div class="comment-author">
         <p>{{ comment.commenterID }}</p>
-    </div>
-    <div class="pure-u-3-5 comment">
-        <p>{{ comment.commentText }}</p>
     </div>
 </div>

@@ -137,6 +137,7 @@ def playlist(p_id):
     if (session.get('user_id') != None and session['user_id'] == user[0]):
        return redirect(url_for("editPlaylist", p_id=str(p_id)))
     else:
+      playlist['ratingAvg'] = float( playlist['ratingAvg'])
       return render_template('playlist.html.jinja', playlist = playlist, user_image = user[5], playlist_id=p_id,user_session = session.get('user'), user_id=session.get('user_id'), songs = songs,comments = comments)
 
 

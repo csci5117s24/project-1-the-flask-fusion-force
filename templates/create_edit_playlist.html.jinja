@@ -29,7 +29,21 @@
                     <input type="text" id="playlistNameInput" placeholder="Name your playlist..." value="{{ playlistDetails.name }}" onchange="changeTitle()"/>
                 </div>
             </div>
+            {%if playlistDetails.tags%}2
+                {% for tag in playlistDetails.tags %}
+                    <div class="tag pure-u-1-5">
+                        {{ tag }}
+                    </div>SavedPlaylists
+                {% endfor %}
+            {%endif%}
+            <div class="pure-u-1 input-button-container pure-form" style = "margin: 0.5em;" >
+                
+                <input type="text" id="tagInput" placeholder="add a tag..." style = "border-radius: 0;" />
+                <button class = "input-button"> Add Tag</button>
+                
+            </div>
         </div>
+        
         <div class="songlst" id="currentSongsDiv">
         </div>
         <div class="right-align">
