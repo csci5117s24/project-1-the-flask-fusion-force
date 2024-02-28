@@ -135,9 +135,11 @@ def playlist(p_id):
     songs = db.getPlaylistSongsOpt(p_id)
     comments = db.getComments(p_id)
     user = db.getUserFromPlaylistId(p_id)
+
     user_rating = db.get_rating(user[0], p_id)
     playlist['ratingAvg'] = float( playlist['ratingAvg'])
-    return render_template('playlist.html.jinja', playlist = playlist, user_image = user[5], playlist_id=p_id,user_session = session.get('user'), user_id=session.get('user_id'), songs = songs,comments = comments, user_rating = user_rating)
+    return render_template('playlist.html.jinja', playlist = playlist, user_image = user[5], playlist_id=p_id,user_session = session.get('user'), user_id=session.get('user_id'), songs = songs,comments = comments, user_rating = user_rating user_name=user[3])
+
 
 @app.route('/settings', methods=['GET'])
 @auth.require_login
