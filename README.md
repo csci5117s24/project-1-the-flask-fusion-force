@@ -38,6 +38,7 @@ CSCI 5117, Spring 2024, [assignment description](https://canvas.umn.edu/courses/
 
 **[Add a screenshot of each key page (around 4)](https://stackoverflow.com/questions/10189356/how-to-add-screenshot-to-readmes-in-github-repository)
 along with a very brief caption:**
+
 Playlist Page
 https://github.com/csci5117s24/project-1-the-flask-fusion-force/blob/main/FinalScreenshots/Screenshot%202024-02-28%20162241.png
 
