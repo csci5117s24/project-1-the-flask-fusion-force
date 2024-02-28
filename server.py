@@ -3,7 +3,7 @@ import json
 from os import environ as env
 from dotenv import find_dotenv, load_dotenv
 from urllib.parse import quote_plus, urlencode
-from flask import Flask, request, render_template, redirect, session, Response, jsonify, url_for
+from flask import Flask, request, render_template, redirect, session, Response, jsonify, url_for, abort
 from spotify import get_playlist_info
 
 import auth, db, spotify, api
@@ -79,7 +79,8 @@ def spotify_callback():
     print(songs)
 
     db.insertSongs(songs)
-    db.insertSongsToPlaylist(playlist_id, songs)
+    song_ids = [ song.get('id') for song in songs ]
+    db.insertSongsToPlaylist(playlist_id, song_ids)
 
   return redirect(url_for("library"))
 
@@ -134,8 +135,9 @@ def playlist(p_id):
     comments = db.getComments(p_id)
     user = db.getUserFromPlaylistId(p_id)
     if (session.get('user_id') != None and session['user_id'] == user[0]):
-      return render_template('create_edit_playlist.html.jinja', playlist_id=p_id, user_session=session.get('user'),playlistDetails=playlist, songs=songs, user_id=session.get('user_id'))
+       return redirect(url_for("editPlaylist", p_id=str(p_id)))
     else:
+      playlist['ratingAvg'] = float( playlist['ratingAvg'])
       return render_template('playlist.html.jinja', playlist = playlist, user_image = user[5], playlist_id=p_id,user_session = session.get('user'), user_id=session.get('user_id'), songs = songs,comments = comments)
 
 
@@ -157,33 +159,28 @@ def library():
     randomPlaylists = db.getRandomPlaylistsOpt(10)
     return render_template('user_library.html.jinja', myPlaylists=myPlaylists, savedPlaylists=savedPlaylists, randomPlaylists=randomPlaylists, user_session=session.get('user'), user_id=session.get('user_id'))
 
-@app.route('/edit-playlist/<int:p_id>', methods=['POST','GET'])
-@app.route('/edit-playlist', methods=['POST','GET'])  # Incase user is making a completey new playlist
+@app.route('/create-playlist', methods=['GET'])
 @auth.require_login
-def editPlaylist(p_id=None):
-    print(p_id)
-    if request.method == "POST":  # user is creating/updating a playlist
-      print(f"testing POST p_id: {p_id}")
-      data = request.json
-      user_id = data.get('user_id')
-      playlist_id = data.get('playlist_id')
-      print(playlist_id)
-      new_playlist = data.get('new_playlist')  # This might be a redundant value. Will depend on id
-      song_ids = data.get('song_ids')
-      playlist_image = data.get('playlist_image')
-      playlist_name = data.get('playlist_name')
-      if new_playlist:
-        db.createPlaylist(user_id, playlist_name, playlist_image, song_ids)
-      else:
-        db.update_playlist(user_id, playlist_id, playlist_name, playlist_image)  # can leave out playlist_image later if it was unchanged
-      playlist_id = db.get_playlist_id(user_id, playlist_name)
-      print(playlist_id)
-      p_id = playlist_id
+def createPlaylist():
+   return render_template('create_edit_playlist.html.jinja', playlistID=None, user_session=session.get('user'), user_id=session.get('user_id'),
+                          playlistDetails={"playlistID": '', "image":'', "name": ''},
+                          songs=[])
+                        #   songs=[{"songID": "abc123","name": "mySong1","image": ""}])
 
-    db_playlist = db.get_playlist_from_playlist_id(p_id)
-    print(db_playlist)
-    playlist = db.get_playlist_from_result(db_playlist)
+@app.route('/edit-playlist/<int:p_id>', methods=['GET'])
+@auth.require_login
+def editPlaylist(p_id):
+    # db_playlist = db.get_playlist_from_playlist_id(p_id)
+    # print(db_playlist)
+    # playlist = db.get_playlist_from_result(db_playlist)
+    playlist = db.getPlaylistOpt(p_id)
+    songs = db.getPlaylistSongsOpt(p_id)
+    print("PLAYLIST SONGS")
     print(playlist)
+    print(songs)
+    print(f"\n\n\nLENGTH OF SONGS IN PLAYLIST: {len(songs)}\n\n\n")
+
+
     if (session.get('user_id') != None and playlist['userID'] == session['user_id']):
     # TODO: uncomment, have playlist as param
     # if userID != session.get('user_id'):
@@ -192,23 +189,21 @@ def editPlaylist(p_id=None):
     # songs = {"songs": [{"songID": "mySongID", "songName": "mySongName", "songImage": ""}]}
     # if p_id is None:  # New playlist
     #     return render_template('create_edit_playlist.html.jinja', playlist_id=p_id, user_session=session.get('user'),playlistDetails= playlist_details,songs=songs,user_id=session.get('user_id'))
-      songs = db.get_playlist_songs(p_id)
-      return render_template('create_edit_playlist.html.jinja', playlist_id=p_id, user_session=session.get('user'),playlistDetails=playlist, songs=songs, user_id=session.get('user_id'))
+    #   songs = db.get_playlist_songs(p_id)
+        print(p_id)
+        return render_template('create_edit_playlist.html.jinja', playlistID=p_id, user_session=session.get('user'),
+                               playlistDetails=playlist, songs=songs, user_id=session.get('user_id'))
     else:
-      user = db.getUserFromPlaylistId(p_id)
-      print(f"User: {user}")
-      songs = db.get_playlist_songs(p_id)
-      comments = db.getComments(p_id)
-      return render_template('playlist.html.jinja', playlist = playlist, user_image = user[5], playlist_id=p_id,user_session = session.get('user'), user_id=session.get('user_id'), songs = songs,comments = comments)
+        return abort(403)
 
-@app.route('/create-playlist', methods=['POST','GET'])  # Incase user is making a completey new playlist
-@auth.require_login
-def createPlaylist():
-    if (session.get('user_id') != None):
-      playlist = {'playlistID': None, 'userID': None, 'image': None, 'name': None, 'ratingAvg': None, \
-        'numRatings': None, 'tags': None, 'userDisplayName': None}
-      songs = [{'song_id': None, 'name': None, 'picture': None, 'artist': None, 'album': None, 'genre': None, 'duration': None}]
-      return render_template('create_edit_playlist.html.jinja', playlist_id=None, user_session=session.get('user'),playlistDetails=playlist, songs=songs, user_id=session.get('user_id'))
+# @app.route('/create-playlist', methods=['POST','GET'])  # Incase user is making a completey new playlist
+# @auth.require_login
+# def createPlaylist():
+#     if (session.get('user_id') != None):
+#       playlist = {'playlistID': None, 'userID': None, 'image': None, 'name': None, 'ratingAvg': None, \
+#         'numRatings': None, 'tags': None, 'userDisplayName': None}
+#       songs = [{'song_id': None, 'name': None, 'picture': None, 'artist': None, 'album': None, 'genre': None, 'duration': None}]
+#       return render_template('create_edit_playlist.html.jinja', playlist_id=None, user_session=session.get('user'),playlistDetails=playlist, songs=songs, user_id=session.get('user_id'))
 
 @app.route('/rate-playlist', methods=['POST'])
 def ratePlaylist():
@@ -220,6 +215,7 @@ def ratePlaylist():
     print(playlist_id)
     print("stars= " + str(stars))
     db.ratePlaylist(user_id, playlist_id, stars)
+    return Response(status=201)
 
 @app.route('/add-comment', methods=['POST'])
 def addComment():
@@ -230,6 +226,7 @@ def addComment():
     print(user_id)
     print(comment)
     db.addComment(user_id, playlist_id, comment)
+    return Response(status=201)
     # if (db.addComment(user_id, playlist_id, comment) != []):  # TODO fix this. We are adding a rating, not a comment.
     #     print("User has already left comment for playlist with id: " + str(playlist_id))
     # else:
@@ -242,7 +239,6 @@ def savePlaylist():
     playlist_id = data.get('playlist_id')
     db.savePlaylist(user_id, playlist_id)
     return redirect(url_for("library"))
-
 
 @app.route('/test-json')
 def send_json():
