@@ -13,7 +13,7 @@
     <div class="pure-u-5-12">
         <div class="pure-form pure-u-1 double-header">
             <input type="text" class="pure-input-rounded" placeholder="Find a Song..." id="songSearch" />
-            <button type="submit" class="pure-button" onclick="searchForSong()">Search</button>
+            <button class="pure-button" onclick="searchForSong()">Search</button>
         </div>
         <div class="songlst" id="searchedSongsDiv">
             {# {% for song in searchedSongs %}
@@ -52,6 +52,35 @@
 {% endif %}
 
 <script>
+    function searchForSong() {
+        const searchQuery = document.getElementById("songSearch").value;
+        const fetchURL = `/spotify/search?q=${encodeURIComponent(searchQuery)}`;
+        console.log(fetchURL);
+        console.log("Searching for song: ", searchQuery);
+        fetch(fetchURL, {
+            method: 'GET', // Ensure method is specified as 'GET'
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(searchRes => {
+                console.log(searchRes);
+                // Do something with the search results
+                searchRes.forEach(function (searchedSong) {
+                    console.log(searchedSong);
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching data:', error);
+            });
+    }
+    
     function makeDeleteSongCard(song) {
         console.log("Called makeDeleteSongCard with ", song);
         // Creating elements dynamically
@@ -103,34 +132,6 @@
     // extract playlist name and image
     var playlistImageData = null;
 
-    function searchForSong() {
-        const searchQuery = document.getElementById("songSearch").value;
-        const fetchURL = `/spotify/search?q=${encodeURIComponent(searchQuery)}`;
-        console.log(fetchURL);
-        fetch(fetchURL, {
-            method: 'GET', // Ensure method is specified as 'GET'
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
-            .then(searchRes => {
-                console.log(searchRes);
-                // Do something with the search results
-                searchRes.forEach(function (searchedSong) {
-                    console.log(searchedSong);
-                });
-            })
-            .catch(error => {
-                console.error('Error fetching data:', error);
-            });
-    }
-
     function addSong(song) {
         console.log("song being added");
         // Add song to arrays, reset HTML for songs section
@@ -155,6 +156,7 @@
     }
 
     function previewImage(input) {
+        console.log("previewImage triggered")
         const file = input.files[0]; // Get selected file
         const reader = new FileReader(); 
         reader.onload = function (e) {
@@ -172,7 +174,7 @@
             playlist_id: playlistID,
             new_playlist: newPlaylist,
             song_ids: playlistSongIDs,
-            playlist_image: playlistImageData;
+            playlist_image: playlistImageData,
             playlist_name: playlistName,
         };
         console.log(data);
