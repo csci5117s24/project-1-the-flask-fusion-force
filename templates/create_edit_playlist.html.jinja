@@ -77,10 +77,9 @@
                 return response.json();
             })
             .then(searchRes => {
-                console.log(searchRes);
                 // Do something with the search results
                 searchRes.forEach(function (searchedSong) {
-                    console.log(searchedSong);
+                    makeAddSongCard(searchedSong)
                 });
             })
             .catch(error => {
@@ -128,6 +127,7 @@
 
     // INITIALIZATION:
     var playlistSongIDs = [];
+    var newSongs = [];
     const userID = "{{ user_id }}";
     const playlistID = "{{ playlistID }}";
     console.log(playlistID)
@@ -137,7 +137,7 @@
     console.log("playlist song ids: ", playlistSongIDs);
     console.log(songs);
     songs.forEach(song => {
-        addSong(song);
+        addSong(song.songID, song.name, song.picture, false, song.artist, song.album, song.duration);
     });
     // extract playlist name and image
     var playlistImageData = playlistDetails.image;
@@ -146,13 +146,72 @@
     var playlistTitleElem = document.getElementById("playlistTitle");
     playlistTitleElem.textContent = playlistDetails.name;
 
-    function addSong(song) {
+    function makeAddSongCard(song) {
+        console.log("Called makeAddSongCard with ", song);
+        // Creating elements dynamically
+        var songDiv = document.createElement("div");
+        songDiv.className = "pure-g song";
+        songDiv.id = song.id;
+
+        var songIconDiv = document.createElement("div");
+        songIconDiv.className = "pure-u-1-5 song-icon";
+        var songIconImg = document.createElement("img");
+        songIconImg.className = "small-playlist-icon"
+        songIconImg.src = song.image;
+        songIconImg.alt = "Song Icon";
+        songIconDiv.appendChild(songIconImg);
+
+        var songTitleDiv = document.createElement("div");
+        songTitleDiv.className = "pure-u-3-5 song-title";
+        songTitleDiv.textContent = song.name;
+
+        var addButton = document.createElement("button");
+        addButton.className = "add-song";
+        addButton.setAttribute("onclick", "addSong('" + song.id + "', '" + song.name + "', '" + song.image + "', '" + true + "', '" + song.artist + "', '" + song.album + "', '" + song.duration +"')");
+        var addButtonText = document.createElement("h1");
+        addButtonText.textContent = "+";
+        addButton.appendChild(addButtonText);
+
+        addButton.addEventListener("click", function (event) {
+            event.stopPropagation(); // Prevent parent event triggering
+        });
+
+        // Appending elements to songDiv
+        songDiv.appendChild(songIconDiv);
+        songDiv.appendChild(songTitleDiv);
+        songDiv.appendChild(addButton);
+        let newSongsContainer = document.getElementById("searchedSongsDiv");
+        newSongsContainer.appendChild(songDiv)
+        
+        console.log("Made songDiv", songDiv);
+        return songDiv;
+    }
+
+    function addSong(id, name, image, remove, artist, album, duration) {
         console.log("song being added");
         // Add song to arrays, reset HTML for songs section
-        playlistSongIDs.push(song.songID);
-        let songDiv = makeDeleteSongCard(song);
-        let songsContainer = document.getElementById("currentSongsDiv");
-        songsContainer.appendChild(songDiv);
+        console.log("ADDING SONG HERE")
+        console.log(remove)
+        console.log(album)
+        let newSong = {}
+        if (artist != "") {
+            console.log("IN IF")
+            newSong = {songID: id, name: name, picture: image, artist: artist, album: album, duration: duration}
+            newSongs.push(newSong)
+        } else {
+            newSong = {songID: id, name: name, picture: image}
+        }
+        
+        playlistSongIDs.push(newSong.songID);
+        console.log(newSong)
+        let songDiv = makeDeleteSongCard(newSong)
+        let currentSongsContainer = document.getElementById("currentSongsDiv");
+        let searchedSong = document.getElementById(id);
+        currentSongsContainer.appendChild(songDiv);
+        console.log(remove)
+        if (remove) {
+            searchedSong.remove();
+        }
     }
 
     function deleteSong(id, name, image) {
@@ -193,11 +252,12 @@
             playlist_id: playlistID,
             new_playlist: newPlaylist,
             song_ids: playlistSongIDs,
+            new_songs: newSongs,
             playlist_image: playlistImageData,
             playlist_name: playlistName,
         };
         console.log(data);
-        fetch('/playlist/edit', {
+        fetch('/save-playlist', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
