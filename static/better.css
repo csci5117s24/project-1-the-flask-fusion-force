@@ -246,13 +246,21 @@ body{
     padding:0.5em; 
     margin: 0.5em;
 }
+.double-content-container{
+    text-align: center;
+    justify-content: center;
+
+}
 
 .horizontal-double-content{
     padding: 2em; 
     max-width: 45%;
+    min-width: 30%;
 }
 .double-header{
-    margin-bottom:5em
+    margin-bottom:5em;
+    height: 6em;
+
 }
 #comment-create-box{
     background-color: #b299fa;
