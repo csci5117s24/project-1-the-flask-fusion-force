@@ -110,3 +110,38 @@ function redirectToViewPlaylist(playlistId) {
 
 
 
+function makeDeleteSongCard(song){
+    console.log("Called makeDeleteSongCard with ", song);
+    // Creating elements dynamically
+    var songDiv = document.createElement("div");
+    songDiv.className = "pure-g song";
+
+    var songIconDiv = document.createElement("div");
+    songIconDiv.className = "pure-u-1-5 song-icon";
+    var songIconImg = document.createElement("img");
+    songIconImg.src = song.songImage;
+    songIconImg.alt = "Song Icon";
+    songIconDiv.appendChild(songIconImg);
+
+    var songTitleDiv = document.createElement("div");
+    songTitleDiv.className = "pure-u-3-5 song-title";
+    songTitleDiv.textContent = song.songName;
+
+    var deleteButton = document.createElement("button");
+    deleteButton.className = "add-song";
+    deleteButton.setAttribute("onclick", "deleteSong('" + song.songID + "', '" + song.songName + "', '" + song.songImage + "')");
+    var deleteButtonText = document.createElement("h1");
+    deleteButtonText.textContent = "-";
+    deleteButton.appendChild(deleteButtonText);
+
+    deleteButton.addEventListener("click", function(event) {
+        event.stopPropagation(); // Prevent parent event triggering
+    });
+
+    // Appending elements to songDiv
+    songDiv.appendChild(songIconDiv);
+    songDiv.appendChild(songTitleDiv);
+    songDiv.appendChild(deleteButton);
+    console.log("Made songDiv", songDiv);
+    return songDiv;
+}
