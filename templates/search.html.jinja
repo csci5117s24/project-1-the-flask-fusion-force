@@ -20,16 +20,28 @@
     </ul>
 </div>
 <div id="nameResults" class = "pure-g" style="display: block;">
+    {% if nameResults == []%}
+        <h3> No playlist currently exist with that name</h3>
+        <p>If you were looking for a tag try clicking the tabs button above.</p>
+        {% endif %}
      {% for playlist in nameResults %}
     {% include "playlistcard.html.jinja" ignore missing with context %}
     {% endfor %} 
 </div>
 <div id="savedResults" style="display: none;" class = "pure-g">
+    {% if  savedResults == []%}
+        <h3> You dont have any saved playlists </h3>
+        <p>Go the the home page to find new playlists</p>
+        {% endif %}
    {% for playlist in savedResults %}
     {% include "playlistcard.html.jinja" ignore missing with context %}
     {% endfor %}
 </div>
 <div id="tagResults" style="display: none;" class = "pure-g">
+    {% if  tagResults == []%}
+        <h3> No playlists have that tag </h3>
+        <p>Try a diffent serch or click on playlist name to serch by playlist name</p>
+        {% endif %}
      {% for playlist in tagResults %}
     {% include "playlistcard.html.jinja" ignore missing with context %}
     {% endfor %}
