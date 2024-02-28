@@ -20,13 +20,13 @@
     </div>
     <div class="pure-u-5-12 horizontal-double-content">
         <div class="pure-g song-feild double-header">
-        <div class="pure-u-1-5 small-playlist-icon" id="playlistImageDiv" onclick="changePlaylistImage()">
+        <div class="pure-u-1-5 " id="playlistImageDiv" onclick="changePlaylistImage()">
             <img src="" alt="Playlist Image" id="playlistImage" class="small-playlist-icon">
             <input type="file" id="imageUpload" style="display: none;" accept="image/*" onchange="previewImage(this)">
         </div>
             <div class="pure-u-1-3">
                 <div class="pure-form pure-u-1">
-                    <input type="text" id="playlistNameInput" placeholder="Name your playlist..." value="{{ playlistDetails.name }}" onchange="changeTitle()"/>
+                    <input type="text" id="playlistNameInput" style = " margin: 2em;" placeholder="Name your playlist..." value="{{ playlistDetails.name }}" onchange="changeTitle()"/>
                 </div>
             </div>
             {%if playlistDetails.tags%}2
@@ -95,7 +95,7 @@
         songDiv.id = song.songID;
 
         var songIconDiv = document.createElement("div");
-        songIconDiv.className = "pure-u-1-5 song-icon";
+        songIconDiv.className = "pure-u-1-5";
         var songIconImg = document.createElement("img");
         songIconImg.className = "small-playlist-icon"
         songIconImg.src = song.picture;
