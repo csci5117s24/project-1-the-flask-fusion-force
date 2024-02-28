@@ -31,6 +31,8 @@ app = create_app()
 @app.route('/homepage', methods=['GET'])
 def homepage():
     playlists = db.getRandomPlaylistsOpt(50)
+    for playlist in playlists:
+       playlist['ratingAvg'] = float( playlist['ratingAvg'])
     return render_template('homepage.html.jinja', user_session=session.get('user'), pretty=json.dumps(session.get('user'), indent=4),
     playlists = playlists)
 
