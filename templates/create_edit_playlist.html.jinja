@@ -29,7 +29,7 @@
                     <input type="text" id="playlistNameInput" style = " margin: 2em;" placeholder="Name your playlist..." value="{{ playlistDetails.name }}" onchange="changeTitle()"/>
                 </div>
             </div>
-            {%if playlistDetails.tags%}2
+            {%if playlistDetails.tags%}
                 {% for tag in playlistDetails.tags %}
                     <div class="tag pure-u-1-5">
                         {{ tag }}
@@ -39,7 +39,7 @@
             <div class="pure-u-1 input-button-container pure-form" style = "margin: 0.5em;" >
                 
                 <input type="text" id="tagInput" placeholder="add a tag..." style = "border-radius: 0;" />
-                <button class = "input-button"> Add Tag</button>
+                <button class = "input-button" onclick="addTag()"> Add Tag</button>
                 
             </div>
         </div>
@@ -266,6 +266,34 @@
     function changeTitle(){
         let name = document.getElementById("playlistNameInput");
         playlistTitleElem.textContent = name.value;
+    }
+
+    function addTag() {
+        let tag = document.getElementById("tagInput").value;
+        const data = {
+            user_id: userID,
+            playlist_id: playlistID,
+            tag_name: tag
+        };
+        fetch('/add-tag', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                else {
+                    // newPlaylist===true ? window.alert("Playlist created") : window.alert("Playlist updated");
+                    window.location.reload();
+                }
+            })
+            .catch(error => {
+                console.error('There was a problem with the fetch operation:', error);
+            });
     }
 
     function saveChanges() {
