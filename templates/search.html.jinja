@@ -1,5 +1,5 @@
 {% extends "layout.html.jinja" %}
-{% block title %}Home{% endblock %}
+{% block title %}Search Results{% endblock %}
 {% block page_title %}
 <h1>Search Results</h1>
 {% endblock %}
@@ -7,19 +7,135 @@
 <div class="pure-menu pure-menu-horizontal">
     <ul class="pure-menu-list">
         <li class="pure-menu-item">
-            <a href="#" class="pure-menu-link tab">Playlist Name</a>
+            <button id="playlistNameBtn" class="pure-menu-link tab" onclick="changeContentToNameResults()">Playlist Name</button>
         </li>
         <li class="pure-menu-item">
-            <a href="#" class="pure-menu-link tab">Tags</a>
+            <button id="tagsBtn" class="pure-menu-link tab" onclick="changeContentToTagResults()">Tags</button>
         </li>
+        {% if user_id %}
         <li class="pure-menu-item">
-            <a href="#" class="pure-menu-link tab">Recently Played</a>
+            <button  id="savedPlaylistsBtn" class="pure-menu-link tab" onclick="changeContentToSavedResults()">Saved Playlists</button>
         </li>
+        {% endif %}
     </ul>
 </div>
-<div class="pure-g">
-    {% for playlist in playlists %}
-        {% include "playlistcard.html.jinja" ignore missing with context %}
+<div id="nameResults" class = "pure-g">
+     {% for playlist in nameResults %}
+    {% include "playlistcard.html.jinja" ignore missing with context %}
+    {% endfor %} 
+</div>
+<div id="SavedResults" style="display: none;" class = "pure-g">
+   {% for playlist in savedResults %}
+    {% include "playlistcard.html.jinja" ignore missing with context %}
     {% endfor %}
 </div>
+<div id="tagResults" style="display: none;" class = "pure-g">
+     {% for playlist in tagResults %}
+    {% include "playlistcard.html.jinja" ignore missing with context %}
+    {% endfor %}
+</div>
+<script src="{{ url_for('static', filename='playlistCard.js') }}"></script>
+<script>
+/*
+    const user_id = "{{ user_id }}";
+    const signedIn = user_id !== "" ? true : false;
+    var nameResults = {{ nameResults | tojson }};
+    var tagResults = {{ tagResults | tojson }};
+    var savedResults= {{ savedResults | tojson }};
+    console.log(nameResults);
+    console.log("User id : ", user_id);*/
+
+    function setActiveButton(activeButton) {
+        console.log("Setting active button:");
+        console.log(activeButton);
+        if (signedIn) {
+            const buttons = [playlistNameBtn, tagsBtn, savedPlaylistsBtn];
+        }
+        else {
+            const buttons = [playlistNameBtn, tagsBtn];
+        }
+        buttons.forEach(button => {
+            if (button === activeButton) {
+                button.classList.add("active");
+                button.style.backgroundColor = "white";
+            } else {
+                button.classList.remove("active");
+                button.style.backgroundColor = ""; // Reset to original color
+            }
+        });
+    }
+    document.addEventListener("DOMContentLoaded", function () {
+        const playlistNameBtn = document.getElementById("playlistNameBtn");
+        const tagsBtn = document.getElementById("tagsBtn");
+        setActiveButton(playlistNameBtn); // Highlight Playlist Name button upon loading
+
+        playlistNameBtn.addEventListener("click", function () {
+            setActiveButton(playlistNameBtn);
+            nameResults.forEach(result => {
+                createPlaylistCard(result, user_id);
+            });
+        });
+        tagsBtn.addEventListener("click", function () {
+            setActiveButton(tagsBtn);
+            tagResults.forEach(result => {
+                createPlaylistCard(result, user_id);
+            });
+        });
+        {% if user_id %}
+        const savedPlaylistsBtn = document.getElementById("savedPlaylistsBtn");
+        savedPlaylistsBtn.addEventListener("click", function () {
+            setActiveButton(savedPlaylistsBtn);
+            savedResults.forEach(result => {
+                createPlaylistCard(result, user_id);
+            });
+        });
+        {% endif %}
+        
+        function changeContentToNameResults() {
+            console.log("Clicked My Playlists tab");
+            
+            let x = document.getElementById("nameResults");
+            let y = document.getElementById("savedResults");
+            let z = document.getElementById("tagResults");
+            if (x.style.display === "none") {
+                x.style.display = "block";
+            }
+                y.style.display = "none";
+                z.style.display = "none";
+                
+         
+        }
+        function changeContentToSavedResults() {
+            console.log("Clicked Saved Playlists tab");
+           let y = document.getElementById("nameResults");
+            let x = document.getElementById("savedResults");
+            let z = document.getElementById("tagResults");
+            if (x.style.display === "none") {
+                x.style.display = "block";
+            }
+                y.style.display = "none";
+                z.style.display = "none";
+             
+        }
+        function changeContentToTagResults() {
+            console.log("Clicked Random Playlists tab");
+           let z = document.getElementById("nameResults");
+            let y = document.getElementById("savedResults");
+            let x = document.getElementById("tagResults");
+            if (x.style.display === "none") {
+                x.style.display = "block";
+            }
+                y.style.display = "none";
+                z.style.display = "none";
+             
+        }
+
+
+        // Add event listener to the document body
+        document.body.addEventListener("click", function () {
+            setActiveButton(document.querySelector(".tab.active"));
+        });
+
+    });
+</script>
 {% endblock %}

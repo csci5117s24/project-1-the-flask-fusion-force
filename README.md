@@ -22,13 +22,16 @@ CSCI 5117, Spring 2024, [assignment description](https://canvas.umn.edu/courses/
 **Describe the most challenging features you implemented
 (one sentence per bullet, maximum 4 bullets):**
 
-* ...
+* The spotify callback to be able to extract a user's information from their library then import these playlists onto the website
+* Another hard part was saving the user's information, playlist information, the songs in the playlist and its' information, and other information that's valuable to the website in the database along with retrieving it correctly
 
 ## Testing Notes
 
 **Is there anything special we need to know in order to effectively test your app? (optional):**
 
-* ...
+* If you're not signed in you won't be able to leave a comment or rating, import your playlist, or see all the available menu options
+* You can leave comments and ratings if you click on the playlist while signed in
+* Comments and ratings left on a playlist will be viewable when a user refreshes the page
 
 
 ## Screenshots of Site
@@ -59,11 +62,10 @@ https://www.canva.com/design/DAF7eiceWJs/7_WpszTzMRMUg8rbZjcjuQ/edit?utm_content
 **Document integrations with 3rd Party code or services here.
 Please do not document required libraries. or libraries that are mentioned in the product requirements**
 
-* Library or service name: description of use
-* ...
+* For our 3rd Party Service, we used the Spotify API so we could directly interact with the user's Spotify account. This will let the user import all of their playlists onto our website and have people rate the playlist and leave comments on what they think about it.
 
 **If there's anything else you would like to disclose about how your project
 relied on external code, expertise, or anything else, please disclose that
 here:**
 
-...
+* We relied on the Spotify API Authorization Tutorial for us to gain the user's access token. https://developer.spotify.com/documentation/web-api/tutorials/code-flow

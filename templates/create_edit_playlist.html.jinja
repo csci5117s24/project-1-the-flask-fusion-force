@@ -1,84 +1,201 @@
-
 {% extends "layout.html.jinja" %}
 {% block title %} Edit Playlist {% endblock %}
 {% block page_title %}
-<h1>&lt;Your Playlist Name Here &gt;</h1>
+<h1>
+    {# {% playlistDetails.playlistName %} #}
+    Playlist Name
+</h1>
 {% endblock %}
+
 {% block content %}
-<div class="pure-g horizontal-double-content" style="padding: 2em;">
+{% if user_session != None %}
+<div class="pure-g horizontal-double-content">
     <div class="pure-u-5-12">
-         <form class="pure-form pure-u-1" method = "POST" action = "/edit-playlist">
-                    <input type="text" class="pure-input-rounded" placeholder="Find a Song..."/>
-                    <button type="submit" class="pure-button">Search</button>
-        </form>
-        <div class = "songlst">
-            {% for song in searched_songs %}
-                {% include "addsongcard.html.jinja" ignore missing with context %}
-            {% endfor %}
+        <div class="pure-form pure-u-1 double-header">
+            <input type="text" class="pure-input-rounded" placeholder="Find a Song..." id="songSearch" />
+            <button class="pure-button" onclick="searchForSong()">Search</button>
         </div>
-        
+        <div class="songlst" id="searchedSongsDiv">
+            {# {% for song in searchedSongs %}
+            {% include "addsongcard.html.jinja" ignore missing with context %}
+            {% endfor %} #}
+        </div>
+
     </div>
-    <div class="pure-u-5-12 horizontal-double-content" >
-        <div class="pure-g song-feild">
-            <div class="pure-u-1-5 small-playlist-icon">
-                <img src="playlist_image.jpg" alt="Playlist Image">
-              
-            </div>
+    <div class="pure-u-5-12 horizontal-double-content">
+        <div class="pure-g song-feild double-header">
+        <div class="pure-u-1-5 small-playlist-icon" id="playlistImageDiv" onclick="changePlaylistImage()">
+            <img src="playlist_image.jpg" alt="Playlist Image" id="playlistImage">
+            <input type="file" id="imageUpload" style="display: none;" accept="image/*" onchange="previewImage(this)">
+        </div>
             <div class="pure-u-1-3">
-                Name of Playlist
+                <div class="pure-form pure-u-1">
+                    <input type="text" id="playlistNameInput" placeholder="Name your playlist..." value="{{ playlistDetails.playlistName }}" />
+                </div>
             </div>
         </div>
-      <div class = "songlst">
-            {% for song in added_songs %}
-                {% include "deletesongcard.html.jinja" ignore missing with context %}
-            {% endfor %}
+        <div class="songlst" id="currentSongsDiv">
+            {# {% for song in songs.songs %}
+            {% include "deletesongcard.html.jinja" ignore missing with context %}
+            {% endfor %} #}
         </div>
-        <div class = "right-align">
-            <!-- Save Button (Bottom Right) -->
-            <form class="pure-form pure-u-1" method = "POST" action = "/library">
-                <button onclick="savePlaylist()" class="save-button pure-button">Save Playlist</button>
-            </form>
-      </div>
+        <div class="right-align">
+            <button onclick="saveChanges()" class="save-button pure-button">Save Changes</button>
+        </div>
     </div>
-     
-    </div>
+
 </div>
+</div>
+{% else %}
+<p> You can't access this page with out loging in</p>
+<a href="/login" class="pure-menu-link">Log in</a>
+{% endif %}
 
-
-    <script>
-        /*
-        // Function to get playlist data from the server
-        function getPlaylist() {
-            fetch('/getPlaylist')
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('No search results for playlist from server');
-                    }
-                    return response.json(); // Read the response body as JSON
-                })
-                .then(data => { 
-                    // Display playlist details and songs
-                    document.getElementById('playlistSongs').innerHTML = renderPlaylistSongs(data.songs);
-                    document.querySelector('h1').innerText = data.playlistName;
-                })
-                .catch(error => {
-                    console.error('There was a problem with the fetch operation:', error);
+<script>
+    function searchForSong() {
+        const searchQuery = document.getElementById("songSearch").value;
+        const fetchURL = `/spotify/search?q=${encodeURIComponent(searchQuery)}`;
+        console.log(fetchURL);
+        console.log("Searching for song: ", searchQuery);
+        fetch(fetchURL, {
+            method: 'GET', // Ensure method is specified as 'GET'
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(searchRes => {
+                console.log(searchRes);
+                // Do something with the search results
+                searchRes.forEach(function (searchedSong) {
+                    console.log(searchedSong);
                 });
-        }
-        // Alters display when user clicks a new tab
-        function searchSong(newTab){
+            })
+            .catch(error => {
+                console.error('Error fetching data:', error);
+            });
+    }
+    
+    function makeDeleteSongCard(song) {
+        console.log("Called makeDeleteSongCard with ", song);
+        // Creating elements dynamically
+        var songDiv = document.createElement("div");
+        songDiv.className = "pure-g song";
+        songDiv.id = song.songID;
 
-        }
-        function addSong(newTab){
+        var songIconDiv = document.createElement("div");
+        songIconDiv.className = "pure-u-1-5 song-icon";
+        var songIconImg = document.createElement("img");
+        songIconImg.src = song.songImage;
+        songIconImg.alt = "Song Icon";
+        songIconDiv.appendChild(songIconImg);
 
-        }
-        function editSong(newTab){
+        var songTitleDiv = document.createElement("div");
+        songTitleDiv.className = "pure-u-3-5 song-title";
+        songTitleDiv.textContent = song.songName;
 
-        }
-        function savePlaylist(newTab){
+        var deleteButton = document.createElement("button");
+        deleteButton.className = "add-song";
+        deleteButton.setAttribute("onclick", "deleteSong('" + song.songID + "', '" + song.songName + "', '" + song.songImage + "')");
+        var deleteButtonText = document.createElement("h1");
+        deleteButtonText.textContent = "-";
+        deleteButton.appendChild(deleteButtonText);
 
-        }
-        window.onload = getPlaylist();
-        */
-    </script>
+        deleteButton.addEventListener("click", function (event) {
+            event.stopPropagation(); // Prevent parent event triggering
+        });
+
+        // Appending elements to songDiv
+        songDiv.appendChild(songIconDiv);
+        songDiv.appendChild(songTitleDiv);
+        songDiv.appendChild(deleteButton);
+        console.log("Made songDiv", songDiv);
+        return songDiv;
+    }
+
+    var playlistSongIDs = [];
+    const userID = "{{ user_id }}";
+    const playlistID = "{{ playlist_id }}";
+    var songs = {{ songs }};
+    var playlistDetails = {{ playlistDetails }};
+    var newPlaylist = playlistID===(undefined || null) ? true : false; // if a new playlist
+
+    songs.songs.forEach(song => {
+        playlistSongIDs.push(song.songID);
+        addSong(song);
+    });
+    // extract playlist name and image
+    var playlistImageData = playlistDetails.playlistPicture;
+
+    function addSong(song) {
+        console.log("song being added");
+        // Add song to arrays, reset HTML for songs section
+        playlistSongIDs.push(song.id);
+        let songDiv = makeDeleteSongCard(song);
+        let songsContainer = document.getElementById("currentSongsDiv");
+        songsContainer.appendChild(songDiv);
+    }
+
+    function deleteSong(id, name, image) {
+        let songDiv = document.getElementById(id);
+        console.log("deleteSong songDiv: ", songDiv);
+        songDiv.remove();
+        // Remove from ids array
+        var index = playlistSongIDs.indexOf(id);
+        playlistSongIDs.splice(index, 1);
+    }
+
+    function changePlaylistImage() {
+        console.log("Changing playlist pfp");
+        document.getElementById('imageUpload').click(); // Trigger the file input click event
+    }
+
+    function previewImage(input) {
+        console.log("previewImage triggered")
+        const file = input.files[0]; // Get selected file
+        const reader = new FileReader(); 
+        reader.onload = function (e) {
+            playlistImageData = e.target.result; // encode
+        };
+        reader.readAsDataURL(file);
+    }
+
+
+
+    function saveChanges() {
+        const playlistName = document.getElementById('playlistNameInput').value;
+        const data = {
+            user_id: userID,
+            playlist_id: playlistID,
+            new_playlist: newPlaylist,
+            song_ids: playlistSongIDs,
+            playlist_image: playlistImageData,
+            playlist_name: playlistName,
+        };
+        console.log(data);
+        fetch('/edit-playlist', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                else {
+                    newPlaylist===true ? window.alert("Playlist created") : window.alert("Playlist updated");
+                }
+            })
+            .catch(error => {
+                console.error('There was a problem with the fetch operation:', error);
+            });
+    }
+</script>
 {% endblock %}

@@ -1,11 +1,11 @@
 <div class="pure-g song">
-    <div class="pure-u-1-5 song-icon ">
-        Song icon
+    <div class="pure-u-1-5 song-icon">
+        <img src="{{ song.songImage }}" alt="Song Image">
     </div>
     <div class="pure-u-3-5 song-title">
-        {{song}}
+        {{ song.songName }}
     </div>
-    <button  class = "add-song" onclick = "addSong('')">
-            <h1>+</h1>  
-    </button >
+    <button class="add-song" onclick="addSong('{{ song.songID }}', '{{ song.songName }}', '{{ song.soneImage }}')">
+        <h1>+</h1>
+    </button>
 </div>

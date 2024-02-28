@@ -5,8 +5,12 @@
 {% endblock %}
 {% block content %}
 <div class="pure-g">
-    {% for playlist in playlists %}
+
+        {% for playlist in playlists %}
         {% include "playlistcard.html.jinja" ignore missing with context %}
-    {% endfor %}
+        {% endfor %}
+
 </div>
+<script src="{{ url_for('static', filename='playlistCard.js') }}"></script>
+
 {% endblock %}

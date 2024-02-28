@@ -1,11 +1,12 @@
 <div class="pure-g song">
-    <div class="pure-u-1-5 song-icon ">
-        Song icon
+    <div class="pure-u-1-5 song-icon">
+        <img src="{{ song.songImage }}" alt="Song Icon">
     </div>
     <div class="pure-u-3-5 song-title">
-        {{song}}
+        {{ song.songName }}
     </div>
-    <button  class = "add-song" onclick = "deleteSong('')">
-            <h1>-</h1>  
-    </button >
+    <button class="add-song" onclick="deleteSong('{{ song.songID }}', '{{ song.songName }}', '{{ song.songImage }}')">
+        <h1>-</h1>
+    </button>
 </div>
+xw

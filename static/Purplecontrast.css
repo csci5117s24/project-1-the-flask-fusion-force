@@ -1,5 +1,5 @@
 /*color pallet
-#bfaaff
+#ffffff
 #b299fa
 #9883e5
 #512f94
@@ -51,11 +51,25 @@ body{
     display: flex;
     flex-wrap: wrap;
 }
-
+.pure-menu-link::before{
+    content: "";
+  }
+.pure-menu-link::after {
+      content: "";
+  }
 .pure-menu-link:hover{
     color: #b299fa;
     background-color: #222222;
+    border-radius: 0.5em;
+    padding-left: 1em;
+    padding-right: 1em;
 }
+.pure-menu-link:hover::before{
+    content: "• ";
+  }
+.pure-menu-link:hover::after {
+      content: " •";
+  }
 .pure-menu-horizontal {
     margin-bottom: 1em;
 }
@@ -66,7 +80,12 @@ body{
     background-color: #222222;
     border-radius: 10px;
 }
-
+#navbarWebsiteName::before{
+  content: "• ";
+}
+#navbarWebsiteName::after {
+    content: " •";
+}
 .page-title {
     margin-top: 7em;
     padding-left: 2em;
@@ -89,10 +108,10 @@ body{
     background: #b299fa; /* Adjusted color */
     border-radius: 2em;
     text-align: center;
-    border-bottom: 6px inset #bfaaff;
+    border-bottom: 6px inset #ffffff;
     border-top: 6px outset #9883e5;
     border-left: 6px outset #9883e5;
-    border-right: 6px inset #bfaaff;
+    border-right: 6px inset #ffffff;
 
 }
 .playlist-container {
@@ -111,31 +130,21 @@ body{
 }
 .tag {
     padding: 0.25em;
-    background: #bfaaff; /* Adjusted color */
+    background: #ffffff; /* Adjusted color */
     border-radius: 0.5em;
     text-align: center;
 }
 /*Indiviual Playlist page*/
-.horizontal-double-content{
-    padding: 2em;
-    text-align: center;
-    justify-content: center;
-}
 .playlist-icon {
     border-style: solid;
     background: #ffffff; /* Adjusted color */
     border-bottom: 6px inset #9883e5;
-    border-top: 6px outset #bfaaff;
-    border-left: 6px outset #bfaaff;
+    border-top: 6px outset #ffffff;
+    border-left: 6px outset #ffffff;
     border-right: 6px inset #9883e5;
     border-radius: 1em;
     text-align: center;
-
-}
-.playlist-img{
-    max-width: 10em;
-    max-height: 10em;
-    border-radius: 0.5em;
+    padding: 2em;
 }
 
 .playlist-name{
@@ -160,10 +169,10 @@ body{
     padding-top: 1em;
     padding-bottom: 1em;
     border-style: solid;
-    background: #bfaaff; /* Adjusted color */
+    background: #ffffff; /* Adjusted color */
     border-bottom: 6px inset #9883e5;
-    border-top: 6px outset #bfaaff;
-    border-left: 6px outset #bfaaff;
+    border-top: 6px outset #ffffff;
+    border-left: 6px outset #ffffff;
     border-right: 6px inset #9883e5;
     border-radius: 1em;
     text-align: center;
@@ -190,10 +199,10 @@ body{
     padding-top: 1em;
     padding-bottom: 1em;
     border-style: solid;
-    background: #bfaaff; /* Adjusted color */
+    background: #ffffff; /* Adjusted color */
     border-bottom: 6px inset #9883e5;
-    border-top: 6px outset #bfaaff;
-    border-left: 6px outset #bfaaff;
+    border-top: 6px outset #ffffff;
+    border-left: 6px outset #ffffff;
     border-right: 6px inset #9883e5;
     border-radius: 1em;
     text-align: center;
@@ -209,18 +218,18 @@ body{
     background-color: #9883e5;
     border-radius: 2em;
     border-bottom: 6px inset #9883e5;
-    border-top: 6px outset #bfaaff;
-    border-left: 6px outset #bfaaff;
+    border-top: 6px outset #ffffff;
+    border-left: 6px outset #ffffff;
     border-right: 6px inset #9883e5;
 }
 .newcomment:hover{
-    color:#bfaaff;
+    color:#ffffff;
     background-color: #512f94;
     border-radius: 2em;
-    border-bottom: 6px inset #bfaaff;
+    border-bottom: 6px inset #ffffff;
     border-top: 6px inset #512f94;
     border-left: 6px inset #512f94;
-    border-right: 6px inset #bfaaff;
+    border-right: 6px inset #ffffff;
 }
 .commentlst{
     padding: 1em;
@@ -296,17 +305,17 @@ button .commentblock:hover{
     margin: .1em -0.3em;
     position: relative;
     display: block;
-    color: #bfaaff;
+    color: #ffffff;
     width: 0px;
     height: 0px;
     border-right: 1em solid transparent;
-    border-bottom: .7em solid #bfaaff;
+    border-bottom: .7em solid #ffffff;
     border-left: 1em solid transparent;
     transform: rotate(35deg);
     border-radius: 3em;
   }
   .stars:before {
-    border-bottom: .8em solid #bfaaff;
+    border-bottom: .8em solid #ffffff;
     border-left: .3em solid transparent;
     border-right: 0.3em solid transparent;
     position: absolute;
@@ -322,13 +331,13 @@ button .commentblock:hover{
   .stars:after {
     position: absolute;
     display: block;
-    color: #bfaaff;
+    color: #ffffff;
     top: .03em;
     left: -1.05em;
     width: 0px;
     height: 0px;
     border-right: 1em solid transparent;
-    border-bottom: .70em solid #bfaaff;
+    border-bottom: .70em solid #ffffff;
     border-left: 1em solid transparent;
     transform: rotate(-70deg);
     content: '';
@@ -383,13 +392,13 @@ button .commentblock:hover{
     background-color: #9883e5;
     border-radius: 2em;
     border-bottom: 6px inset #9883e5;
-    border-top: 6px outset #bfaaff;
-    border-left: 6px outset #bfaaff;
+    border-top: 6px outset #ffffff;
+    border-left: 6px outset #ffffff;
     border-right: 6px inset #9883e5;
     
 }
 .add-song:hover{
-    color:#bfaaff;
+    color:#ffffff;
     background-color: #512f9488;
     border-radius: 2em;
     border-bottom: 6px inset #9883e5;
@@ -407,27 +416,18 @@ button .commentblock:hover{
     background-color: #9883e5;
     border-radius: 2em;
     border-bottom: 6px inset #9883e5;
-    border-top: 6px outset #bfaaff;
-    border-left: 6px outset #bfaaff;
+    border-top: 6px outset #ffffff;
+    border-left: 6px outset #ffffff;
     border-right: 6px inset #9883e5;
 }
 .pure-button:hover{
-    color:#bfaaff;
+    color:#ffffff;
     background-color: #512f94;
     border-radius: 2em;
-    border-bottom: 6px inset #bfaaff;
+    border-bottom: 6px inset #ffffff;
     border-top: 6px inset #512f94;
     border-left: 6px inset #512f94;
-    border-right: 6px inset #bfaaff;
-}
-.pure-button-disabled{
-    color:#bfaaff;
-    background-color: #512f94;
-    border-radius: 2em;
-    border-bottom: 6px inset #bfaaff;
-    border-top: 6px inset #512f94;
-    border-left: 6px inset #512f94;
-    border-right: 6px inset #bfaaff;
+    border-right: 6px inset #ffffff;
 }
 .song-info-feild{
     padding: 1em;
