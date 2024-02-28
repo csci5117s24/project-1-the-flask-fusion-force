@@ -8,9 +8,9 @@
 {% endblock %}
 {% block content %}
 {% if user_session != None %}
-<div class="pure-g horizontal-double-content">
+<div class="pure-g horizontal-double-content" style="padding: 2em;">
     <div class="pure-u-5-12">
-        <div class="pure-form pure-u-1 double-header">
+        <div class="pure-form pure-u-1">
             <input type="text" class="pure-input-rounded" placeholder="Find a Song..." id="songSearch" />
             <button type="submit" class="pure-button" onclick="searchForSong()">Search</button>
         </div>
@@ -22,7 +22,7 @@
 
     </div>
     <div class="pure-u-5-12 horizontal-double-content">
-        <div class="pure-g song-feild double-header">
+        <div class="pure-g song-feild">
             <div class="pure-u-1-5 small-playlist-icon" id="playlistImageDiv" onclick="changePlaylistImage()">
                 <img src="playlist_image.jpg" alt="Playlist Image" id="playlistImage">
             </div>
