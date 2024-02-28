@@ -8,6 +8,9 @@
 
 {% block content %}
 {% if user_session != None %}
+<div class=>
+    <button onclick="saveChanges()" class="save-button pure-button">Save Changes</button>
+</div>
 <div class="pure-g double-content-container">
     <div class="pure-u-5-12 horizontal-double-content">
         <div class="pure-form pure-u-1 double-header">
@@ -42,13 +45,12 @@
                 <button class = "input-button" onclick="addTag()"> Add Tag</button>
                 
             </div>
+          
         </div>
         
         <div class="songlst" id="currentSongsDiv">
         </div>
-        <div class="right-align">
-            <button onclick="saveChanges()" class="save-button pure-button">Save Changes</button>
-        </div>
+       
     </div>
 
 </div>
