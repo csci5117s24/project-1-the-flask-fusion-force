@@ -948,7 +948,7 @@ def getRandomPlaylistsOpt(n):
 """SELECT pl.playlist_id, 
 pl.playlist_name AS name, 
 pl.image AS image,
-AVG(r.stars) AS rating,
+COALESCE(AVG(r.stars), 0) AS rating,
 ARRAY_REMOVE(ARRAY_AGG(t.tag_name), NULL) AS tags
 FROM mixtape_fm_playlists pl
 LEFT JOIN mixtape_fm_playlist_tags pt ON pl.playlist_id = pt.playlist_id
@@ -1003,7 +1003,7 @@ def getPlaylistOpt(playlist_id):
             """SELECT pl.playlist_id,
 pl.playlist_name AS name,
 pl.image AS image,
-AVG(r.stars) AS rating
+COALESCE(AVG(r.stars), 0) AS rating
 FROM mixtape_fm_playlists pl
 LEFT JOIN mixtape_fm_ratings r ON pl.playlist_id = r.playlist_id
 WHERE pl.playlist_id = %s
@@ -1044,6 +1044,11 @@ def changePlaylistDicts(playlists):
 def changePlaylistDict(playlist):
   renameKeyInRealDict(playlist, 'playlist_id', 'playlistID')
   renameKeyInRealDict(playlist, 'rating', 'ratingAvg')
+  if playlist.get('ratingAvg') is not None: 
+    # playlist['ratingAvg'] = str(round(float(playlist.get('ratingAvg')), 2)) doesn't work
+    playlist['ratingAvg'] = str("%.2g" % playlist['ratingAvg'])
+    # print(type(playlist['ratingAvg']))
+    # print(playlist['ratingAvg'])
   return playlist
 
 def nullIfNone(arg):
