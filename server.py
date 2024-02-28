@@ -30,6 +30,7 @@ app = create_app()
 @app.route('/home', methods=['GET'])
 @app.route('/homepage', methods=['GET'])
 def homepage():
+    session['spotify'] = False
     playlists = db.getRandomPlaylistsOpt(10)
     return render_template('homepage.html.jinja', user_session=session.get('user'), pretty=json.dumps(session.get('user'), indent=4),
     playlists = playlists)
@@ -131,7 +132,7 @@ def playlist(p_id):
     playlist = db.get_playlist_from_result(db_playlist)
     user = db.getUserFromPlaylistId(db_playlist[0])
     if (session.get('user_id') != None and session['user_id'] == user[0]):
-      return render_template('create_edit_playlist.html.jinja', playlist_id=p_id, user_session=session.get('user'),playlistDetails=playlist, songs=songs, user_id=session.get('user_id'), user_action='edit')
+      return render_template('create_edit_playlist.html.jinja', playlist_id=p_id, user_session=session.get('user'),playlistDetails=playlist, songs=songs, user_id=session.get('user_id'))
     else:
       return render_template('playlist.html.jinja', playlist = playlist, user_image = user[5], playlist_id=p_id,user_session = session.get('user'), user_id=session.get('user_id'), songs = songs,comments = comments)
 
@@ -190,7 +191,7 @@ def editPlaylist(p_id=None):
     # if p_id is None:  # New playlist
     #     return render_template('create_edit_playlist.html.jinja', playlist_id=p_id, user_session=session.get('user'),playlistDetails= playlist_details,songs=songs,user_id=session.get('user_id'))
       songs = db.get_playlist_songs(p_id)
-      return render_template('create_edit_playlist.html.jinja', playlist_id=p_id, user_session=session.get('user'),playlistDetails=playlist, songs=songs, user_id=session.get('user_id'), user_action='edit')
+      return render_template('create_edit_playlist.html.jinja', playlist_id=p_id, user_session=session.get('user'),playlistDetails=playlist, songs=songs, user_id=session.get('user_id'))
     else:
       user = db.getUserFromPlaylistId(p_id)
       print(f"User: {user}")
@@ -205,7 +206,7 @@ def createPlaylist():
       playlist = {'playlistID': None, 'userID': None, 'image': None, 'name': None, 'ratingAvg': None, \
         'numRatings': None, 'tags': None, 'userDisplayName': None}
       songs = [{'song_id': None, 'name': None, 'picture': None, 'artist': None, 'album': None, 'genre': None, 'duration': None}]
-      return render_template('create_edit_playlist.html.jinja', playlist_id=None, user_session=session.get('user'),playlistDetails=playlist, songs=songs, user_id=session.get('user_id'), user_action='create')
+      return render_template('create_edit_playlist.html.jinja', playlist_id=None, user_session=session.get('user'),playlistDetails=playlist, songs=songs, user_id=session.get('user_id'))
 
 @app.route('/rate-playlist', methods=['POST'])
 def ratePlaylist():
@@ -238,6 +239,7 @@ def savePlaylist():
     user_id = data.get('user_id')
     playlist_id = data.get('playlist_id')
     db.savePlaylist(user_id, playlist_id)
+    return redirect(url_for("library"))
 
 
 @app.route('/test-json')
@@ -246,5 +248,5 @@ def send_json():
     return json.dumps(data)
 
 @app.errorhandler(404)
-def page_not_found():
-    return render_template('404.html.jinja'), 404
+def page_not_found(e):
+    return render_template('404.html.jinja')

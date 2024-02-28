@@ -64,7 +64,7 @@ def get_playlist_songs(playlist_id):
     song_result = get_song_from_song_id(song_id)
     # songs: [song_id:””, name:””, picture:”img”, artist:’’”, album:””, genre:””|null, duration:””|null]
     duration = None
-    if (song_result[5]):
+    if (song_result[4]):
       seconds = int(song_result[4]) % 60000
       while (seconds >= 100):
         seconds /= 10
@@ -252,7 +252,7 @@ def search(user_id, search_word):
   name_results = get_playlists_from_results(playlist_results)
   tag_results = get_playlists_from_tag_id_results(tag_id_results)
   if (user_id != None):
-    saved_results = get_saved_playlists(user_id)
+    saved_results = getSavedPlaylists(user_id)
   else:
     saved_results = []
   # saved_results = get_playlists_from_saved_results(playlist_results)
@@ -950,7 +950,7 @@ def savePlaylist(user_id, playlist_id):
     cursor.execute("INSERT INTO mixtape_fm_playlists_saved (playlist_id, user_id) VALUES (%s, %s);", (playlist_id, user_id))
   return
 
-def get_saved_playlists(user_id):
+def get_saved_playlist_ids(user_id):
   with get_db_cursor(True) as cursor:
     cursor.execute("SELECT * FROM mixtape_fm_playlists_saved WHERE user_id = %s;", (user_id, ))
     return cursor.fetchall()
@@ -960,7 +960,10 @@ def getSavedPlaylists(user_id):
     print("Invalid parameter:")
     print("  user_id= " + str(user_id))
     return
-  playlist_results = get_saved_playlists(user_id)
+  playlist_ids = get_saved_playlist_ids(user_id)
+  playlist_results = []
+  for playlist_id in playlist_ids:
+    playlist_results.append(get_playlist_from_playlist_id(playlist_id[0]))
   playlists = get_playlists_from_results(playlist_results)
   return playlists
   # return jsonify(playlists)

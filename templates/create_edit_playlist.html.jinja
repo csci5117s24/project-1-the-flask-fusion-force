@@ -40,7 +40,7 @@
             {% endfor %} #}
         </div>
         <div class="right-align">
-            <button onclick="saveChanges({{user_action}})" class="save-button pure-button">Save Changes</button>
+            <button onclick="saveChanges()" class="save-button pure-button">Save Changes</button>
         </div>
     </div>
 
@@ -130,7 +130,7 @@
         addSong(song);
     });
     // extract playlist name and image
-    var playlistImageData = null;
+    var playlistImageData = playlistDetails.playlistPicture;
 
     function addSong(song) {
         console.log("song being added");
@@ -160,7 +160,7 @@
         const file = input.files[0]; // Get selected file
         const reader = new FileReader(); 
         reader.onload = function (e) {
-            const base64Image = e.target.result; // encode
+            playlistImageData = e.target.result; // encode
         };
         reader.readAsDataURL(file);
     }
