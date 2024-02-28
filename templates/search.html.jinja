@@ -19,12 +19,12 @@
         {% endif %}
     </ul>
 </div>
-<div id="nameResults" class = "pure-g">
+<div id="nameResults" class = "pure-g" style="display: block;">
      {% for playlist in nameResults %}
     {% include "playlistcard.html.jinja" ignore missing with context %}
     {% endfor %} 
 </div>
-<div id="SavedResults" style="display: none;" class = "pure-g">
+<div id="savedResults" style="display: none;" class = "pure-g">
    {% for playlist in savedResults %}
     {% include "playlistcard.html.jinja" ignore missing with context %}
     {% endfor %}
@@ -91,45 +91,7 @@
         });
         {% endif %}
         
-        function changeContentToNameResults() {
-            console.log("Clicked My Playlists tab");
-            
-            let x = document.getElementById("nameResults");
-            let y = document.getElementById("savedResults");
-            let z = document.getElementById("tagResults");
-            if (x.style.display === "none") {
-                x.style.display = "block";
-            }
-                y.style.display = "none";
-                z.style.display = "none";
-                
-         
-        }
-        function changeContentToSavedResults() {
-            console.log("Clicked Saved Playlists tab");
-           let y = document.getElementById("nameResults");
-            let x = document.getElementById("savedResults");
-            let z = document.getElementById("tagResults");
-            if (x.style.display === "none") {
-                x.style.display = "block";
-            }
-                y.style.display = "none";
-                z.style.display = "none";
-             
-        }
-        function changeContentToTagResults() {
-            console.log("Clicked Random Playlists tab");
-           let z = document.getElementById("nameResults");
-            let y = document.getElementById("savedResults");
-            let x = document.getElementById("tagResults");
-            if (x.style.display === "none") {
-                x.style.display = "block";
-            }
-                y.style.display = "none";
-                z.style.display = "none";
-             
-        }
-
+   
 
         // Add event listener to the document body
         document.body.addEventListener("click", function () {
@@ -137,5 +99,44 @@
         });
 
     });
+    function changeContentToNameResults() {
+        console.log("Clicked My Playlists tab");
+        
+        let x = document.getElementById("nameResults");
+        let y = document.getElementById("savedResults");
+        let z = document.getElementById("tagResults");
+        if (x.style.display === "none") {
+            x.style.display = "block";
+        }
+            y.style.display = "none";
+            z.style.display = "none";
+            
+     
+    }
+    function changeContentToSavedResults() {
+        console.log("Clicked Saved Playlists tab");
+       let y = document.getElementById("nameResults");
+        let x = document.getElementById("savedResults");
+        let z = document.getElementById("tagResults");
+        if (x.style.display === "none") {
+            x.style.display = "block";
+        }
+            y.style.display = "none";
+            z.style.display = "none";
+         
+    }
+    function changeContentToTagResults() {
+        console.log("Clicked Random Playlists tab");
+       let z = document.getElementById("nameResults");
+        let y = document.getElementById("savedResults");
+        let x = document.getElementById("tagResults");
+        if (x.style.display === "none") {
+            x.style.display = "block";
+        }
+            y.style.display = "none";
+            z.style.display = "none";
+         
+    }
+
 </script>
 {% endblock %}

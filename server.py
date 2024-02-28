@@ -123,13 +123,16 @@ def search():
 
 @app.route('/playlist/<int:p_id>', methods=['POST','GET'])
 def playlist(p_id):
-    songs = db.get_playlist_songs(p_id)
+    # songs = db.get_playlist_songs(p_id)
+    # comments = db.getComments(p_id)
+    # db_playlist = db.get_playlist_from_playlist_id(p_id)
+    # if db_playlist == None:  # playlist w/ playlistID p_id not found
+    #     return render_template('403.html.jinja')
+    # playlist = db.get_playlist_from_result(db_playlist)
+    playlist = db.getPlaylistOpt(p_id)
+    songs = db.getPlaylistSongsOpt(p_id)
     comments = db.getComments(p_id)
-    db_playlist = db.get_playlist_from_playlist_id(p_id)
-    if db_playlist == None:  # playlist w/ playlistID p_id not found
-        return render_template('403.html.jinja')
-    playlist = db.get_playlist_from_result(db_playlist)
-    user = db.getUserFromPlaylistId(db_playlist[0])
+    user = db.getUserFromPlaylistId(p_id)
     if (session.get('user_id') != None and session['user_id'] == user[0]):
       return render_template('create_edit_playlist.html.jinja', playlist_id=p_id, user_session=session.get('user'),playlistDetails=playlist, songs=songs, user_id=session.get('user_id'))
     else:
