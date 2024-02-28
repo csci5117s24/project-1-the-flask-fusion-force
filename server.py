@@ -30,6 +30,7 @@ app = create_app()
 @app.route('/home', methods=['GET'])
 @app.route('/homepage', methods=['GET'])
 def homepage():
+    session['spotify'] = False
     playlists = []
     if (session.get('user_id') != None):
       playlists = db.getUserPlaylists(session['user_id'])
@@ -173,8 +174,7 @@ def editPlaylist(p_id=None):
     else:
       print('User ' + str(session['user_id']) + ' trying to modify playlist owned by user ' + str(playlist['userID']))
       playlists = db.getRandomPlaylists(10)
-      return render_template('homepage.html.jinja', user_session=session.get('user'), pretty=json.dumps(session.get('user'), indent=4),
-      playlists = playlists)
+      playlist(p_id)
 
 @app.route('/rate-playlist', methods=['POST'])
 def ratePlaylist():
@@ -222,3 +222,7 @@ def send_json():
     }
 
     return json.dumps(data)
+
+@app.errorhandler(404)
+def page_not_found():
+    return render_template('404.html.jinja'), 404

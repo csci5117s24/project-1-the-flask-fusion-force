@@ -7,7 +7,9 @@
             {{ playlist.name }}
         </div>
         <div class="playlist-rating">
-            {{ playlist.rating }}
+            {% if playlist.ratingAvg != '0' and playlist.ratingAvg != 0 %}
+                {{ playlist.ratingAvg }}
+            {% endif %}
         </div>
         <div class="pure-g playlist-tags">
             {% for tag in playlist.tags %}
