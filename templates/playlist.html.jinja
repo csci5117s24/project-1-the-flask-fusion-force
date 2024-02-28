@@ -74,11 +74,9 @@
                         + Add a comment
                     </button>
                 </div>
-                {# <div class="pure-u-1-2">
-                    <button class="newcomment" onclick="toggleComment('comment-create-box')">
-                        + Add a rating
-                    </button>
-                </div> #}
+                <div class="pure-u-1-2" id="editPlaylistDiv" style="display: none;">
+                    <button onclick="editPlaylist()" class="save-button pure-button">Edit Playlist</button>
+                </div>
             {% endif %}
                 
             </div>
@@ -117,6 +115,18 @@
 <script>
     const userID = "{{ user_id }}";
     var playlistID = "{{ playlist_id }}";
+    var userRating = "{{ user_rating }}";
+    var playlist = {{ playlist  | tojson}};
+
+    let userIsOwner = playlist.userID === userID ? true : false;
+    if (userIsOwner){  // if user owns playlist, give them edit button
+        let editPlaylistDiv = document.getElementById("editPlaylistDiv");
+        editPlaylistDiv.style.display = "block";
+    }
+
+    console.log("User Rating: ", (userRating));
+    console.log(typeof(userRating))
+
     var starButtons = document.querySelectorAll('.star-button');
     // spotify_connected=session['spotify'] is not None -> user not logged into spotify
     // if user_id is None -> user not logged into our site
@@ -244,6 +254,9 @@
                 });
         })
     });
-
+    function editPlaylist(){
+        console.log("Triggered editPlaylist with pid: ", playlistID);
+        window.location.href = "/edit-playlist/" + playlistID;
+    }
 </script>
 {% endblock %}

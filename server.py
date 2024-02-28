@@ -96,7 +96,7 @@ def spotify_search():
     if session.get('spotify') is None:
        return Response("Need to be logged in to Spotify to use this feature!", status=400, mimetype='text/plain')
 
-    spotify.refresh_spotify_tokens(session['user_id'], session['spotify'])
+    session['spotify'] = spotify.refresh_spotify_tokens(session['user_id'], session['spotify'])
 
     search_string = request.args.get('q')
     num_results = request.args.get('n')
@@ -135,11 +135,9 @@ def playlist(p_id):
     songs = db.getPlaylistSongsOpt(p_id)
     comments = db.getComments(p_id)
     user = db.getUserFromPlaylistId(p_id)
-    if (session.get('user_id') != None and session['user_id'] == user[0]):
-       return redirect(url_for("editPlaylist", p_id=str(p_id)))
-    else:
-      return render_template('playlist.html.jinja', playlist = playlist, user_image = user[5], playlist_id=p_id,user_session = session.get('user'), user_id=session.get('user_id'), songs = songs,comments = comments)
-
+    user_rating = db.get_rating(user[0], p_id)
+    playlist['ratingAvg'] = float( playlist['ratingAvg'])
+    return render_template('playlist.html.jinja', playlist = playlist, user_image = user[5], playlist_id=p_id,user_session = session.get('user'), user_id=session.get('user_id'), songs = songs,comments = comments, user_rating = user_rating)
 
 @app.route('/settings', methods=['GET'])
 @auth.require_login
