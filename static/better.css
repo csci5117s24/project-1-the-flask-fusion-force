@@ -162,7 +162,8 @@ body{
 }
 .song-icon{
     
- 
+    padding-top: 1em;
+    padding-bottom: 1em;
     border-style: solid;
     background: #bfaaff; /* Adjusted color */
     border-bottom: 3px inset #512f98;
@@ -170,8 +171,6 @@ body{
     border-left: 3px outset #bfaaff;
     border-right: 3px inset #512f98;
     border-radius: 1em;
-    max-width: 5em;
-    max-height: 5em;
     text-align: center;
 
     
@@ -183,7 +182,6 @@ body{
 .song{
     padding:0.5em;
 
-
 }
 .song-feild{
     margin-bottom: 2em;
@@ -192,6 +190,8 @@ body{
 
    
     margin: 0.5em;
+    padding-top: 1em;
+    padding-bottom: 1em;
     border-style: solid;
     background: #bfaaff; /* Adjusted color */
     border-bottom: 3px inset #512f98;
@@ -249,7 +249,6 @@ body{
 
 .horizontal-double-content{
     padding: 2em; 
-    max-width: 45%;
 }
 .double-header{
     margin-bottom:5em
