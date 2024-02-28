@@ -158,7 +158,26 @@ def library():
 @auth.require_login
 def editPlaylist(p_id=None):
     print(p_id)
+    if request.method == "POST":  # user is creating/updating a playlist
+      print(f"testing POST p_id: {p_id}")
+      data = request.json
+      user_id = data.get('user_id')
+      playlist_id = data.get('playlist_id')
+      print(playlist_id)
+      new_playlist = data.get('new_playlist')  # This might be a redundant value. Will depend on id
+      song_ids = data.get('song_ids')
+      playlist_image = data.get('playlist_image')
+      playlist_name = data.get('playlist_name')
+      if new_playlist:
+        db.createPlaylist(user_id, playlist_name, playlist_image, song_ids)
+      else:
+        db.update_playlist(user_id, playlist_id, playlist_name, playlist_image)  # can leave out playlist_image later if it was unchanged
+      playlist_id = db.get_playlist_id(user_id, playlist_name)
+      print(playlist_id)
+      p_id = playlist_id
+
     db_playlist = db.get_playlist_from_playlist_id(p_id)
+    print(db_playlist)
     playlist = db.get_playlist_from_result(db_playlist)
     print(playlist)
     if (session.get('user_id') != None and playlist['userID'] == session['user_id']):

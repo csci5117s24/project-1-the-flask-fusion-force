@@ -51,7 +51,6 @@
 {% endif %}
 
 <script>
-    let idCt = 0;
     function makeDeleteSongCard(song) {
         console.log("Called makeDeleteSongCard with ", song);
         // Creating elements dynamically
@@ -94,16 +93,14 @@
     const playlistID = "{{ playlist_id }}";
     var songs = {{ songs }};
     var playlistDetails = {{ playlistDetails }};
+    var newPlaylist = playlistID===(undefined || null) ? true : false; // if a new playlist
+
     songs.songs.forEach(song => {
         playlistSongIDs.push(song.songID);
         addSong(song);
     });
     // extract playlist name and image
     var playlistImageData = null;
-
-    console.log(songs);
-    console.log(playlistDetails);
-
 
     function searchForSong() {
         const searchQuery = document.getElementById("songSearch").value;
@@ -141,7 +138,7 @@
         let songsContainer = document.getElementById("currentSongsDiv");
         songsContainer.appendChild(songDiv);
     }
-    
+
     function deleteSong(id, name, image) {
         let songDiv = document.getElementById(id);
         console.log("deleteSong songDiv: ", songDiv);
@@ -172,13 +169,33 @@
 
     // TODO
     function saveChanges() {
-
-        if (playlistID === null) {  // make a completeley new playlist
-
-        }
-        else {  // update an existing playlist
-
-        }
+        const data = {
+            user_id: userID,
+            playlist_id: playlistID,
+            new_playlist: newPlaylist,
+            song_ids: playlistSongIDs,
+            playlist_image: playlistImageData;
+            playlist_name: playlistName,
+        };
+        console.log(data);
+        fetch('/edit-playlist', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                else {
+                    newPlaylist===true ? window.alert("Playlist created") : window.alert("Playlist updated");
+                }
+            })
+            .catch(error => {
+                console.error('There was a problem with the fetch operation:', error);
+            });
     }
 </script>
 {% endblock %}
