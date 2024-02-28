@@ -93,7 +93,7 @@ def spotify_search():
     print("Spotify searching...")
     if session.get('spotify') is None:
        return Response("Need to be logged in to Spotify to use this feature!", status=400, mimetype='text/plain')
-
+    print(session['spotify'])
     spotify.refresh_spotify_tokens(session['user_id'], session['spotify'])
 
     search_string = request.args.get('q')
