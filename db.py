@@ -526,10 +526,10 @@ def getComments(playlist_id):
   return comments
   # return jsonify(comments)
 
-def get_ratings(user_id, playlist_id):
+def get_rating(user_id, playlist_id):
   with get_db_cursor(True) as cursor:
     cursor.execute("SELECT * FROM mixtape_fm_ratings WHERE rating_user_id=%s AND playlist_id=%s;", (user_id, playlist_id))
-    return cursor.fetchall()    
+    return cursor.fetchone()   
 
 def get_ratings_no_user(playlist_id):
   with get_db_cursor(True) as cursor:
@@ -565,7 +565,7 @@ def getRatings(user_id, playlist_id):
   if (playlist_id == None or user_id == None):
     return ratings
     # return jsonify(ratings)
-  db_ratings = get_ratings(user_id, playlist_id)
+  db_ratings = get_rating(user_id, playlist_id)
   ratings = get_ratings_from_db_ratings(db_ratings)
   return ratings
   # return jsonify(ratings) 
