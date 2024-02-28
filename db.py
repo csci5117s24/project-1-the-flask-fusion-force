@@ -474,6 +474,42 @@ def getUserPlaylists(user_id):
   return playlists
   # return jsonify(playlists)
 
+def getRandomPlaylistsOpt(n):
+    with get_db_cursor(True) as cursor:
+        cursor.execute(
+"""SELECT pl.playlist_id AS playlistID, 
+pl.playlist_name AS name, 
+pl.image AS image,
+AVG(r.stars) AS rating,
+ARRAY_REMOVE(ARRAY_AGG(t.tag_name), NULL) AS tags
+FROM mixtape_fm_playlists pl
+LEFT JOIN mixtape_fm_playlist_tags pt ON pl.playlist_id = pt.playlist_id
+LEFT JOIN mixtape_fm_tags t ON pt.tag_id = t.tag_id
+LEFT JOIN mixtape_fm_ratings r ON r.playlist_id = pl.playlist_id
+GROUP BY pl.playlist_id, pl.playlist_name, pl.image
+ORDER BY RANDOM()
+LIMIT %s""", (n,))
+        return cursor.fetchall()
+
+def getUserPlaylistsOpt(user_id):
+    if (user_id == None or user_id == ""):
+        return []
+
+    with get_db_cursor(True) as cursor:
+        cursor.execute(
+"""SELECT pl.playlist_id AS playlistID, 
+pl.playlist_name AS name, 
+pl.image AS image,
+COALESCE(AVG(r.stars), 0) AS rating,
+ARRAY_REMOVE(ARRAY_AGG(t.tag_name), NULL) AS tags
+FROM mixtape_fm_playlists pl
+LEFT JOIN mixtape_fm_playlist_tags pt ON pl.playlist_id = pt.playlist_id
+LEFT JOIN mixtape_fm_tags t ON pt.tag_id = t.tag_id
+LEFT JOIN mixtape_fm_ratings r ON r.playlist_id = pl.playlist_id
+WHERE pl.user_id = %s
+GROUP BY pl.playlist_id, pl.playlist_name, pl.image;""", (user_id,))
+        return cursor.fetchall()
+
 ## HELPER TO RETRIEVE COMMENTS
 def get_comments(playlist_id):
   if (playlist_id == None):
@@ -909,6 +945,37 @@ def getSavedPlaylists(user_id):
   playlists = get_playlists_from_results(playlist_results)
   return playlists
   # return jsonify(playlists)
+def getSavedPlaylistsOpt(user_id):
+    if (user_id == None or user_id == ""):
+        return []
+    with get_db_cursor(True) as cursor:
+        cursor.execute(
+"""SELECT pl.playlist_id AS playlistID, 
+pl.playlist_name AS name, 
+pl.image AS image,
+COALESCE(AVG(r.stars), 0) AS rating,
+ARRAY_REMOVE(ARRAY_AGG(t.tag_name), NULL) AS tags
+FROM mixtape_fm_playlists_saved ps 
+LEFT JOIN mixtape_fm_playlists pl on ps.playlist_id = pl.playlist_id
+LEFT JOIN mixtape_fm_playlist_tags pt ON pl.playlist_id = pt.playlist_id
+LEFT JOIN mixtape_fm_tags t ON pt.tag_id = t.tag_id
+LEFT JOIN mixtape_fm_ratings r ON r.playlist_id = pl.playlist_id
+WHERE ps.user_id = %s
+GROUP BY pl.playlist_id, pl.playlist_name, pl.image;""", (user_id,))
+        return cursor.fetchall()
+
+"""SELECT pl.playlist_id AS playlistID, 
+pl.playlist_name AS name, 
+pl.image AS image,
+COALESCE(AVG(r.stars), 0) AS rating,
+ARRAY_REMOVE(ARRAY_AGG(t.tag_name), NULL) AS tags
+FROM mixtape_fm_playlists_saved ps 
+LEFT JOIN mixtape_fm_playlists pl on ps.playlist_id = pl.playlist_id
+LEFT JOIN mixtape_fm_playlist_tags pt ON pl.playlist_id = pt.playlist_id
+LEFT JOIN mixtape_fm_tags t ON pt.tag_id = t.tag_id
+LEFT JOIN mixtape_fm_ratings r ON r.playlist_id = pl.playlist_id
+WHERE ps.user_id = 'wcliaw610@gmail.com'
+GROUP BY pl.playlist_id, pl.playlist_name, pl.image;"""
 
 def unsavePlaylist(user_id, playlist_id):
   if (user_id == None or playlist_id == None):
