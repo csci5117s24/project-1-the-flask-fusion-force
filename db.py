@@ -1059,9 +1059,9 @@ def changePlaylistDict(playlist):
   renameKeyInRealDict(playlist, 'playlist_id', 'playlistID')
   renameKeyInRealDict(playlist, 'user_id', 'userID')
   renameKeyInRealDict(playlist, 'rating', 'ratingAvg')
-  if playlist.get('ratingAvg') is not None: 
+  #if playlist.get('ratingAvg') is not None: 
     # playlist['ratingAvg'] = str(round(float(playlist.get('ratingAvg')), 2)) doesn't work
-    playlist['ratingAvg'] = str("%.2g" % playlist['ratingAvg'])
+    #playlist['ratingAvg'] = str("%.2g" % playlist['ratingAvg'])
     # print(type(playlist['ratingAvg']))
     # print(playlist['ratingAvg'])
   return playlist
