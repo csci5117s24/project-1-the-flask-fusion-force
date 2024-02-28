@@ -28,7 +28,7 @@ def get_db_cursor(commit=False, useRealDict=False):
     if useRealDict: factory = RealDictCursor
     else: factory = DictCursor
     with get_db_connection() as connection:
-      cursor = connection.cursor(cursor_factory=DictCursor)
+      cursor = connection.cursor(cursor_factory=factory)
       try:
           yield cursor
           if commit:
