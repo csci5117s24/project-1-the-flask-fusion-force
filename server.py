@@ -95,7 +95,7 @@ def spotify_search():
     if session.get('spotify') is None:
        return Response("Need to be logged in to Spotify to use this feature!", status=400, mimetype='text/plain')
     print(session['spotify'])
-    spotify.refresh_spotify_tokens(session['user_id'], session['spotify'])
+    session['spotify'] = spotify.refresh_spotify_tokens(session['user_id'], session['spotify'])
 
     search_string = request.args.get('q')
     num_results = request.args.get('n')
@@ -237,7 +237,16 @@ def savePlaylist():
     data = request.json
     user_id = data.get('user_id')
     playlist_id = data.get('playlist_id')
-    db.savePlaylist(user_id, playlist_id)
+    song_ids = data.get('song_ids')
+    playlist_name=data.get('playlist_name')
+    playlist_image=data.get('playlist_image')
+    new_songs = data.get('new_songs')
+    for song in new_songs:
+       song['id'] = song['songID']
+       song['image'] = song['picture']
+    db.insertSongs(new_songs)
+    db.updatePlaylist(user_id, playlist_id, song_ids, playlist_name, playlist_image)
+    # db.savePlaylist(user_id, playlist_id)
     return redirect(url_for("library"))
 
 @app.route('/test-json')
