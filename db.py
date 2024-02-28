@@ -120,10 +120,18 @@ def get_comment(commenter_id, playlist_id):
     cursor.execute("SELECT * FROM mixtape_fm_comments WHERE comment_user_id=%s AND playlist_id=%s;", (commenter_id, playlist_id))
     return cursor.fetchall()
 
-def get_tag_id(tag_name):
+def get_tag_id_helper(tag_name):
   with get_db_cursor(True) as cursor:
-    cursor.execute("SELECT * FROM mixtape_fm_tags WHERE tag_name=%s;", (tag_name,))
+    cursor.execute("SELECT tag_id FROM mixtape_fm_tags WHERE tag_name=%s;", (tag_name,))
     return cursor.fetchone()
+
+def get_tag_id(tag_name):
+  tag_id = get_tag_id_helper(tag_name)
+  print('tag_id= ' + str(tag_id))
+  if (tag_id is None):
+    insert_tag(tag_name)
+  tag_id = get_tag_id_helper(tag_name)
+  return tag_id[0]
 
 def checkUser(user_id):
   with get_db_cursor(True) as cursor:
@@ -716,20 +724,19 @@ def insertSongsToPlaylist(playlist_id, song_ids):
 def insert_tag(tag_name):
   with get_db_cursor(True) as cursor:
     cursor.execute("INSERT INTO mixtape_fm_tags (tag_name) VALUES (%s);", (tag_name,))
-  t_id = get_tag_id(tag_name)
-  return t_id[0]
+  return
 
 def insert_playlist_tag_id(playlist_id, tag_id):
   with get_db_cursor(True) as cursor:
     cursor.execute("INSERT INTO mixtape_fm_playlist_tags (playlist_id, tag_id) VALUES (%s, %s);", (playlist_id, tag_id))
   return
 
-def insert_playlist_tag(playlist_id, tag_name):
-  tag_id = get_tag_id(tag_name)
-  if (tag_id is None):
-    tag_id = insert_tag(tag_name)
-  insert_playlist_tag_id(playlist_id, tag_id)
-  return
+# def insert_playlist_tag(playlist_id, tag_name):
+#   tag_id = get_tag_id(tag_name)
+#   if (tag_id is None):
+#     tag_id = insert_tag(tag_name)
+#   insert_playlist_tag_id(playlist_id, tag_id)
+#   return
 
 def removePlaylistLeastRecent(user_id, playlist_id):
   with get_db_cursor(True) as cursor:

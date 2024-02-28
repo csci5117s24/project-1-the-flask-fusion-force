@@ -250,6 +250,18 @@ def savePlaylist():
     # db.savePlaylist(user_id, playlist_id)
     return redirect(url_for("library"))
 
+@app.route('/add-tag', methods=['POST'])
+def addTag():
+  data = request.json
+  user_id = data.get('user_id')
+  playlist_id = data.get('playlist_id')
+  tag_name = data.get('tag_name')
+  print(tag_name)
+  tag_id = db.get_tag_id(tag_name)
+  print(tag_id)
+  db.insert_playlist_tag_id(playlist_id, tag_id)
+  return Response(status=201)
+
 @app.route('/test-json')
 def send_json():
     data = {"songs": [{"songID": "abc123","songName": "mySong1","songImage": ""}]}
