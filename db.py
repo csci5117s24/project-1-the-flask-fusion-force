@@ -4,7 +4,7 @@ import random
 from flask import current_app, jsonify
 import psycopg2
 from psycopg2.pool import ThreadedConnectionPool
-from psycopg2.extras import DictCursor
+from psycopg2.extras import DictCursor, RealDictCursor
 import math
 pool = None
 
@@ -24,9 +24,11 @@ def get_db_connection():
 
 
 @contextmanager
-def get_db_cursor(commit=False):
+def get_db_cursor(commit=False, useRealDict=False):
+    if useRealDict: factory = RealDictCursor
+    else: factory = DictCursor
     with get_db_connection() as connection:
-      cursor = connection.cursor(cursor_factory=DictCursor)
+      cursor = connection.cursor(cursor_factory=factory)
       try:
           yield cursor
           if commit:
@@ -490,6 +492,42 @@ def getUserPlaylists(user_id):
   return playlists
   # return jsonify(playlists)
 
+def getRandomPlaylistsOpt(n):
+    with get_db_cursor(True, useRealDict=True) as cursor:
+        cursor.execute(
+"""SELECT pl.playlist_id, 
+pl.playlist_name AS name, 
+pl.image AS image,
+AVG(r.stars) AS rating,
+ARRAY_REMOVE(ARRAY_AGG(t.tag_name), NULL) AS tags
+FROM mixtape_fm_playlists pl
+LEFT JOIN mixtape_fm_playlist_tags pt ON pl.playlist_id = pt.playlist_id
+LEFT JOIN mixtape_fm_tags t ON pt.tag_id = t.tag_id
+LEFT JOIN mixtape_fm_ratings r ON r.playlist_id = pl.playlist_id
+GROUP BY pl.playlist_id, pl.playlist_name, pl.image
+ORDER BY RANDOM()
+LIMIT %s""", (n,))
+        return renamePlaylistDicts(cursor.fetchall())
+
+def getUserPlaylistsOpt(user_id):
+    if (user_id == None or user_id == ""):
+        return []
+
+    with get_db_cursor(True, useRealDict=True) as cursor:
+        cursor.execute(
+"""SELECT pl.playlist_id, 
+pl.playlist_name AS name, 
+pl.image AS image,
+COALESCE(AVG(r.stars), 0) AS rating,
+ARRAY_REMOVE(ARRAY_AGG(t.tag_name), NULL) AS tags
+FROM mixtape_fm_playlists pl
+LEFT JOIN mixtape_fm_playlist_tags pt ON pl.playlist_id = pt.playlist_id
+LEFT JOIN mixtape_fm_tags t ON pt.tag_id = t.tag_id
+LEFT JOIN mixtape_fm_ratings r ON r.playlist_id = pl.playlist_id
+WHERE pl.user_id = %s
+GROUP BY pl.playlist_id, pl.playlist_name, pl.image;""", (user_id,))
+        return renamePlaylistDicts(cursor.fetchall())
+
 ## HELPER TO RETRIEVE COMMENTS
 def get_comments(playlist_id):
   if (playlist_id == None):
@@ -925,6 +963,24 @@ def getSavedPlaylists(user_id):
   playlists = get_playlists_from_results(playlist_results)
   return playlists
   # return jsonify(playlists)
+def getSavedPlaylistsOpt(user_id):
+    if (user_id == None or user_id == ""):
+        return []
+    with get_db_cursor(True, useRealDict=True) as cursor:
+        cursor.execute(
+"""SELECT pl.playlist_id, 
+pl.playlist_name AS name, 
+pl.image AS image,
+COALESCE(AVG(r.stars), 0) AS rating,
+ARRAY_REMOVE(ARRAY_AGG(t.tag_name), NULL) AS tags
+FROM mixtape_fm_playlists_saved ps 
+LEFT JOIN mixtape_fm_playlists pl on ps.playlist_id = pl.playlist_id
+LEFT JOIN mixtape_fm_playlist_tags pt ON pl.playlist_id = pt.playlist_id
+LEFT JOIN mixtape_fm_tags t ON pt.tag_id = t.tag_id
+LEFT JOIN mixtape_fm_ratings r ON r.playlist_id = pl.playlist_id
+WHERE ps.user_id = %s
+GROUP BY pl.playlist_id, pl.playlist_name, pl.image;""", (user_id,))
+        return renamePlaylistDicts(cursor.fetchall())
 
 def unsavePlaylist(user_id, playlist_id):
   if (user_id == None or playlist_id == None):
@@ -936,6 +992,19 @@ def unsavePlaylist(user_id, playlist_id):
     cursor.execute("DELETE FROM mixtape_fm_playlists_saved WHERE playlist_id=%s AND user_id=%s;", (playlist_id, user_id))
   return
 
+def renamePlaylistDicts(playlists):
+    return [ renamePlaylistDict(pl) for pl in playlists ]
+
+def renamePlaylistDict(playlist):
+  renameKeyInRealDict(playlist, 'playlist_id', 'playlistID')
+  renameKeyInRealDict(playlist, 'rating', 'ratingAvg')
+  return playlist
+
 def nullIfNone(arg):
   if arg is None: return "NULL"
   else: return arg
+
+# dict must be made from RealDictCursor!!
+def renameKeyInRealDict(dict, oldkey, newkey):
+    dict[newkey] = dict.get(oldkey)
+    del dict[oldkey]

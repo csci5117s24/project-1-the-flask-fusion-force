@@ -33,9 +33,11 @@ def homepage():
     session['spotify'] = False
     playlists = []
     if (session.get('user_id') != None):
-      playlists = db.getUserPlaylists(session['user_id'])
+      playlists = db.getUserPlaylistsOpt(session['user_id'])
     else:
-      playlists = db.getRandomPlaylists(10)
+      playlists = db.getRandomPlaylistsOpt(10)
+    print(playlists)
+    print(playlists[0].get('rating'))
     return render_template('homepage.html.jinja', user_session=session.get('user'), pretty=json.dumps(session.get('user'), indent=4),
     playlists = playlists)
 
@@ -146,10 +148,10 @@ def library():
     user_id = session['user']['userinfo']['email']
 
     # List of dictionaries where each nested list has a playlist's information
-    myPlaylists = db.getUserPlaylists(user_id)
+    myPlaylists = db.getUserPlaylistsOpt(user_id)
     print(myPlaylists)
-    savedPlaylists = db.getSavedPlaylists(user_id)
-    randomPlaylists = db.getRandomPlaylists(10)
+    savedPlaylists = db.getSavedPlaylistsOpt(user_id)
+    randomPlaylists = db.getRandomPlaylistsOpt(10)
     return render_template('user_library.html.jinja', myPlaylists=myPlaylists, savedPlaylists=savedPlaylists, randomPlaylists=randomPlaylists, user_session=session.get('user'), user_id=session.get('user_id'))
 
 @app.route('/edit-playlist/<int:p_id>', methods=['POST','GET'])
