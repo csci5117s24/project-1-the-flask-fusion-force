@@ -239,6 +239,7 @@ def savePlaylist():
     user_id = data.get('user_id')
     playlist_id = data.get('playlist_id')
     db.savePlaylist(user_id, playlist_id)
+    return redirect(url_for("library"))
 
 
 @app.route('/test-json')
@@ -247,5 +248,5 @@ def send_json():
     return json.dumps(data)
 
 @app.errorhandler(404)
-def page_not_found():
-    return render_template('404.html.jinja'), 404
+def page_not_found(e):
+    return render_template('404.html.jinja')
