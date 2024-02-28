@@ -136,9 +136,16 @@ def playlist(p_id):
     comments = db.getComments(p_id)
     user = db.getUserFromPlaylistId(p_id)
 
-    user_rating = db.get_rating(user[0], p_id)
+    visiting_user = session.get('user_id')
+    # This is a crude approach. Feel free to improve.
+    user_rating = db.get_rating(visiting_user, p_id)
+    if user_rating != None and len(user_rating) >= 4:
+       user_rating = int(user_rating[3])
+    else:
+       user_rating = 0
+    print(user_rating)
     playlist['ratingAvg'] = float( playlist['ratingAvg'])
-    return render_template('playlist.html.jinja', playlist = playlist, user_image = user[5], playlist_id=p_id,user_session = session.get('user'), user_id=session.get('user_id'), songs = songs,comments = comments, user_rating = user_rating, user_name=user[3])
+    return render_template('playlist.html.jinja', playlist = playlist, user_image = user[5], playlist_id=p_id,user_session = session.get('user'), user_id=visiting_user, songs = songs,comments = comments, user_rating = user_rating, user_name=user[3])
 
 
 @app.route('/settings', methods=['GET'])
