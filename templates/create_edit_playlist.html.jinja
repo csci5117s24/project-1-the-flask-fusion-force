@@ -137,7 +137,7 @@
     console.log("playlist song ids: ", playlistSongIDs);
     console.log(songs);
     songs.forEach(song => {
-        addSong(song.songID, song.name, song.picture, false, song.artist, song.album, song.duration);
+        addSong(song);
     });
     // extract playlist name and image
     var playlistImageData = playlistDetails.image;
@@ -167,7 +167,7 @@
 
         var addButton = document.createElement("button");
         addButton.className = "add-song";
-        addButton.setAttribute("onclick", "addSong('" + song.id + "', '" + song.name + "', '" + song.image + "', '" + true + "', '" + song.artist + "', '" + song.album + "', '" + song.duration +"')");
+        addButton.setAttribute("onclick", "addNewSong('" + song.id + "', '" + song.name + "', '" + song.image + "', '" + true + "', '" + song.artist + "', '" + song.album + "', '" + song.duration +"')");
         var addButtonText = document.createElement("h1");
         addButtonText.textContent = "+";
         addButton.appendChild(addButtonText);
@@ -187,29 +187,53 @@
         return songDiv;
     }
 
-    function addSong(id, name, image, remove, artist, album, duration) {
+    function addNewSong(id, name, image, remove, artist, album, duration) {
+        console.log(remove)
+        console.log(album)
+        //let newSong = {}
+        //if (artist != "") {
+        //    console.log("IN IF")
+        let newSong = {
+            songID: id, 
+            id: id,
+            name: name, 
+            picture: image, 
+            image: image,
+            artist: artist, 
+            album: album, 
+            duration: duration
+        }
+        newSongs.push(newSong)
+        //} else {
+        //    newSong = {songID: id, name: name, picture: image}
+        //}
+        addSong(newSong)
+    }
+
+    function addSong(song) {
         console.log("song being added");
         // Add song to arrays, reset HTML for songs section
         console.log("ADDING SONG HERE")
-        console.log(remove)
-        console.log(album)
-        let newSong = {}
+        //console.log(remove)
+        //console.log(album)
+        /*let newSong = {}
         if (artist != "") {
             console.log("IN IF")
             newSong = {songID: id, name: name, picture: image, artist: artist, album: album, duration: duration}
             newSongs.push(newSong)
         } else {
             newSong = {songID: id, name: name, picture: image}
-        }
+        }*/
         
-        playlistSongIDs.push(newSong.songID);
-        console.log(newSong)
-        let songDiv = makeDeleteSongCard(newSong)
+        //playlistSongIDs.push(newSong.songID);
+        playlistSongIDs.push(song.songID);
+        console.log(song.songID)
+        let songDiv = makeDeleteSongCard(song)
         let currentSongsContainer = document.getElementById("currentSongsDiv");
-        let searchedSong = document.getElementById(id);
+        let searchedSong = document.getElementById(song.songID);
         currentSongsContainer.appendChild(songDiv);
-        console.log(remove)
-        if (remove) {
+        console.log(song.remove)
+        if (song.remove) {
             searchedSong.remove();
         }
     }
@@ -256,6 +280,7 @@
             playlist_image: playlistImageData,
             playlist_name: playlistName,
         };
+        console.log(data)
         console.log(data);
         fetch('/save-playlist', {
             method: 'POST',
