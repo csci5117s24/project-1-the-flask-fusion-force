@@ -78,7 +78,10 @@
                     <button onclick="editPlaylist()" class="save-button pure-button">Edit Playlist</button>
                 </div>
                 {% endif %}
-                 <!-- Save Button (Bottom Right) -->
+
+
+                  <!-- Save Button  -->
+
                 {% if user_session != None %}
                 <form class="pure-form pure-u-1-3" method="POST" action="/library">
                     <button onclick="savePlaylist()" class="save-button pure-button">Save Playlist</button>
@@ -86,9 +89,7 @@
                 {% endif %}
 
             </div>
-         
-               
-   
+
             <div>
                 {% for comment in comments %}
                 {% include "commentcard.html.jinja" ignore missing with context %}
