@@ -70,10 +70,9 @@
                 return response.json();
             })
             .then(searchRes => {
-                console.log(searchRes);
                 // Do something with the search results
                 searchRes.forEach(function (searchedSong) {
-                    console.log(searchedSong);
+                    addSong(searchedSong)
                 });
             })
             .catch(error => {
@@ -132,12 +131,51 @@
     // extract playlist name and image
     var playlistImageData = playlistDetails.playlistPicture;
 
+    function makeAddSongCard(song) {
+        console.log("Called makeAddSongCard with ", song);
+        // Creating elements dynamically
+        var songDiv = document.createElement("div");
+        songDiv.className = "pure-g song";
+        songDiv.id = song.id;
+
+        var songIconDiv = document.createElement("div");
+        songIconDiv.className = "pure-u-1-5 song-icon";
+        var songIconImg = document.createElement("img");
+        songIconImg.src = song.image;
+        songIconImg.alt = "Song Icon";
+        songIconDiv.appendChild(songIconImg);
+
+        var songTitleDiv = document.createElement("div");
+        songTitleDiv.className = "pure-u-3-5 song-title";
+        songTitleDiv.textContent = song.name;
+
+        var addButton = document.createElement("button");
+        addButton.className = "add-song";
+        addButton.setAttribute("onclick", "addSong('" + song.id + "', '" + song.name + "', '" + song.image + "')");
+        var addButtonText = document.createElement("h1");
+        addButtonText.textContent = "+";
+        addButton.appendChild(addButtonText);
+
+        addButton.addEventListener("click", function (event) {
+            event.stopPropagation(); // Prevent parent event triggering
+        });
+
+        // Appending elements to songDiv
+        songDiv.appendChild(songIconDiv);
+        songDiv.appendChild(songTitleDiv);
+        songDiv.appendChild(addButton);
+
+        
+        console.log("Made songDiv", songDiv);
+        return songDiv;
+    }
+
     function addSong(song) {
         console.log("song being added");
         // Add song to arrays, reset HTML for songs section
         playlistSongIDs.push(song.id);
-        let songDiv = makeDeleteSongCard(song);
-        let songsContainer = document.getElementById("currentSongsDiv");
+        let songDiv = makeAddSongCard(song)
+        let songsContainer = document.getElementById("searchedSongsDiv");
         songsContainer.appendChild(songDiv);
     }
 
