@@ -164,7 +164,7 @@ def playlist_search(variation, search_word):
     else:
       print("variation value %d invalid" % (variation))
       return None
-    cursor.execute("SELECT * FROM mixtape_fm_playlists WHERE playlist_name LIKE %s;", (search_symbol, ))
+    cursor.execute("SELECT * FROM mixtape_fm_playlists WHERE playlist_name ILIKE %s;", (search_symbol, ))
     return cursor.fetchall()
 
 def tag_id_search(variation, search_word):
@@ -189,7 +189,7 @@ def tag_id_search(variation, search_word):
     else:
       print("variation value %d invalid" % (variation))
       return None
-    cursor.execute("SELECT tag_id FROM mixtape_fm_tags WHERE tag_name LIKE %s;", (search_symbol, ))
+    cursor.execute("SELECT tag_id FROM mixtape_fm_tags WHERE tag_name ILIKE %s;", (search_symbol, ))
     return cursor.fetchall()
 
 def get_playlist_id_from_tag_id(tag_id):
@@ -232,7 +232,44 @@ def get_playlists_from_tag_id_results(tag_id_results):
 #       if (saved_result != None and saved_result != []):
 #         saved_results.append(saved_result)
 #   return get_playlists_from_results(saved_results)
-
+def getSavedPlaylistsSearchOpt(user_id, variation, search_word):
+    if (user_id == None or user_id == ""):
+        return []
+    with get_db_cursor(True, useRealDict=True) as cursor:
+      search_symbol = ''
+      if (variation == 1):
+        search_symbol = '%' + search_word + '%'
+      elif (variation == 2):
+        search_symbol = '% ' + search_word + '%'
+      elif (variation == 3):
+        search_symbol = '%' + search_word + ' %'
+      elif (variation == 4):
+        search_symbol = '% ' + search_word + ' %'
+      elif (variation == 5):
+        search_symbol = '% ' + search_word + '.%'
+      elif (variation == 6):
+        search_symbol = '%' + search_word + ',%'
+      elif (variation == 7):
+        search_symbol = search_word + '%'
+      elif (variation == 8):
+        search_symbol = '%' + search_word
+      else:
+        print("variation value %d invalid" % (variation))
+        return None
+      cursor.execute(
+        """SELECT pl.playlist_id, 
+        pl.playlist_name AS name, 
+        pl.image AS image,
+        COALESCE(AVG(r.stars), 0) AS rating,
+        ARRAY_REMOVE(ARRAY_AGG(t.tag_name), NULL) AS tags
+        FROM mixtape_fm_playlists_saved ps 
+        LEFT JOIN mixtape_fm_playlists pl on ps.playlist_id = pl.playlist_id
+        LEFT JOIN mixtape_fm_playlist_tags pt ON pl.playlist_id = pt.playlist_id
+        LEFT JOIN mixtape_fm_tags t ON pt.tag_id = t.tag_id
+        LEFT JOIN mixtape_fm_ratings r ON r.playlist_id = pl.playlist_id
+        WHERE ps.user_id = %s AND pl.playlist_name ILIKE %s
+        GROUP BY pl.playlist_id, pl.playlist_name, pl.image;""", (user_id, search_symbol))
+      return changePlaylistDicts(cursor.fetchall())
 
 # TODO: Create search keyword matching, using sql operators 'like' and 'ilike'
 ## Make a function compiling results from searching for songs in db and playlists, tags preferable
@@ -246,52 +283,21 @@ def search(user_id, search_word):
     return ret_dict
   playlist_results = []
   tag_id_results = []
+  og_saved_results = []
   for variation in range(1, 9):
     playlist_results = playlist_results + playlist_search(variation, search_word)
     tag_id_results = tag_id_results + tag_id_search(variation, search_word)
+    og_saved_results = og_saved_results + getSavedPlaylistsSearchOpt(user_id, variation, search_word)
+  saved_results = []
+  for saved_result in og_saved_results:
+    if saved_result not in saved_results:
+      saved_results.append(saved_result)
   name_results = get_playlists_from_results(playlist_results)
   tag_results = get_playlists_from_tag_id_results(tag_id_results)
-  if (user_id != None):
-    saved_results = getSavedPlaylists(user_id)
-  else:
-    saved_results = []
-  # saved_results = get_playlists_from_saved_results(playlist_results)
   ret_dict['name_results'] = name_results
   ret_dict['tag_results'] = tag_results
   ret_dict['saved_results'] = saved_results
   return ret_dict
-
-
-# def search(search_word):
-#   ret_dict = {}
-#   if (search_word == None or search_word == ''):
-#     return ret_dict
-#   playlist_results = []
-#   tag_results = []
-#   tag_ids = []
-#   playlist_ids = []
-#   for variation in range(1, 7):
-#     # playlist_results = playlist_results + playlist_search(variation, search_word)
-#     p_s_results = playlist_search(variation, search_word)
-#     for result in p_s_results:
-#       tags = []
-#       db_tag_ids = get_tag_ids_from_playlist_id(result[0])
-#       for db_tag_id in db_tag_ids:
-#         db_tag = get_tag_from_id(db_tag_id[0])
-#         tags.append(db_tag[0])
-#       avg_rating = getRatingAvg(result[0])
-#       playlist_results.append({'image': result[4],'name': result[2],'rating': avg_rating[0],'tags': tags})
-#     tag_ids = tag_ids + tag_id_search(variation, search_word) # Need to get tag_ids
-#   for tag_id in tag_ids:
-#     p_t_id = get_playlist_id_from_tag_id(tag_id)
-#     playlist_ids.append(p_t_id[0]) # Need to get playlist_ids corresponding to tag_ids
-#   for playlist_id in playlist_ids:
-#     db_playlist = get_playlist_from_playlist_id(playlist_id)
-#     tag_results.append(db_playlist[0])
-#     # tag_results = tag_results +  get_playlist_from_playlist_id(playlist_id) # Finally, need to get playlists based on initial tag search word
-#   ret_dict["playlist_results"] = playlist_results
-#   ret_dict["tag_results"] = tag_results
-#   return ret_dict
 
 ## HELPER FUNCTION TO GET TAGS FOR PLAYLSITS
 def get_tag_ids_from_playlist_id(playlist_id):
