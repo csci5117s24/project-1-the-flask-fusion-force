@@ -77,10 +77,9 @@
                 return response.json();
             })
             .then(searchRes => {
-                console.log(searchRes);
                 // Do something with the search results
                 searchRes.forEach(function (searchedSong) {
-                    console.log(searchedSong);
+                    makeAddSongCard(searchedSong)
                 });
             })
             .catch(error => {
@@ -128,6 +127,7 @@
 
     // INITIALIZATION:
     var playlistSongIDs = [];
+    var newSongs = [];
     const userID = "{{ user_id }}";
     const playlistID = "{{ playlistID }}";
     console.log(playlistID)
@@ -146,13 +146,96 @@
     var playlistTitleElem = document.getElementById("playlistTitle");
     playlistTitleElem.textContent = playlistDetails.name;
 
+    function makeAddSongCard(song) {
+        console.log("Called makeAddSongCard with ", song);
+        // Creating elements dynamically
+        var songDiv = document.createElement("div");
+        songDiv.className = "pure-g song";
+        songDiv.id = song.id;
+
+        var songIconDiv = document.createElement("div");
+        songIconDiv.className = "pure-u-1-5 song-icon";
+        var songIconImg = document.createElement("img");
+        songIconImg.className = "small-playlist-icon"
+        songIconImg.src = song.image;
+        songIconImg.alt = "Song Icon";
+        songIconDiv.appendChild(songIconImg);
+
+        var songTitleDiv = document.createElement("div");
+        songTitleDiv.className = "pure-u-3-5 song-title";
+        songTitleDiv.textContent = song.name;
+
+        var addButton = document.createElement("button");
+        addButton.className = "add-song";
+        addButton.setAttribute("onclick", "addNewSong('" + song.id + "', '" + song.name + "', '" + song.image + "', '" + true + "', '" + song.artist + "', '" + song.album + "', '" + song.duration +"')");
+        var addButtonText = document.createElement("h1");
+        addButtonText.textContent = "+";
+        addButton.appendChild(addButtonText);
+
+        addButton.addEventListener("click", function (event) {
+            event.stopPropagation(); // Prevent parent event triggering
+        });
+
+        // Appending elements to songDiv
+        songDiv.appendChild(songIconDiv);
+        songDiv.appendChild(songTitleDiv);
+        songDiv.appendChild(addButton);
+        let newSongsContainer = document.getElementById("searchedSongsDiv");
+        newSongsContainer.appendChild(songDiv)
+        
+        console.log("Made songDiv", songDiv);
+        return songDiv;
+    }
+
+    function addNewSong(id, name, image, remove, artist, album, duration) {
+        console.log(remove)
+        console.log(album)
+        //let newSong = {}
+        //if (artist != "") {
+        //    console.log("IN IF")
+        let newSong = {
+            songID: id, 
+            id: id,
+            name: name, 
+            picture: image, 
+            image: image,
+            artist: artist, 
+            album: album, 
+            duration: duration
+        }
+        newSongs.push(newSong)
+        //} else {
+        //    newSong = {songID: id, name: name, picture: image}
+        //}
+        addSong(newSong)
+    }
+
     function addSong(song) {
         console.log("song being added");
         // Add song to arrays, reset HTML for songs section
+        console.log("ADDING SONG HERE")
+        //console.log(remove)
+        //console.log(album)
+        /*let newSong = {}
+        if (artist != "") {
+            console.log("IN IF")
+            newSong = {songID: id, name: name, picture: image, artist: artist, album: album, duration: duration}
+            newSongs.push(newSong)
+        } else {
+            newSong = {songID: id, name: name, picture: image}
+        }*/
+        
+        //playlistSongIDs.push(newSong.songID);
         playlistSongIDs.push(song.songID);
-        let songDiv = makeDeleteSongCard(song);
-        let songsContainer = document.getElementById("currentSongsDiv");
-        songsContainer.appendChild(songDiv);
+        console.log(song.songID)
+        let songDiv = makeDeleteSongCard(song)
+        let currentSongsContainer = document.getElementById("currentSongsDiv");
+        let searchedSong = document.getElementById(song.songID);
+        currentSongsContainer.appendChild(songDiv);
+        console.log(song.remove)
+        if (song.remove) {
+            searchedSong.remove();
+        }
     }
 
     function deleteSong(id, name, image) {
@@ -193,11 +276,13 @@
             playlist_id: playlistID,
             new_playlist: newPlaylist,
             song_ids: playlistSongIDs,
+            new_songs: newSongs,
             playlist_image: playlistImageData,
             playlist_name: playlistName,
         };
+        console.log(data)
         console.log(data);
-        fetch('/playlist/edit', {
+        fetch('/save-playlist', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

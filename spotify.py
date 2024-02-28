@@ -5,7 +5,7 @@ import json
 import time
 import db
 
-spotify_redirect_uri = "http://127.0.0.1:5000/spotify/callback"
+spotify_redirect_uri = "https://mixtape-fm.onrender.com/spotify/callback"
 
 def base64_client_creds():
   credentials_str = f"{env['SPOTIFY_CLIENT_ID']}:{env['SPOTIFY_CLIENT_SECRET']}"
@@ -105,16 +105,33 @@ def get_songs_from_playlist(access_token, playlist_id):
   log_response(response)
   playlist_songs_json = response.json()
   # print(playlist_songs_json['items'])
+  return song_parse(playlist_songs_json)
+
+def song_parse(song_json):
   songs = []
-  for song in playlist_songs_json['items']:
-    song_id = song['track']['id']
-    song_name = song['track']['name']
-    song_artist = song['track']['artists'][0]['name']
-    song_album = song['track']['album']['name']
-    song_duration = song['track']['duration_ms']
-    song_image = song['track']['album']['images']
-    if (song_image is not None and len(song_image) != 0): song_image = song_image[0].get('url')
-    songs.append({"id": song_id, "name": song_name, "artist": song_artist, "album": song_album, "duration": song_duration, "image": song_image})
+  if 'items' not in song_json:
+    for song in song_json['tracks']['items']:
+      song_id = song['id']
+      song_name = song['name']
+      song_artist = song['artists'][0]['name']
+      song_album = song['album']['name']
+      song_duration = song['duration_ms']
+      song_image = song['album']['images']
+      if (song_image is not None and len(song_image) != 0): song_image = song_image[0].get('url')
+      songs.append({"id": song_id, "name": song_name, "artist": song_artist, "album": song_album, "duration": song_duration, "image": song_image})
+  else:
+    print("NEW IMPORT")
+    for song in song_json['items']:
+      song_id = song['track']['id']
+      song_name = song['track']['name']
+      song_artist = song['track']['artists'][0]['name']
+      song_album = song['track']['album']['name']
+      song_duration = song['track']['duration_ms']
+      song_image = song['track']['album']['images']
+      if (song_image is not None and len(song_image) != 0): song_image = song_image[0].get('url')
+      songs.append({"id": song_id, "name": song_name, "artist": song_artist, "album": song_album, "duration": song_duration, "image": song_image})
+
+    print(songs)
     # print(song_album)
     # db.insert_song(song_name, song_artist, song_album, None, song_duration)
 
@@ -127,7 +144,9 @@ def search_song(access_token, search_string, num_results=20):
   response = requests.get(url=search_url, headers=search_headers)
   log_response(response, contentMaxLen=1000)
   rsp_json = json.loads(response.content)
-  return rsp_json
+  songs = song_parse(rsp_json)
+  print(songs)
+  return songs
 
 # db functions
 # This user_id is not spotify user_id
