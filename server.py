@@ -31,8 +31,6 @@ app = create_app()
 @app.route('/homepage', methods=['GET'])
 def homepage():
     playlists = db.getRandomPlaylistsOpt(50)
-    for playlist in playlists:
-       playlist['ratingAvg'] = float( playlist['ratingAvg'])
     return render_template('homepage.html.jinja', user_session=session.get('user'), pretty=json.dumps(session.get('user'), indent=4),
     playlists = playlists)
 
@@ -139,7 +137,6 @@ def playlist(p_id):
     if (session.get('user_id') != None and session['user_id'] == user[0]):
        return redirect(url_for("editPlaylist", p_id=str(p_id)))
     else:
-      playlist['ratingAvg'] = float( playlist['ratingAvg'])
       return render_template('playlist.html.jinja', playlist = playlist, user_image = user[5], playlist_id=p_id,user_session = session.get('user'), user_id=session.get('user_id'), songs = songs,comments = comments)
 
 
@@ -159,6 +156,7 @@ def library():
     print(myPlaylists)
     savedPlaylists = db.getSavedPlaylistsOpt(user_id)
     randomPlaylists = db.getRandomPlaylistsOpt(10)
+    
     return render_template('user_library.html.jinja', myPlaylists=myPlaylists, savedPlaylists=savedPlaylists, randomPlaylists=randomPlaylists, user_session=session.get('user'), user_id=session.get('user_id'))
 
 @app.route('/create-playlist', methods=['GET'])
