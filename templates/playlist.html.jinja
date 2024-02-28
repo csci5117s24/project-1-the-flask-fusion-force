@@ -15,45 +15,45 @@
                 {# Picture of Playlist #}
             </div>
             <div class="pure-u-1-6">
-                <img src="{{ user_image }}" alt="User Icon" class = "small-playlist-icon">
+                <img src="{{ user_image }}" alt="User Icon" class="small-playlist-icon">
                 {# {{ user_image }} #}
             </div>
             <div class="pure-u-3-6" style="padding: 2em 0.5em;  margin-left: 2.5em;">
                 {{ user_name }}
                 <div style="padding: 0.5em 1em;">
-                    <button id="star1" class="star-button" onclick="addrating(1)">
-                    {%if playlist.ratingAvg >= 1 %}
+                    <button id="star1" class="star-button">
+                        {%if playlist.ratingAvg >= 1 %}
                         <div class="stars-filled"></div>
-                    {%else%}
+                        {%else%}
                         <div class="stars"></div>
-                    {%endif%}
+                        {%endif%}
                     </button>
-                    <button id="star2" class="star-button" onclick="addrating(2)">
+                    <button id="star2" class="star-button">
                         {%if playlist.ratingAvg >= 2 %}
-                            <div class="stars-filled"></div>
+                        <div class="stars-filled"></div>
                         {%else%}
-                            <div class="stars"></div>
+                        <div class="stars"></div>
                         {%endif%}
                     </button>
-                    <button id="star3" class="star-button" onclick="addrating(3)">
+                    <button id="star3" class="star-button">
                         {%if playlist.ratingAvg >= 3 %}
-                            <div class="stars-filled"></div>
+                        <div class="stars-filled"></div>
                         {%else%}
-                            <div class="stars"></div>
+                        <div class="stars"></div>
                         {%endif%}
                     </button>
-                    <button id="star4" class="star-button" onclick="addrating(4)">
+                    <button id="star4" class="star-button">
                         {%if playlist.ratingAvg >=4 %}
-                            <div class="stars-filled"></div>
+                        <div class="stars-filled"></div>
                         {%else%}
-                            <div class="stars"></div>
+                        <div class="stars"></div>
                         {%endif%}
                     </button>
-                    <button id="star5" class="star-button" onclick="addrating(5)">
+                    <button id="star5" class="star-button">
                         {%if playlist.ratingAvg >= 5 %}
-                            <div class="stars-filled"></div>
+                        <div class="stars-filled"></div>
                         {%else%}
-                            <div class="stars"></div>
+                        <div class="stars"></div>
                         {%endif%}
                     </button>
                 </div>
@@ -68,7 +68,7 @@
     <div class="pure-u-6-12 horizontal-double-content">
         <div class="commentlst">
             <div class="pure-g">
-             {% if user_session != None %}
+                {% if user_session != None %}
                 <div class="pure-u-1-2">
                     <button class="pure-button " onclick="toggleComment('comment-create-box')">
                         + Add a comment
@@ -77,8 +77,8 @@
                 <div class="pure-u-1-2" id="editPlaylistDiv" style="display: none;">
                     <button onclick="editPlaylist()" class="save-button pure-button">Edit Playlist</button>
                 </div>
-            {% endif %}
-                
+                {% endif %}
+
             </div>
             <div class="right-align">
                 <!-- Save Button (Bottom Right) -->
@@ -93,7 +93,7 @@
                 {% include "commentcard.html.jinja" ignore missing with context %}
                 {% endfor %}
             </div>
-            
+
         </div>
     </div>
 </div>
@@ -115,17 +115,15 @@
 <script>
     const userID = "{{ user_id }}";
     var playlistID = "{{ playlist_id }}";
-    var userRating = "{{ user_rating }}";
+    var userRating = {{ user_rating }};
     var playlist = {{ playlist  | tojson}};
 
+
     let userIsOwner = playlist.userID === userID ? true : false;
-    if (userIsOwner){  // if user owns playlist, give them edit button
+    if (userIsOwner) {  // if user owns playlist, give them edit button
         let editPlaylistDiv = document.getElementById("editPlaylistDiv");
         editPlaylistDiv.style.display = "block";
     }
-
-    console.log("User Rating: ", (userRating));
-    console.log(typeof(userRating))
 
     var starButtons = document.querySelectorAll('.star-button');
     // spotify_connected=session['spotify'] is not None -> user not logged into spotify
@@ -138,6 +136,14 @@
         }
     });
 
+    if (userRating !== "") {
+        starButtons.forEach(function (star, index) {
+            if (index < userRating) {
+                star.classList.add('star-button-selected');
+            }
+        });
+    }
+
     function changeStarClass(element, selectedIndex, className) {
         // Remove 'star-button-selected' class from all stars
         starButtons.forEach(function (star, index) {
@@ -148,7 +154,17 @@
             }
         });
     }
-    function addRating(stars, comment) {
+    function toggleComment(id) {
+        var x = document.getElementById(id);
+        if (x.style.display === "none") {
+            x.style.display = "block";
+        } else {
+            x.style.display = "none";
+        }
+    }
+
+    // Add star rating to playlist
+    function addRating(stars) {
         if (userID === undefined) {
             console.error('User not signed in');
             return;
@@ -157,7 +173,6 @@
             user_id: userID,
             playlist_id: playlistID,
             stars: stars,
-            comment: comment
         };
         fetch('/rate-playlist', {
             method: 'POST',
@@ -175,6 +190,8 @@
                 console.error('There was a problem with the fetch operation:', error);
             });
     }
+
+    // Save playlist to user's library
     function savePlaylist() {
         console.log('User saving this playlist...');
         if (userID === undefined) {
@@ -182,10 +199,10 @@
             return;
         }
         const data = {
-            user_id: userID,
-            playlist_id: playlistID
+            userID: userID,
+            playlistID: playlistID
         };
-        fetch('/save-playlist', {
+        fetch('/playlist/save', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -195,7 +212,6 @@
             .then(response => {
                 if (response.ok) {
                     console.log('Playlist saved successfully');
-                    // TODO: add success message to front-end ?
                 } else {
                     throw new Error('Network response was not ok');
                 }
@@ -203,16 +219,6 @@
             .catch(error => {
                 console.error('There was a problem with the fetch operation:', error);
             });
-    }
-
-
-    function toggleComment(id) {
-        var x = document.getElementById(id);
-        if (x.style.display === "none") {
-            x.style.display = "block";
-        } else {
-            x.style.display = "none";
-        }
     }
 
     // Handle comment submissions:
@@ -244,8 +250,7 @@
                     if (!response.ok) {
                         throw new Error('Network response was not ok');
                     }
-                    else{
-                        // TODO: add success message to front-end ?
+                    else {
                         console.log("comment submission successful");
                     }
                 })
@@ -254,7 +259,7 @@
                 });
         })
     });
-    function editPlaylist(){
+    function editPlaylist() {
         console.log("Triggered editPlaylist with pid: ", playlistID);
         window.location.href = "/edit-playlist/" + playlistID;
     }
