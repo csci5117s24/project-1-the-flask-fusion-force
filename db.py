@@ -954,7 +954,7 @@ LEFT JOIN mixtape_fm_ratings r ON r.playlist_id = pl.playlist_id
 GROUP BY pl.playlist_id, pl.playlist_name, pl.image
 ORDER BY RANDOM()
 LIMIT %s""", (n,))
-        return renamePlaylistDicts(cursor.fetchall())
+        return changePlaylistDicts(cursor.fetchall())
 
 def getUserPlaylistsOpt(user_id):
     if (user_id == None or user_id == ""):
@@ -973,7 +973,7 @@ LEFT JOIN mixtape_fm_tags t ON pt.tag_id = t.tag_id
 LEFT JOIN mixtape_fm_ratings r ON r.playlist_id = pl.playlist_id
 WHERE pl.user_id = %s
 GROUP BY pl.playlist_id, pl.playlist_name, pl.image;""", (user_id,))
-        return renamePlaylistDicts(cursor.fetchall())
+        return changePlaylistDicts(cursor.fetchall())
 
 def getSavedPlaylistsOpt(user_id):
     if (user_id == None or user_id == ""):
@@ -992,7 +992,7 @@ LEFT JOIN mixtape_fm_tags t ON pt.tag_id = t.tag_id
 LEFT JOIN mixtape_fm_ratings r ON r.playlist_id = pl.playlist_id
 WHERE ps.user_id = %s
 GROUP BY pl.playlist_id, pl.playlist_name, pl.image;""", (user_id,))
-        return renamePlaylistDicts(cursor.fetchall())
+        return changePlaylistDicts(cursor.fetchall())
 
 def getPlaylistOpt(playlist_id):
     with get_db_cursor(True, useRealDict=True) as cursor:
@@ -1005,7 +1005,7 @@ FROM mixtape_fm_playlists pl
 LEFT JOIN mixtape_fm_ratings r ON pl.playlist_id = r.playlist_id
 WHERE pl.playlist_id = %s
 GROUP BY pl.playlist_id, pl.playlist_name, pl.image""", (playlist_id,))
-        return renamePlaylistDict(cursor.fetchone())
+        return changePlaylistDict(cursor.fetchone())
 
 def getPlaylistSongsOpt(playlist_id):
     if (playlist_id == None):
@@ -1023,12 +1023,22 @@ LEFT JOIN mixtape_fm_playlist_songs ps ON pl.playlist_id = ps.playlist_id
 LEFT JOIN mixtape_fm_songs s ON ps.song_id = s.song_id
 WHERE pl.playlist_id = %s
 ORDER BY ps.position""", (playlist_id,))
-        return cursor.fetchall()
+        songs = cursor.fetchall()
+        for song in songs:
+            song_dir = song.get('duration')
+            duration = None              # not null in DB
+            seconds = int(song_dir) % 60000
+            while (seconds >= 100):
+                seconds /= 10
+                duration = str(math.floor(int(song_dir) / 60000)) + ':' + str(int(seconds))
+            # print("Duration: " + str(song_dir) + " " + str(duration))
+            song['duration'] = duration
+        return songs
 
-def renamePlaylistDicts(playlists):
-    return [ renamePlaylistDict(pl) for pl in playlists ]
+def changePlaylistDicts(playlists):
+    return [ changePlaylistDict(pl) for pl in playlists ]
 
-def renamePlaylistDict(playlist):
+def changePlaylistDict(playlist):
   renameKeyInRealDict(playlist, 'playlist_id', 'playlistID')
   renameKeyInRealDict(playlist, 'rating', 'ratingAvg')
   return playlist
