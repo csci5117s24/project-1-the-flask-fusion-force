@@ -65,7 +65,10 @@ def get_playlist_songs(playlist_id):
     # songs: [song_id:””, name:””, picture:”img”, artist:’’”, album:””, genre:””|null, duration:””|null]
     duration = None
     if (song_result[5]):
-      duration = str(math.floor(int(song_result[4]) / 60000)) + ':' + str(int(song_result[4]) % 60000)
+      seconds = int(song_result[4]) % 60000
+      while (seconds >= 100):
+        seconds /= 10
+      duration = str(math.floor(int(song_result[4]) / 60000)) + ':' + str(int(seconds))
       # print("duration= " + duration)
     song = {'song_id': song_result[6], 'name': song_result[0], 'picture': song_result[5], 'artist': song_result[1], 'album': song_result[2], 'genre': song_result[3], 'duration': duration}
     playlist_songs.append(song)
@@ -154,8 +157,12 @@ def playlist_search(variation, search_word):
       search_symbol = '% ' + search_word + '.%'
     elif (variation == 6):
       search_symbol = '%' + search_word + ',%'
+    elif (variation == 7):
+      search_symbol = search_word + '%'
+    elif (variation == 8):
+      search_symbol = '%' + search_word
     else:
-      print("variation value %d invalid", (variation))
+      print("variation value %d invalid" % (variation))
       return None
     cursor.execute("SELECT * FROM mixtape_fm_playlists WHERE playlist_name LIKE %s;", (search_symbol, ))
     return cursor.fetchall()
@@ -175,8 +182,12 @@ def tag_id_search(variation, search_word):
       search_symbol = '% ' + search_word + '.%'
     elif (variation == 6):
       search_symbol = '%' + search_word + ',%'
+    elif (variation == 7):
+      search_symbol = search_word + '%'
+    elif (variation == 8):
+      search_symbol = '%' + search_word
     else:
-      print("variation value %d invalid", (variation))
+      print("variation value %d invalid" % (variation))
       return None
     cursor.execute("SELECT tag_id FROM mixtape_fm_tags WHERE tag_name LIKE %s;", (search_symbol, ))
     return cursor.fetchall()
@@ -203,7 +214,8 @@ def get_playlists_from_tag_id_results(tag_id_results):
         playlist_id = get_playlist_id_from_tag_id(tag_id_result[0])
         if (playlist_id):
           playlist = get_playlist_from_playlist_id(playlist_id[0])
-          playlists.append(playlist)
+          if (playlist not in playlists):
+            playlists.append(playlist)
   return get_playlists_from_results(playlists)
 
 # TODO
@@ -234,7 +246,7 @@ def search(user_id, search_word):
     return ret_dict
   playlist_results = []
   tag_id_results = []
-  for variation in range(1, 7):
+  for variation in range(1, 9):
     playlist_results = playlist_results + playlist_search(variation, search_word)
     tag_id_results = tag_id_results + tag_id_search(variation, search_word)
   name_results = get_playlists_from_results(playlist_results)
@@ -372,8 +384,12 @@ def get_playlists_from_results(playlist_results):
     ratingAvg = 0
     if (db_ratingAvg[0]):
       ratingAvg = str(round(float(db_ratingAvg[0]), 2))
-    playlists.append({'playlistID': playlist[0], 'userID': user[0], 'image': playlist[4], 'name': playlist[2], 'ratingAvg': ratingAvg, \
-    'numRatings': len(ratings), 'tags': tags, 'userDisplayName': user[3]})
+    p_entry = {'playlistID': playlist[0], 'userID': user[0], 'image': playlist[4], 'name': playlist[2], 'ratingAvg': ratingAvg, \
+    'numRatings': len(ratings), 'tags': tags, 'userDisplayName': user[3]}
+    if (p_entry not in playlists):
+      playlists.append(p_entry)
+    # playlists.append({'playlistID': playlist[0], 'userID': user[0], 'image': playlist[4], 'name': playlist[2], 'ratingAvg': ratingAvg, \
+    # 'numRatings': len(ratings), 'tags': tags, 'userDisplayName': user[3]})
   return playlists
 
 # Takes user_id, returns array with {name, image, ratings, tags[], playlist_id}
@@ -682,7 +698,7 @@ def insertSongs(songs):
         ])
         cursor.execute("INSERT INTO mixtape_fm_songs (song_id, name, artist, album, duration, genre, image) VALUES" 
                        + values_str
-                       + " ON CONFLICT (song_id) DO UPDATE SET name = excluded.name, artist = excluded.song_id,"
+                       + " ON CONFLICT (song_id) DO UPDATE SET name = excluded.name, artist = excluded.artist,"
                        + "album = excluded.album, duration = excluded.duration, genre = excluded.genre, image = excluded.image")
     return
 
