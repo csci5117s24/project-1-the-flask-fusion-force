@@ -155,6 +155,7 @@
     }
 
     function previewImage(input) {
+        console.log("previewImage triggered")
         const file = input.files[0]; // Get selected file
         const reader = new FileReader(); 
         reader.onload = function (e) {

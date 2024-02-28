@@ -192,6 +192,7 @@ def editPlaylist(p_id=None):
       return render_template('create_edit_playlist.html.jinja', playlist_id=p_id, user_session=session.get('user'),playlistDetails=playlist, songs=songs, user_id=session.get('user_id'), user_action='edit')
     else:
       user = db.getUserFromPlaylistId(p_id)
+      print(f"User: {user}")
       songs = db.get_playlist_songs(p_id)
       comments = db.getComments(p_id)
       return render_template('playlist.html.jinja', playlist = playlist, user_image = user[5], playlist_id=p_id,user_session = session.get('user'), user_id=session.get('user_id'), songs = songs,comments = comments)
