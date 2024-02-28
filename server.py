@@ -60,7 +60,9 @@ def spotify_callback():
   # Gets all the playlist information for us in a list of dictionaries where each entry is its own playlist
   for playlist_info in playlist_json.get('items'):
     images = playlist_info.get('images')
-    image = images[0].get('url') if images is not None or len(images) > 0 else "NULL"
+    print(f"Images: {images}")
+    print(f"Images: {len(images)}")
+    image = images[0].get('url') if images is not None and len(images) > 0 else "NULL"
     info.append({'id':playlist_info.get('id'),'image': image, 'name': playlist_info.get('name')})
 
   db_playlists = db.getPlaylists(session['user_id'])

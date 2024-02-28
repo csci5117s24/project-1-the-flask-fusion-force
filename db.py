@@ -682,6 +682,7 @@ def insertSong(name, artist, album, genre, duration, image):
 
 def insertSongs(songs):
     # FUTURE: break this into chunks?
+    if (songs is None or len(songs) <= 0): return
     with get_db_cursor(True) as cursor:
         values_str = ",".join([
             cursor.mogrify(
