@@ -72,6 +72,7 @@ def update_playlist():
         return wrapDBFunc(lambda: db.updatePlaylist(user_id, playlist_id, song_ids, playlist_name, playlist_image))
     return wrapReqChecking(f)
 
+# UNUSED
 @app.route("/playlist/create", methods=['POST'])
 def create_playlist():
     def f():
@@ -82,3 +83,21 @@ def create_playlist():
         song_ids = json['songIDs']
         return wrapDBFunc(lambda: db.createPlaylist(user_id, playlist_name, playlist_image, song_ids))
     return wrapReqChecking(f)
+
+@app.route('/playlist/edit', methods=['POST'])
+def edit_playlist():
+    data = request.json
+    user_id = data.get('user_id')
+    playlist_id = data.get('playlist_id')
+    print(playlist_id)
+    new_playlist = data.get('new_playlist')  # This might be a redundant value. Will depend on id
+    song_ids = data.get('song_ids')
+    playlist_image = data.get('playlist_image')
+    playlist_name = data.get('playlist_name')
+    if new_playlist:
+        db.createPlaylist(user_id, playlist_name, playlist_image, song_ids)
+    else:
+        db.updatePlaylist(user_id, playlist_id, song_ids, playlist_name, playlist_image)  # can leave out playlist_image later if it was unchanged
+    # playlist_id = db.get_playlist_id(user_id, playlist_name)
+    # print(playlist_id)
+    return Response(status=201)
