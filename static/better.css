@@ -179,6 +179,8 @@ body{
 .song-title{
     color: #222222;
     padding:0.5em;
+    padding-top: 2em;
+    padding-bottom: 1em;
 }
 .song{
     padding:0.5em;
