@@ -492,42 +492,6 @@ def getUserPlaylists(user_id):
   return playlists
   # return jsonify(playlists)
 
-def getRandomPlaylistsOpt(n):
-    with get_db_cursor(True, useRealDict=True) as cursor:
-        cursor.execute(
-"""SELECT pl.playlist_id, 
-pl.playlist_name AS name, 
-pl.image AS image,
-AVG(r.stars) AS rating,
-ARRAY_REMOVE(ARRAY_AGG(t.tag_name), NULL) AS tags
-FROM mixtape_fm_playlists pl
-LEFT JOIN mixtape_fm_playlist_tags pt ON pl.playlist_id = pt.playlist_id
-LEFT JOIN mixtape_fm_tags t ON pt.tag_id = t.tag_id
-LEFT JOIN mixtape_fm_ratings r ON r.playlist_id = pl.playlist_id
-GROUP BY pl.playlist_id, pl.playlist_name, pl.image
-ORDER BY RANDOM()
-LIMIT %s""", (n,))
-        return renamePlaylistDicts(cursor.fetchall())
-
-def getUserPlaylistsOpt(user_id):
-    if (user_id == None or user_id == ""):
-        return []
-
-    with get_db_cursor(True, useRealDict=True) as cursor:
-        cursor.execute(
-"""SELECT pl.playlist_id, 
-pl.playlist_name AS name, 
-pl.image AS image,
-COALESCE(AVG(r.stars), 0) AS rating,
-ARRAY_REMOVE(ARRAY_AGG(t.tag_name), NULL) AS tags
-FROM mixtape_fm_playlists pl
-LEFT JOIN mixtape_fm_playlist_tags pt ON pl.playlist_id = pt.playlist_id
-LEFT JOIN mixtape_fm_tags t ON pt.tag_id = t.tag_id
-LEFT JOIN mixtape_fm_ratings r ON r.playlist_id = pl.playlist_id
-WHERE pl.user_id = %s
-GROUP BY pl.playlist_id, pl.playlist_name, pl.image;""", (user_id,))
-        return renamePlaylistDicts(cursor.fetchall())
-
 ## HELPER TO RETRIEVE COMMENTS
 def get_comments(playlist_id):
   if (playlist_id == None):
@@ -963,6 +927,53 @@ def getSavedPlaylists(user_id):
   playlists = get_playlists_from_results(playlist_results)
   return playlists
   # return jsonify(playlists)
+
+def unsavePlaylist(user_id, playlist_id):
+  if (user_id == None or playlist_id == None):
+    print("Invalid parameters:")
+    print("  user_id= " + str(user_id))
+    print("  playlist_id= " + str(playlist_id))
+    return
+  with get_db_cursor(True) as cursor:
+    cursor.execute("DELETE FROM mixtape_fm_playlists_saved WHERE playlist_id=%s AND user_id=%s;", (playlist_id, user_id))
+  return
+
+def getRandomPlaylistsOpt(n):
+    with get_db_cursor(True, useRealDict=True) as cursor:
+        cursor.execute(
+"""SELECT pl.playlist_id, 
+pl.playlist_name AS name, 
+pl.image AS image,
+AVG(r.stars) AS rating,
+ARRAY_REMOVE(ARRAY_AGG(t.tag_name), NULL) AS tags
+FROM mixtape_fm_playlists pl
+LEFT JOIN mixtape_fm_playlist_tags pt ON pl.playlist_id = pt.playlist_id
+LEFT JOIN mixtape_fm_tags t ON pt.tag_id = t.tag_id
+LEFT JOIN mixtape_fm_ratings r ON r.playlist_id = pl.playlist_id
+GROUP BY pl.playlist_id, pl.playlist_name, pl.image
+ORDER BY RANDOM()
+LIMIT %s""", (n,))
+        return renamePlaylistDicts(cursor.fetchall())
+
+def getUserPlaylistsOpt(user_id):
+    if (user_id == None or user_id == ""):
+        return []
+
+    with get_db_cursor(True, useRealDict=True) as cursor:
+        cursor.execute(
+"""SELECT pl.playlist_id, 
+pl.playlist_name AS name, 
+pl.image AS image,
+COALESCE(AVG(r.stars), 0) AS rating,
+ARRAY_REMOVE(ARRAY_AGG(t.tag_name), NULL) AS tags
+FROM mixtape_fm_playlists pl
+LEFT JOIN mixtape_fm_playlist_tags pt ON pl.playlist_id = pt.playlist_id
+LEFT JOIN mixtape_fm_tags t ON pt.tag_id = t.tag_id
+LEFT JOIN mixtape_fm_ratings r ON r.playlist_id = pl.playlist_id
+WHERE pl.user_id = %s
+GROUP BY pl.playlist_id, pl.playlist_name, pl.image;""", (user_id,))
+        return renamePlaylistDicts(cursor.fetchall())
+
 def getSavedPlaylistsOpt(user_id):
     if (user_id == None or user_id == ""):
         return []
@@ -982,15 +993,36 @@ WHERE ps.user_id = %s
 GROUP BY pl.playlist_id, pl.playlist_name, pl.image;""", (user_id,))
         return renamePlaylistDicts(cursor.fetchall())
 
-def unsavePlaylist(user_id, playlist_id):
-  if (user_id == None or playlist_id == None):
-    print("Invalid parameters:")
-    print("  user_id= " + str(user_id))
-    print("  playlist_id= " + str(playlist_id))
-    return
-  with get_db_cursor(True) as cursor:
-    cursor.execute("DELETE FROM mixtape_fm_playlists_saved WHERE playlist_id=%s AND user_id=%s;", (playlist_id, user_id))
-  return
+def getPlaylistOpt(playlist_id):
+    with get_db_cursor(True, useRealDict=True) as cursor:
+        cursor.execute(
+            """SELECT pl.playlist_id,
+pl.playlist_name AS name,
+pl.image AS image,
+AVG(r.stars) AS rating
+FROM mixtape_fm_playlists pl
+LEFT JOIN mixtape_fm_ratings r ON pl.playlist_id = r.playlist_id
+WHERE pl.playlist_id = %s
+GROUP BY pl.playlist_id, pl.playlist_name, pl.image""", (playlist_id,))
+        return renamePlaylistDict(cursor.fetchone())
+
+def getPlaylistSongsOpt(playlist_id):
+    if (playlist_id == None):
+        return []
+    with get_db_cursor(True, useRealDict=True) as cursor:
+        cursor.execute(
+            """SELECT s.name as name,
+s.artist AS artist,
+s.album AS album,
+s.genre AS genre,
+s.image AS picture,
+s.duration AS duration
+FROM mixtape_fm_playlists pl
+LEFT JOIN mixtape_fm_playlist_songs ps ON pl.playlist_id = ps.playlist_id
+LEFT JOIN mixtape_fm_songs s ON ps.song_id = s.song_id
+WHERE pl.playlist_id = %s
+ORDER BY ps.position""", (playlist_id,))
+        return cursor.fetchall()
 
 def renamePlaylistDicts(playlists):
     return [ renamePlaylistDict(pl) for pl in playlists ]
@@ -1006,5 +1038,6 @@ def nullIfNone(arg):
 
 # dict must be made from RealDictCursor!!
 def renameKeyInRealDict(dict, oldkey, newkey):
-    dict[newkey] = dict.get(oldkey)
-    del dict[oldkey]
+    if (dict.get(oldkey) is not None):
+        dict[newkey] = dict.get(oldkey)
+        del dict[oldkey]
