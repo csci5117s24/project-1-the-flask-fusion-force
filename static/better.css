@@ -391,7 +391,27 @@ body{
     border-radius: 3em;
   }
 /*Create Playlist page*/
-
+.input-button-container{
+    display: flex;
+    flex-direction: row ;
+    border-bottom: 5px inset #512f98;
+    border-top: 5px outset #bfaaff;
+    border-left: 5px outset #bfaaff;
+    border-right: 5px inset #512f98;
+   
+}
+.input-button{
+    color: #222222; 
+    background-color: #b299fa;
+    border: none;
+    flex-grow: 1;
+}
+.input-button:hover{
+    color: #bfaaff; 
+    background-color: #512f98;
+    border: none;
+    flex-grow: 1;
+}
 .add-song{
  
     background-color: #512f98;
