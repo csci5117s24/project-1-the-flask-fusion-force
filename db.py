@@ -344,7 +344,7 @@ def getRatingsNoUser(playlist_id):
   # return jsonify(ratings) 
 
 def get_playlist_from_result(playlist_result):
-  playlist = {'playlistID': None, 'image': None, 'name': None, 'ratingAvg': None, \
+  playlist = {'playlistID': None, 'userID': None, 'image': None, 'name': None, 'ratingAvg': None, \
     'numRatings': None, 'tags': None, 'userDisplayName': None}
   if (playlist_result == [] or playlist_result == None):
     return playlist
