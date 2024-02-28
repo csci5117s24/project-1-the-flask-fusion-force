@@ -4,7 +4,7 @@ import random
 from flask import current_app, jsonify
 import psycopg2
 from psycopg2.pool import ThreadedConnectionPool
-from psycopg2.extras import DictCursor
+from psycopg2.extras import DictCursor, RealDictCursor
 import math
 pool = None
 
@@ -24,7 +24,9 @@ def get_db_connection():
 
 
 @contextmanager
-def get_db_cursor(commit=False):
+def get_db_cursor(commit=False, useRealDict=False):
+    if useRealDict: factory = RealDictCursor
+    else: factory = DictCursor
     with get_db_connection() as connection:
       cursor = connection.cursor(cursor_factory=DictCursor)
       try:
@@ -475,7 +477,7 @@ def getUserPlaylists(user_id):
   # return jsonify(playlists)
 
 def getRandomPlaylistsOpt(n):
-    with get_db_cursor(True) as cursor:
+    with get_db_cursor(True, useRealDict=True) as cursor:
         cursor.execute(
 """SELECT pl.playlist_id, 
 pl.playlist_name AS name, 
@@ -495,7 +497,7 @@ def getUserPlaylistsOpt(user_id):
     if (user_id == None or user_id == ""):
         return []
 
-    with get_db_cursor(True) as cursor:
+    with get_db_cursor(True, useRealDict=True) as cursor:
         cursor.execute(
 """SELECT pl.playlist_id, 
 pl.playlist_name AS name, 
@@ -948,7 +950,7 @@ def getSavedPlaylists(user_id):
 def getSavedPlaylistsOpt(user_id):
     if (user_id == None or user_id == ""):
         return []
-    with get_db_cursor(True) as cursor:
+    with get_db_cursor(True, useRealDict=True) as cursor:
         cursor.execute(
 """SELECT pl.playlist_id, 
 pl.playlist_name AS name, 
