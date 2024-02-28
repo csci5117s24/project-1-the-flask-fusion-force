@@ -668,15 +668,15 @@ def insertSongs(songs):
     return
 
 # each entry in songs contains: name, artist, album, duration
-def insertSongsToPlaylist(playlist_id, songs):
-    print([i for i,_ in enumerate(songs)])
+def insertSongsToPlaylist(playlist_id, song_ids):
+    print([i for i,_ in enumerate(song_ids)])
     with get_db_cursor(True) as cursor:
         value_str = ",".join([
             cursor.mogrify(
                 "(%s,%s,%s)",
-                (playlist_id, song.get("id"), i))
+                (playlist_id, song_id, i))
             .decode('utf-8')
-            for i, song in enumerate(songs)
+            for i, song_id in enumerate(song_ids)
         ])
         cursor.execute("INSERT INTO mixtape_fm_playlist_songs (playlist_id, song_id, position) VALUES" 
                        + value_str 
@@ -881,10 +881,12 @@ def updatePlaylist(user_id, playlist_id, song_ids, playlist_name, playlist_image
     update_playlist(user_id, playlist_id, playlist_name)
   else:
     update_playlist(user_id, playlist_id, playlist_name, playlist_image)
-  position = 0
-  for song_id in song_ids:
-    insert_song_into_playlist(playlist_id, song_id, position)
-    position += 1
+#   position = 0
+  print(song_ids)
+  insertSongsToPlaylist(playlist_id, song_ids)
+#   for song_id in song_ids:
+#     insert_song_into_playlist(playlist_id, song_id, position)
+#     position += 1
   return playlist_id
 
 
@@ -1001,6 +1003,7 @@ def getPlaylistOpt(playlist_id):
     with get_db_cursor(True, useRealDict=True) as cursor:
         cursor.execute(
             """SELECT pl.playlist_id,
+pl.user_id AS user_id,
 pl.playlist_name AS name,
 pl.image AS image,
 COALESCE(AVG(r.stars), 0) AS rating
@@ -1015,7 +1018,8 @@ def getPlaylistSongsOpt(playlist_id):
         return []
     with get_db_cursor(True, useRealDict=True) as cursor:
         cursor.execute(
-            """SELECT s.name as name,
+            """SELECT s.song_id as song_id,
+s.name as name,
 s.artist AS artist,
 s.album AS album,
 s.genre AS genre,
@@ -1028,6 +1032,7 @@ WHERE pl.playlist_id = %s
 ORDER BY ps.position""", (playlist_id,))
         songs = cursor.fetchall()
         for song in songs:
+            renameKeyInRealDict(song, 'song_id', 'songID')
             song_dir = song.get('duration')
             duration = None              # not null in DB
             seconds = int(song_dir) % 60000
@@ -1043,6 +1048,7 @@ def changePlaylistDicts(playlists):
 
 def changePlaylistDict(playlist):
   renameKeyInRealDict(playlist, 'playlist_id', 'playlistID')
+  renameKeyInRealDict(playlist, 'user_id', 'userID')
   renameKeyInRealDict(playlist, 'rating', 'ratingAvg')
   if playlist.get('ratingAvg') is not None: 
     # playlist['ratingAvg'] = str(round(float(playlist.get('ratingAvg')), 2)) doesn't work
