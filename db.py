@@ -389,7 +389,7 @@ def get_playlists_from_results(playlist_results):
     db_ratingAvg = getRatingAvg(playlist[0])
     ratingAvg = 0
     if (db_ratingAvg[0]):
-      ratingAvg = str(round(float(db_ratingAvg[0]), 2))
+      ratingAvg = (round(float(db_ratingAvg[0]), 2))
     p_entry = {'playlistID': playlist[0], 'userID': user[0], 'image': playlist[4], 'name': playlist[2], 'ratingAvg': ratingAvg, \
     'numRatings': len(ratings), 'tags': tags, 'userDisplayName': user[3]}
     if (p_entry not in playlists):

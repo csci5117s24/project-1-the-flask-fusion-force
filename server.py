@@ -31,6 +31,7 @@ app = create_app()
 @app.route('/homepage', methods=['GET'])
 def homepage():
     playlists = db.getRandomPlaylistsOpt(50)
+  
     return render_template('homepage.html.jinja', user_session=session.get('user'), pretty=json.dumps(session.get('user'), indent=4),
     playlists = playlists)
 
@@ -119,7 +120,7 @@ def search():
     print(f"Search results:\n{searchResults}")
     nameResults = searchResults['name_results']
     tagResults = searchResults['tag_results']
-    savedResults = searchResults['saved_results']
+    savedResults = searchResults['saved_results'] 
     return render_template('search.html.jinja',user_id=session.get('user_id'), nameResults=nameResults, tagResults=tagResults, savedResults=savedResults)
 
 @app.route('/playlist/<int:p_id>', methods=['POST','GET'])
