@@ -6,6 +6,7 @@
     Playlist Name
 </h1>
 {% endblock %}
+
 {% block content %}
 {% if user_session != None %}
 <div class="pure-g horizontal-double-content" style="padding: 2em;">
@@ -33,9 +34,9 @@
             </div>
         </div>
         <div class="songlst" id="currentSongsDiv">
-            {% for song in songs.songs %}
+            {# {% for song in songs.songs %}
             {% include "deletesongcard.html.jinja" ignore missing with context %}
-            {% endfor %}
+            {% endfor %} #}
         </div>
         <div class="right-align">
             <button onclick="saveChanges()" class="save-button pure-button">Save Changes</button>
@@ -49,17 +50,54 @@
 <a href="/login" class="pure-menu-link">Log in</a>
 {% endif %}
 
-
 <script>
+    let idCt = 0;
+    function makeDeleteSongCard(song) {
+        console.log("Called makeDeleteSongCard with ", song);
+        // Creating elements dynamically
+        var songDiv = document.createElement("div");
+        songDiv.className = "pure-g song";
+        songDiv.id = song.songID;
+
+        var songIconDiv = document.createElement("div");
+        songIconDiv.className = "pure-u-1-5 song-icon";
+        var songIconImg = document.createElement("img");
+        songIconImg.src = song.songImage;
+        songIconImg.alt = "Song Icon";
+        songIconDiv.appendChild(songIconImg);
+
+        var songTitleDiv = document.createElement("div");
+        songTitleDiv.className = "pure-u-3-5 song-title";
+        songTitleDiv.textContent = song.songName;
+
+        var deleteButton = document.createElement("button");
+        deleteButton.className = "add-song";
+        deleteButton.setAttribute("onclick", "deleteSong('" + song.songID + "', '" + song.songName + "', '" + song.songImage + "')");
+        var deleteButtonText = document.createElement("h1");
+        deleteButtonText.textContent = "-";
+        deleteButton.appendChild(deleteButtonText);
+
+        deleteButton.addEventListener("click", function (event) {
+            event.stopPropagation(); // Prevent parent event triggering
+        });
+
+        // Appending elements to songDiv
+        songDiv.appendChild(songIconDiv);
+        songDiv.appendChild(songTitleDiv);
+        songDiv.appendChild(deleteButton);
+        console.log("Made songDiv", songDiv);
+        return songDiv;
+    }
+
     var playlistSongIDs = [];
     const userID = "{{ user_id }}";
     const playlistID = "{{ playlist_id }}";
     var songs = {{ songs }};
     var playlistDetails = {{ playlistDetails }};
-    songs.songs.forEach(song =>{
-        console.log(song);
+    songs.songs.forEach(song => {
         playlistSongIDs.push(song.songID);
-    })
+        addSong(song);
+    });
     // extract playlist name and image
     var playlistImageData = null;
 
@@ -95,22 +133,22 @@
             });
     }
 
-    function addSong(id, name, image) {
+    function addSong(song) {
         console.log("song being added");
         // Add song to arrays, reset HTML for songs section
-        playlistSongIDs.push(id);
-        songs.push(id, name, image);
-        document.getElementById("currentSongsDiv").innerHTML = `{% for song in songs %}{% include "deletesongcard.html.jinja" ignore missing with context %}{% endfor %}`;
+        playlistSongIDs.push(song.id);
+        let songDiv = makeDeleteSongCard(song);
+        let songsContainer = document.getElementById("currentSongsDiv");
+        songsContainer.appendChild(songDiv);
     }
+    
     function deleteSong(id, name, image) {
-        console.log("song will be removed");
-        console.log(playlistSongIDs);
-        // Remove song from arrays, reset HTML for songs section
-        let idx = playlistSongIDs.indexOf(id);
-        playlistSongIDs = playlistSongIDs.splice(idx, 1);
-        songs.songs.splice(idx, 1);
-        document.getElementById("currentSongsDiv").innerHTML = `{% for song in songs.songs %}{% include "deletesongcard.html.jinja" ignore missing with context %}{% endfor %}`;
-        console.log("Songs is now: ", songs.songs.length);
+        let songDiv = document.getElementById(id);
+        console.log("deleteSong songDiv: ", songDiv);
+        songDiv.remove();
+        // Remove from ids array
+        var index = playlistSongIDs.indexOf(id);
+        playlistSongIDs.splice(index, 1);
     }
 
     function changePlaylistImage() {
@@ -128,6 +166,11 @@
         reader.readAsDataURL(file);
     }
 
+
+
+
+
+    // TODO
     function saveChanges() {
 
         if (playlistID === null) {  // make a completeley new playlist

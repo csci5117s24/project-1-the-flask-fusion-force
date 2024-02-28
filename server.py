@@ -212,16 +212,7 @@ def savePlaylist():
 
 @app.route('/test-json')
 def send_json():
-    data = {
-        "songs": [
-            {
-                "songID": "abc123",
-                "songName": "mySong1",
-                "songImage": ""
-            }
-        ]
-    }
-
+    data = {"songs": [{"songID": "abc123","songName": "mySong1","songImage": ""}]}
     return json.dumps(data)
 
 @app.errorhandler(404)
