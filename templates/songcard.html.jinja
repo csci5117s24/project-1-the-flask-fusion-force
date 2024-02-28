@@ -11,7 +11,7 @@
         {% if song.album %}
             <p>Album: {{ song.album }}</p>
         {% endif %}
-        {% if song.genre %}
+        {% if song.genre != 'NULL' %}
             <p>Genre: {{ song.genre }}</p>
         {% endif %}
         {% if song.duration %}

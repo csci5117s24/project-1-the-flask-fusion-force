@@ -31,10 +31,10 @@ app = create_app()
 @app.route('/homepage', methods=['GET'])
 def homepage():
     playlists = []
-    if (session.get('user_id') != None):
-      playlists = db.getUserPlaylists(session['user_id'])
-    else:
-      playlists = db.getRandomPlaylists(10)
+    # if (session.get('user_id') != None):
+    #   playlists = db.getUserPlaylists(session['user_id'])
+    # else:
+    playlists = db.getRandomPlaylists(50)
     return render_template('homepage.html.jinja', user_session=session.get('user'), pretty=json.dumps(session.get('user'), indent=4),
     playlists = playlists)
 
@@ -132,7 +132,10 @@ def playlist(p_id):
         return render_template('403.html.jinja')
     playlist = db.get_playlist_from_result(db_playlist)
     user = db.getUserFromPlaylistId(db_playlist[0])
-    return render_template('playlist.html.jinja', playlist = playlist, user_image = user[5], playlist_id=p_id,user_session = session.get('user'), user_id=session.get('user_id'), songs = songs,comments = comments)
+    if (session.get('user_id') != None and user[0] == session['user_id']):
+      return render_template('create_edit_playlist.html.jinja', playlist_id=p_id, user_session=session.get('user'),playlistDetails=playlist, songs=songs, user_id=session.get('user_id'))
+    else:
+      return render_template('playlist.html.jinja', playlist = playlist, user_image = user[5], playlist_id=p_id,user_session = session.get('user'), user_id=session.get('user_id'), songs = songs,comments = comments)
 @app.route('/settings', methods=['GET'])
 @auth.require_login
 def settings():
