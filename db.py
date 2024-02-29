@@ -677,8 +677,9 @@ def insertSongs(songs):
         ])
         cursor.execute("INSERT INTO mixtape_fm_songs (song_id, name, artist, album, duration, genre, image) VALUES" 
                        + values_str
-                       + " ON CONFLICT (song_id) DO UPDATE SET name = excluded.name, artist = excluded.artist,"
-                       + "album = excluded.album, duration = excluded.duration, genre = excluded.genre, image = excluded.image")
+                       + "ON CONFLICT (song_id) DO NOTHING")
+                      #  + " ON CONFLICT (song_id) DO UPDATE SET name = excluded.name, artist = excluded.artist,"
+                      #  + "album = excluded.album, duration = excluded.duration, genre = excluded.genre, image = excluded.image")
     return
 
 # each entry in songs contains: name, artist, album, duration
