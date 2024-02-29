@@ -110,7 +110,7 @@
 
         var deleteButton = document.createElement("button");
         deleteButton.className = "add-song";
-        deleteButton.setAttribute("onclick", "deleteSong('" + song.songID + "', '" + song.name + "', '" + song.picture + "')");
+        deleteButton.setAttribute("onclick", "deleteSong(\"" + song.songID + "\", \"" + song.name + "\", \"" + song.picture + "\", \"" + true + "\")");
         var deleteButtonText = document.createElement("h1");
         deleteButtonText.textContent = "-";
         deleteButton.appendChild(deleteButtonText);
@@ -170,7 +170,7 @@
         var addButton = document.createElement("button");
         addButton.className = "add-song";
         addButton.setAttribute("id", song.id);
-        addButton.setAttribute("onclick", "addNewSong('" + song.id + "', '" + song.name + "', '" + song.image + "', '" + true + "', '" + song.artist + "', '" + song.album + "', '" + song.duration +"')");
+        addButton.setAttribute("onclick", "addNewSong(\"" + song.id + "\", \"" + song.name + "\", \"" + song.image + "\", \"" + true + "\", \"" + song.artist + "\", \"" + song.album + "\", \"" + song.duration +"\")");
         var addButtonText = document.createElement("h1");
         addButtonText.textContent = "+";
         addButton.appendChild(addButtonText);
@@ -245,9 +245,17 @@
     }
 
     function deleteSong(id, name, image) {
-        let songDiv = document.getElementById(id);
-        console.log("deleteSong songDiv: ", songDiv);
-        songDiv.remove();
+        let currentSongsContainer = document.getElementById("currentSongsDiv").children;
+        console.log(currentSongsContainer)
+        for (let i = 0; i < currentSongsContainer.length; i++) {
+            console.log("IN FOR IF")
+            console.log(currentSongsContainer[i].id)
+            if (currentSongsContainer[i].id === id) {
+                console.log("IN FOR IF")
+                document.getElementById(id).classList.remove("pure-button-disabled")
+                currentSongsContainer[i].remove();
+            }
+        }
         // Remove from ids array
         var index = playlistSongIDs.indexOf(id);
         playlistSongIDs.splice(index, 1);
