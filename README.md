@@ -6,7 +6,7 @@ CSCI 5117, Spring 2024, [assignment description](https://canvas.umn.edu/courses/
 
 * Team Name: The Flask Fusion Force
 * App Name: Mixtape.fm
-* App Link: <https://TODO.com/>
+* App Link: <[https://mixtape-fm.onrender.com](https://mixtape-fm.onrender.com)>
 
 ### Students
 
@@ -32,7 +32,7 @@ CSCI 5117, Spring 2024, [assignment description](https://canvas.umn.edu/courses/
 * If you're not signed in you won't be able to leave a comment or rating, import your playlist, or see all the available menu options
 * You can leave comments and ratings if you click on the playlist while signed in
 * Comments and ratings left on a playlist will be viewable when a user refreshes the page
-
+* Possible error when signing in. Simply reload the home page and your account will be logged in again (has not occurred recently).
 
 ## Screenshots of Site
 
