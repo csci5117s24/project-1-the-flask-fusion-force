@@ -33,6 +33,7 @@ CSCI 5117, Spring 2024, [assignment description](https://canvas.umn.edu/courses/
 * You can leave comments and ratings if you click on the playlist while signed in
 * Comments and ratings left on a playlist will be viewable when a user refreshes the page
 * Possible error when signing in. Simply reload the home page and your account will be logged in again (has not occurred recently).
+* Need Spotify API Access so we used a dummy account for access, use the following account credentials: email: dummyspotify24@gmail.com, password: FlaskFusionForce24!
 
 ## Screenshots of Site
 
