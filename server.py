@@ -263,10 +263,9 @@ def addTag():
   user_id = data.get('user_id')
   playlist_id = data.get('playlist_id')
   tag_name = data.get('tag_name')
-  print(tag_name)
   tag_id = db.get_tag_id(tag_name)
-  print(tag_id)
-  db.insert_playlist_tag_id(playlist_id, tag_id)
+  if (not db.playlist_is_tagged(playlist_id, tag_id)):
+    db.insert_playlist_tag_id(playlist_id, tag_id)
   return Response(status=201)
 
 @app.route('/test-json')
