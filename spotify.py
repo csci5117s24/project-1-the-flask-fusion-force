@@ -5,7 +5,7 @@ import json
 import time
 import db
 
-spotify_redirect_uri = "http://127.0.0.1:5000"
+spotify_redirect_uri = "https://mixtape-fm.onrender.com/search"
 
 def base64_client_creds():
   credentials_str = f"{env['SPOTIFY_CLIENT_ID']}:{env['SPOTIFY_CLIENT_SECRET']}"
