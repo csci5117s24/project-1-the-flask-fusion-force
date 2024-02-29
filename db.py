@@ -128,7 +128,7 @@ def get_tag_id_helper(tag_name):
 def get_tag_id(tag_name):
   tag_id = get_tag_id_helper(tag_name)
   print('tag_id= ' + str(tag_id))
-  if (tag_id is None):
+  if (tag_id is None or tag_id == []):
     insert_tag(tag_name)
   tag_id = get_tag_id_helper(tag_name)
   return tag_id[0]
@@ -902,6 +902,16 @@ def updatePlaylist(user_id, playlist_id, song_ids, playlist_name, playlist_image
 #     position += 1
   return playlist_id
 
+def check_if_tagged_helper(playlist_id, tag_id):
+  with get_db_cursor(True) as cursor:
+    cursor.execute("SELECT * FROM mixtape_fm_playlist_tags WHERE playlist_id=%s AND tag_id=%s;", (playlist_id, tag_id))
+    return cursor.fetchone()
+
+def playlist_is_tagged(playlist_id, tag_id):
+  if (check_if_tagged_helper(playlist_id, tag_id) != []):
+    return True
+  else:
+    return False
 
 def add_tag(tag_name):
   with get_db_cursor(True) as cursor:
