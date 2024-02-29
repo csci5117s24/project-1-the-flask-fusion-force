@@ -133,19 +133,24 @@
 
     starButtons.forEach(function (star, index) {
         star.onclick = function () {
-            addRating(index + 1);  // add rating to back-end
+            changeRating(index + 1);  // add rating to back-end
             changeStarClass(star, index + 1, 'star-button-selected');
         }
     });
 
-    if (userRating !== "") {
-        starButtons.forEach(function (star, index) {
-            if (index < userRating) {
-                star.classList.add('star-button-selected');
-            }
-        });
+    // Displays user's rating on stars
+    function showUserRating(){
+        if (userRating !== "") {
+            starButtons.forEach(function (star, index) {
+                if (index < userRating) {
+                    star.classList.add('star-button-selected');
+                }
+                else{
+                    star.classList.remove('star-button-selected');  // TODO: consider condensing with changeStarClass
+                }
+            });
+        }
     }
-
     function changeStarClass(element, selectedIndex, className) {
         // Remove 'star-button-selected' class from all stars
         starButtons.forEach(function (star, index) {
@@ -166,31 +171,36 @@
     }
 
     // Add star rating to playlist
-    function addRating(stars) {
-        if (userID === undefined) {
-            console.error('User not signed in');
-            return;
-        }
+    function changeRating(stars) {
+        let endpoint = '/change-playlist-rating/1';
         const data = {
             user_id: userID,
             playlist_id: playlistID,
             stars: stars,
         };
-        fetch('/rate-playlist', {
+        if (stars===userRating){  // User has already rated playlist this : delete rating
+            endpoint = '/change-playlist-rating/0'
+        }
+        fetch(endpoint, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify(data)
         })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-            })
-            .catch(error => {
-                console.error('There was a problem with the fetch operation:', error);
-            });
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            else{  // success - update UI
+                userRating = stars===userRating ? 0 : stars; 
+                showUserRating();
+            }
+        })
+        .catch(error => {
+            console.error('There was a problem with the fetch operation:', error);
+        });
+
     }
 
     // Save playlist to user's library
@@ -225,6 +235,7 @@
 
     // Handle comment submissions:
     document.addEventListener("DOMContentLoaded", function () {
+        showUserRating();  // initially show user rating
         const commentForm = document.getElementById("comment-form");
         commentForm.addEventListener("submit", function (event) {
             event.preventDefault(); // Prevent default form submission behavior

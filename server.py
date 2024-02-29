@@ -213,8 +213,8 @@ def editPlaylist(p_id):
 #       songs = [{'song_id': None, 'name': None, 'picture': None, 'artist': None, 'album': None, 'genre': None, 'duration': None}]
 #       return render_template('create_edit_playlist.html.jinja', playlist_id=None, user_session=session.get('user'),playlistDetails=playlist, songs=songs, user_id=session.get('user_id'))
 
-@app.route('/rate-playlist', methods=['POST'])
-def ratePlaylist():
+@app.route('/change-playlist-rating/<int:add_rating>', methods=['POST'])
+def ratePlaylist(add_rating):
     data = request.json
     user_id = data.get('user_id')
     playlist_id = data.get('playlist_id')
@@ -222,7 +222,10 @@ def ratePlaylist():
     print(user_id)
     print(playlist_id)
     print("stars= " + str(stars))
-    db.ratePlaylist(user_id, playlist_id, stars)
+    if add_rating == 1:  # adding a rating
+      db.ratePlaylist(user_id, playlist_id, stars)
+    else:
+      db.deleteRating(user_id, playlist_id)
     return Response(status=201)
 
 @app.route('/add-comment', methods=['POST'])

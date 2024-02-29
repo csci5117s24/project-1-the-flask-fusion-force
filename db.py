@@ -807,7 +807,7 @@ def addComment(user_id, playlist_id, comment):
 
 def deleteRating(user_id, playlist_id):
   with get_db_cursor(True) as cursor:
-    cursor.execute("DELETE * FROM mixtape_fm_ratings WHERE rating_user_id=%s AND playlist_id=%s;", \
+    cursor.execute("DELETE FROM mixtape_fm_ratings WHERE rating_user_id=%s AND playlist_id=%s;", \
     (user_id, playlist_id))
   return
 
